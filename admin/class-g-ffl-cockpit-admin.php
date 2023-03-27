@@ -134,7 +134,7 @@ class g_ffl_Cockpit_Admin
         
         <div class="wrap">
             <a href="https://garidium.com" target="_blank" style="display: inline-block">
-                <img width="250" src="<?php echo plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png'?>">
+                <img src="<?php echo plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png'?>">
             </a>
             <br><br>
             <!-- Tab links -->
