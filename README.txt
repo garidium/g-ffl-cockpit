@@ -54,6 +54,7 @@ While the plugin is free to download and install, it does require you to purchas
 
 == Screenshots ==
 1. The configuration tab show an editor (JSON Editor for those in the know), where distributor and pricing settings can be configured.
+2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
 1. v1.0.0 Initial Release of the g-FFL Cockpit Plugin

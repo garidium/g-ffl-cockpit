@@ -141,8 +141,9 @@ class g_ffl_Cockpit_Admin
             <div class="tab">
                 <button class="tablinks" onclick="openTab(event, 'configuration')" id="defaultOpen">Configuration</button>
                 <button class="tablinks" onclick="openTab(event, 'product_feed')">Product Feed</button>
-                <button class="tablinks" onclick="openTab(event, 'fulfillment')">Fulfillment (Coming Soon)</button>
-                <button class="tablinks" onclick="openTab(event, 'instructions')">Instructions</button>
+                <button class="tablinks" onclick="openTab(event, 'fulfillment')">Fulfillment</button>
+                <button class="tablinks" onclick="openTab(event, 'logs')">Logs</button>
+                <button class="tablinks" onclick="openTab(event, 'instructions')">Help Center</button>
             </div>
             <!-- Tab content -->
             <div id="configuration" class="tabcontent">
@@ -250,10 +251,16 @@ class g_ffl_Cockpit_Admin
                     <p>Coming Soon! Automated Fulfillment Orders will be reported on here</p>
                 </div>
             </div>            
-            <div id="instructions" class="tabcontent">
-                <h3>Instructions</h3>
+            <div id="logs" class="tabcontent">
+                <h3>Logs</h3>
                 <div class="postbox" style="padding: 10px;margin-top: 10px">
-                    <p>This is where the instructions go.</p>
+                    <p>Coming Soon! View Process Logs to Monitor Feeds</p>
+                </div>
+            </div>  
+            <div id="instructions" class="tabcontent">
+                <h3>Help Center</h3>
+                <div class="postbox" style="padding: 10px;margin-top: 10px">
+                    <p>This is where the help documentation and videos will go. In the meantime, email sales@garidium.com with any questions.</p>
                 </div>
             </div>
         </div>
