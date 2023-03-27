@@ -141,6 +141,7 @@ class g_ffl_Cockpit_Admin
             <div class="tab">
                 <button class="tablinks" onclick="openTab(event, 'configuration')" id="defaultOpen">Configuration</button>
                 <button class="tablinks" onclick="openTab(event, 'product_feed')">Product Feed</button>
+                <button class="tablinks" onclick="openTab(event, 'fulfillment')">Fulfillment (Coming Soon)</button>
                 <button class="tablinks" onclick="openTab(event, 'instructions')">Instructions</button>
             </div>
             <!-- Tab content -->
@@ -194,7 +195,7 @@ class g_ffl_Cockpit_Admin
                     <div id="product_feed_table"></div>
                     <script>
                         new gridjs.Grid({
-                            columns: [{name: "Listed", hidden: true}, "Dist", {name: 'SKU',formatter: (_, row) => `${row.cells[0].data?row.cells[2].data + '*':row.cells[1].data}`}, "UPC", "MPN", "Cl", "Name", "Qty", {name: 'Cost',formatter: (cell) => `$${cell.toFixed(2)}`}, {name: 'Ship',formatter: (cell) => `$${cell.toFixed(2)}`}, {name: 'T-Cost',formatter: (cell) => `$${cell.toFixed(2)}`}, {name: 'MAP',formatter: (cell) => `${cell==null?'':'$'+cell.toFixed(2)}`}, {name: 'Price',formatter: (cell) => `$${cell.toFixed(2)}`}, "DS"],
+                            columns: [{name: "Listed", hidden: true}, "Dist", {name: 'SKU',formatter: (_, row) => `${row.cells[0].data?row.cells[2].data + '*':row.cells[2].data}`}, "UPC", "MPN", "Category", "Name", "Qty", {name: 'Cost',formatter: (cell) => `$${cell.toFixed(2)}`}, {name: 'Ship',formatter: (cell) => `$${cell.toFixed(2)}`}, {name: 'T-Cost',formatter: (cell) => `$${cell.toFixed(2)}`}, {name: 'MAP',formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, {name: 'Price',formatter: (cell) => `$${cell.toFixed(2)}`}, "DS"],
                             sort: true,
                             search: true,
                             resizable: true,
@@ -202,10 +203,10 @@ class g_ffl_Cockpit_Admin
                                 limit: 200
                             },
                             fixedHeader: true,
-                            height: '600px',
+                            height: '400px',
                             style: {
                                 table: { 
-                                    'white-space': 'nowrap'
+                                    'white-space': 'nowrap',
                                 },
                                 td: {
                                     'padding': '3px'
@@ -228,7 +229,7 @@ class g_ffl_Cockpit_Admin
                                                                    product.distsku,
                                                                    product.upc, 
                                                                    product.mpn, 
-                                                                   product.product_class, 
+                                                                   product.item_cat, 
                                                                    product.name,                                                                
                                                                    product.qty_on_hand, 
                                                                    product.unit_price,  
@@ -243,6 +244,12 @@ class g_ffl_Cockpit_Admin
                     </script>
                 </div>
             </div>
+            <div id="fulfillment" class="tabcontent">
+                <h3>Fulfillment</h3>
+                <div class="postbox" style="padding: 10px;margin-top: 10px">
+                    <p>Coming Soon! Automated Fulfillment Orders will be reported on here</p>
+                </div>
+            </div>            
             <div id="instructions" class="tabcontent">
                 <h3>Instructions</h3>
                 <div class="postbox" style="padding: 10px;margin-top: 10px">
