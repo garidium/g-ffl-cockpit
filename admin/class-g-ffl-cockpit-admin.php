@@ -191,20 +191,38 @@ class g_ffl_Cockpit_Admin
             </div>
             <div id="product_feed" class="tabcontent">
                 <h3>Product Feed</h3>
-                <div class="postbox" style="padding: 10px;margin-top: 10px">
-                    <p>The Product Feed is based on your Configuration. If products exist from multiple distributors, the "*" next to the SKU indicates the current product to be listed based on availability and total cost.</p>
+                <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
+                    <p>The Product Feed is based on your Configuration. If products exist from multiple distributors, the "Y" in the List column indicates the product listed based on availability and total cost. The synchronization processes run every 15-minutes, at which point any changes you make to your configuration will be applied.</p>
                     <div id="product_feed_table"></div>
                     <script>
+                        // https://unpkg.com/browse/gridjs@5.1.0/dist/
                         new gridjs.Grid({
-                            columns: [{name: "Listed", hidden: true}, "Dist", {name: 'SKU',formatter: (_, row) => `${row.cells[0].data?row.cells[2].data + '*':row.cells[2].data}`}, "UPC", "MPN", "Category", "Name", "Qty", {name: 'Cost',formatter: (cell) => `$${cell.toFixed(2)}`}, {name: 'Ship',formatter: (cell) => `$${cell.toFixed(2)}`}, {name: 'T-Cost',formatter: (cell) => `$${cell.toFixed(2)}`}, {name: 'MAP',formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, {name: 'Price',formatter: (cell) => `$${cell.toFixed(2)}`}, "DS"],
+                            columns: [
+                                //formatter: (_, row) => `${row.cells[0].data?row.cells[2].data + '*':row.cells[2].data}`
+                                {name: "List", width: '50px', formatter: (cell) => `${cell?"Y":"N"}`}, 
+                                {name: "Dist", width: '60px'},
+                                {name: 'SKU', width: '150px'}, 
+                                {name: "UPC", width: '120px'},
+                                {name: "MPN", width: '150px'},
+                                //{name: "Category", width: '120px'},
+                                {name: "Qty", width: '55px'},
+                                {name: 'Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
+                                {name: 'Ship', width: '60px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
+                                {name: 'T-Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
+                                {name: 'MAP', width: '80px', formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, 
+                                {name: 'Price', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
+                                {name: 'Name'}, 
+                                //{name: 'DS', width: '50px'}
+                            ],
                             sort: true,
                             search: true,
                             resizable: true,
                             pagination: {
-                                limit: 200
+                                limit: 25
                             },
                             fixedHeader: true,
-                            height: '400px',
+                            //height: '400px',
+                            //width: '1500px',
                             style: {
                                 table: { 
                                     'white-space': 'nowrap',
@@ -230,15 +248,15 @@ class g_ffl_Cockpit_Admin
                                                                    product.distsku,
                                                                    product.upc, 
                                                                    product.mpn, 
-                                                                   product.item_cat, 
-                                                                   product.name,                                                                
+                                                                   //product.item_cat, 
                                                                    product.qty_on_hand, 
                                                                    product.unit_price,  
                                                                    product.shipping_cost,
                                                                    product.total_cost,
                                                                    product.map_price,                                                               
                                                                    product.price, 
-                                                                   product.drop_ship_flg])
+                                                                   product.name])                                                            
+                                                                   //product.drop_ship_flg])
 
                             } 
                         }).render(document.getElementById("product_feed_table"));
