@@ -125,7 +125,7 @@ class g_ffl_Cockpit_Admin
 
     function g_ffl_cockpit_settings_page()
     {
-        $gFFLCheckoutKey = get_option('ffl_api_key_option');
+        $gFFLCheckoutKey = get_option('g_ffl_cockpit_key');
         echo '<script type="text/javascript">
                 let gFFLCheckoutKey = "' . esc_attr($gFFLCheckoutKey) . '"
               </script>';
@@ -157,7 +157,7 @@ class g_ffl_Cockpit_Admin
                                 <td style="padding:5px;vertical-align:top;">
                                     <div class="user-pass-wrap">
                                         <div class="wp-pwd">
-                                            <input type="password" style="width: 30%" name="g_ffl_cockpit_key"
+                                            <input type="password" style="width: 350px;" name="g_ffl_cockpit_key"
                                                 aria-describedby="login_error" class="input password-input" size="20"
                                                 value="<?php echo esc_attr($gFFLCheckoutKey); ?>"/>
                                         </div>
@@ -203,15 +203,15 @@ class g_ffl_Cockpit_Admin
                                 {name: "Dist", width: '60px'},
                                 {name: 'SKU', width: '150px'}, 
                                 {name: "UPC", width: '120px'},
-                                {name: "MPN", width: '150px'},
+                                {name: 'Name'}, 
+                                //{name: "MPN", width: '150px'},
                                 //{name: "Category", width: '120px'},
                                 {name: "Qty", width: '55px'},
                                 {name: 'Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
                                 {name: 'Ship', width: '60px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
                                 {name: 'T-Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
                                 {name: 'MAP', width: '80px', formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, 
-                                {name: 'Price', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
-                                {name: 'Name'}, 
+                                {name: 'Price', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`},   
                                 //{name: 'DS', width: '50px'}
                             ],
                             sort: true,
@@ -247,15 +247,15 @@ class g_ffl_Cockpit_Admin
                                                                    product.distid, 
                                                                    product.distsku,
                                                                    product.upc, 
-                                                                   product.mpn, 
+                                                                   product.name,
+                                                                   //product.mpn, 
                                                                    //product.item_cat, 
                                                                    product.qty_on_hand, 
                                                                    product.unit_price,  
                                                                    product.shipping_cost,
                                                                    product.total_cost,
                                                                    product.map_price,                                                               
-                                                                   product.price, 
-                                                                   product.name])                                                            
+                                                                   product.price])                                                            
                                                                    //product.drop_ship_flg])
 
                             } 
