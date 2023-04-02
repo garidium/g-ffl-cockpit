@@ -194,6 +194,7 @@ class g_ffl_Cockpit_Admin
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
                     <p>The Product Feed is based on your Configuration. If products exist from multiple distributors, the "Y" in the List column indicates the product listed based on availability and total cost. The synchronization processes run every 15-minutes, at which point any changes you make to your configuration will be applied.</p>
                     <div id="product_feed_table"></div>
+                    <div style="padding:5px;"><button id="download_inventory_button" class="button alt" data-marker-id="">Download Inventory</button></div>
                     <script>
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
                         new gridjs.Grid({
@@ -203,15 +204,16 @@ class g_ffl_Cockpit_Admin
                                 {name: "Dist", width: '60px'},
                                 {name: 'SKU', width: '150px'}, 
                                 {name: "UPC", width: '120px'},
-                                {name: 'Name'}, 
-                                //{name: "MPN", width: '150px'},
-                                //{name: "Category", width: '120px'},
+                                {name: "MPN", width: '140px'},
                                 {name: "Qty", width: '55px'},
                                 {name: 'Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
                                 {name: 'Ship', width: '60px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
-                                {name: 'T-Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
-                                {name: 'MAP', width: '80px', formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, 
-                                {name: 'Price', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`},   
+                                {name: 'Total', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
+                                {name: 'Name'}, 
+                                //{name: "MPN", width: '150px'},
+                                //{name: "Category", width: '120px'},
+                                //{name: 'MAP', width: '80px', formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, 
+                                //{name: 'Price', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`},   
                                 //{name: 'DS', width: '50px'}
                             ],
                             sort: true,
@@ -247,19 +249,39 @@ class g_ffl_Cockpit_Admin
                                                                    product.distid, 
                                                                    product.distsku,
                                                                    product.upc, 
-                                                                   product.name,
-                                                                   //product.mpn, 
-                                                                   //product.item_cat, 
+                                                                   product.mpn,
                                                                    product.qty_on_hand, 
+                                                                   //product.item_cat, 
                                                                    product.unit_price,  
                                                                    product.shipping_cost,
                                                                    product.total_cost,
-                                                                   product.map_price,                                                               
-                                                                   product.price])                                                            
+                                                                   product.name,])
+                                                                   //product.map_price,                                                               
+                                                                   //product.price])                                                            
                                                                    //product.drop_ship_flg])
 
                             } 
                         }).render(document.getElementById("product_feed_table"));
+                    
+                        document.getElementById("download_inventory_button").addEventListener("click", function(){
+                            document.getElementById("download_inventory_button").disabled = true;
+                            document.getElementById('download_inventory_button').innerText = 'Please Wait...';
+                            fetch("https://ffl-api.garidium.com/download", {
+                                method: "POST",
+                                headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/json",
+                                "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey); ?>",
+                                },
+                                body: JSON.stringify({"action": "download_inventory"})
+                            })
+                            .then(response=>response.json())
+                            .then(data=>{ 
+                                window.open(data);  
+                                document.getElementById("download_inventory_button").disabled = false; 
+                                document.getElementById('download_inventory_button').innerText = 'Download Inventory';     
+                            });
+                        });
                     </script>
                 </div>
             </div>

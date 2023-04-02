@@ -10,7 +10,7 @@ License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 ==Description==
-==Built by a FFL, for FFL's. This plugin will help streamline the inventory management and fulfillment processes.==
+==Built by a FFL, for FFL's. This plugin will help streamline inventory management by synchronizing with a series of firearm distributors.==
 It was built to support my business, and I know it will help yours as well. See the plugin in-action on [garidium.com](https://garidium.com).
 
 ==Feature Highlights:==
@@ -18,13 +18,14 @@ It was built to support my business, and I know it will help yours as well. See 
 2. Inventory is then updated every 15-minutes to ensure in-stock quanities are updated continuously.
 3. Easily set pricing and listing options, along with configuring the inclusion/exclusion of specific brands.
 4. View a report of all items being listed, including pricing from each distributor.
-5. Synchronize your WooCommerce and Gunbroker Listings
-6. Automated Fulfillment (Coming Soon).
+5. This plugin can also synchronize your Gunbroker Listings.
+6. Works with the g-FFL Checkout plugin to automatically mark firearms as requiring FFL selection during checkout.
+7. Automated Fulfillment (Coming Soon).
 
 == API Subscription Required ==
 While the plugin is free to download and install, it does require you to purchase a license for a personalized API key. The plugin will not be useful without this key. The API key allows the plugin to connect to the required data services, providing the following features:
 
-1. Access to a database we manage that synchronizes distributor data
+1. Access to a data services we manage that synchronizes distributor product data
 
 == To purchase a key, visit the g-FFL API product page: ==
 [g-FFL Product Page](https://garidium.com/g-ffl-cockpit/) 
