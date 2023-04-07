@@ -179,7 +179,7 @@ class g_ffl_Cockpit_Admin
                                     }
                                     var editor = new JSONEditor(document.getElementById("jsoneditor"), options);
                                     // get json
-                                    var initialJSON = <?php echo get_option('g_ffl_cockpit_configuration'); ?>;
+                                    var initialJSON = <?php echo get_option('g_ffl_cockpit_configuration')==""?"{}":get_option('g_ffl_cockpit_configuration'); ?>;
                                     editor.set(initialJSON);
                                 </script>
                                 </td>
@@ -200,27 +200,47 @@ class g_ffl_Cockpit_Admin
                         new gridjs.Grid({
                             columns: [
                                 //formatter: (_, row) => `${row.cells[0].data?row.cells[2].data + '*':row.cells[2].data}`
-                                {name: "List", width: '50px', formatter: (cell) => `${cell?"Y":"N"}`}, 
+                                //{sort: false, name: "List", width: '50px', formatter: (cell) => `${cell?"Y":"N"}`}, 
                                 {name: "Dist", width: '60px'},
                                 {name: 'SKU', width: '150px'}, 
                                 {name: "UPC", width: '120px'},
-                                {name: "MPN", width: '140px'},
+                                {name: "MFG", width: '175px'},
+                                {name: "MPN", width: '175px'},
                                 {name: "Qty", width: '55px'},
                                 {name: 'Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
+                                //{name: 'MAP', width: '80px', formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, 
                                 {name: 'Ship', width: '60px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
                                 {name: 'Total', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
                                 {name: 'Name'}, 
                                 //{name: "MPN", width: '150px'},
                                 //{name: "Category", width: '120px'},
-                                //{name: 'MAP', width: '80px', formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, 
                                 //{name: 'Price', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`},   
                                 //{name: 'DS', width: '50px'}
                             ],
-                            sort: true,
-                            search: true,
+                            sort: {
+                                multiColumn: false,
+                                server: {
+                                    url: (prev, columns) => {
+                                        if (!columns.length) return prev;
+                                        const col = columns[0];
+                                        const dir = col.direction === 1 ? 'asc' : 'desc';
+                                        let colName = ['distid', 'distsku', 'upc', 'mfg_name', 'mpn', 'qty_on_hand', 'unit_price', 'shipping_cost', 'total_cost',  'name'][col.index];
+                                        let sortUrl = `${prev}&order_column=${colName}&order_direction=${dir}`;
+                                        return sortUrl;
+                                    }
+                                }
+                            },
+                            search: {
+                                server: {
+                                    url: (prev, keyword) => `${prev}&search=${keyword}`
+                                }
+                            },
                             resizable: true,
                             pagination: {
-                                limit: 25
+                                limit: 25,
+                                server: {
+                                    url: (prev, page, limit) => `${prev}&limit=${limit}&offset=${page * limit}`
+                                }
                             },
                             fixedHeader: true,
                             //height: '400px',
@@ -237,29 +257,30 @@ class g_ffl_Cockpit_Admin
                                 }
                             },
                             server: {
-                                url: 'https://ffl-api.garidium.com/',
-                                method: 'POST',
+                                url: 'https://ffl-api.garidium.com/product?action=get_filtered_catalog',
+                                method: 'GET',
                                 headers: {
                                     "Accept": "application/json",
                                     "Content-Type": "application/json",
                                     "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey); ?>",
 			                    },
-                                body: JSON.stringify({"action": "get_filtered_catalog", "data": {"api_key": "<?php echo esc_attr($gFFLCheckoutKey); ?>"}}),
-                                then: data => JSON.parse(data).map(product => [product.is_best_item,
+                                then: data => JSON.parse(data).products.map(product => [//product.is_best_item,
                                                                    product.distid, 
                                                                    product.distsku,
                                                                    product.upc, 
+                                                                   product.mfg_name, //+ ' (' + product.mpn + ")",
                                                                    product.mpn,
                                                                    product.qty_on_hand, 
-                                                                   //product.item_cat, 
                                                                    product.unit_price,  
                                                                    product.shipping_cost,
                                                                    product.total_cost,
-                                                                   product.name,])
-                                                                   //product.map_price,                                                               
+                                                                   product.name]),  
+                                                                   //product.drop_ship_flg,
+                                                                   //product.map_price, 
+                                                                   //product.item_cat,                                          
                                                                    //product.price])                                                            
                                                                    //product.drop_ship_flg])
-
+                                total: data => JSON.parse(data).count
                             } 
                         }).render(document.getElementById("product_feed_table"));
                     
