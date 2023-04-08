@@ -192,7 +192,7 @@ class g_ffl_Cockpit_Admin
             <div id="product_feed" class="tabcontent">
                 <h3>Product Feed</h3>
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
-                    <p>The Product Feed is based on your Configuration. If products exist from multiple distributors, the "Y" in the List column indicates the product listed based on availability and total cost. The synchronization processes run every 15-minutes, at which point any changes you make to your configuration will be applied.</p>
+                    <p>The Product Feed is based on your Configuration. The synchronization process will run every 15-minutes, at which point any changes you make to your configuration will be applied. This list will show items from all distributors configured, and with quantities less than your minimum listing quantity. We list one product per UPC, based on availability and price.</p>
                     <div id="product_feed_table"></div>
                     <div style="padding:5px;"><button id="download_inventory_button" class="button alt" data-marker-id="">Download Inventory</button></div>
                     <script>
