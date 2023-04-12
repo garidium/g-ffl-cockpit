@@ -149,7 +149,7 @@ class g_ffl_Cockpit_Admin
             <div id="configuration" class="tabcontent">
             <h3>Configuration</h3>
                 <div class="postbox" style="padding: 10px;margin-top: 10px">
-                    <form method="post" action="options.php" onSubmit="return setConfig();">
+                    <form method="post" action="options.php" onSubmit="return setConfig('<?php echo esc_attr($gFFLCheckoutKey);?>');">
                         <?php settings_fields('g-ffl-cockpit-settings'); ?>
                         <table class="form-table">
                         <tr>
@@ -157,19 +157,44 @@ class g_ffl_Cockpit_Admin
                                 <td style="padding:5px;vertical-align:top;">
                                     <div class="user-pass-wrap">
                                         <div class="wp-pwd">
-                                            <input type="password" style="width: 350px;" name="g_ffl_cockpit_key"
+                                            <input type="password" style="width: 350px;" name="g_ffl_cockpit_key" id="g_ffl_cockpit_key" 
                                                 aria-describedby="login_error" class="input password-input" size="20"
                                                 value="<?php echo esc_attr($gFFLCheckoutKey); ?>"/>
                                         </div>
                                         <p>Email sales@garidium.com to get a key, or if your key has expired.</p>
                                     </div>
                                 </td>
+                                <td>
+                                    <div align="right" style="margin:5px;"><a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);">Reload Configuration from Server</a></div>
+                                </td>
                             </tr>
 
                             <tr valign="top">
-                                <td colspan=2>
+                                <td colspan=3>
                                 <div id="jsoneditor" style="width: 100%; height: 500px;"></div>
                                 <input type="hidden" name="g_ffl_cockpit_configuration" id="g_ffl_cockpit_configuration">
+                                <script>
+                                    function get_and_set_cockpit_configuration(api_key){
+                                        fetch("https://ffl-api.garidium.com", {
+                                            method: "POST",
+                                            headers: {
+                                            "Accept": "application/json",
+                                            "Content-Type": "application/json",
+                                            "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey);?>",
+                                            },
+                                            body: JSON.stringify({"action": "get_subscription", "data": {"api_key": api_key}})
+                                        })
+                                        .then(response=>response.json())
+                                        .then(data=>{
+                                            try{
+                                                cockpit_configuration = JSON.parse(data[0].cockpit_configuration);
+                                                editor.set(cockpit_configuration);
+                                            } catch (error) {
+                                                console.error("No configuration found for this key, setting to default.");
+                                            }
+                                        });
+                                    }
+                                </script>
                                 <script>
                                     // create the editor
                                     var options = {
@@ -178,9 +203,7 @@ class g_ffl_Cockpit_Admin
                                         ace: ace
                                     }
                                     var editor = new JSONEditor(document.getElementById("jsoneditor"), options);
-                                    // get json
-                                    var initialJSON = <?php echo get_option('g_ffl_cockpit_configuration')==""?"{}":get_option('g_ffl_cockpit_configuration'); ?>;
-                                    editor.set(initialJSON);
+                                    window.onload = function(){get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCheckoutKey);?>");}
                                 </script>
                                 </td>
                             </tr>

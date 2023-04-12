@@ -41,7 +41,7 @@
 })( jQuery );
 
 
-function setConfig(){
+function setConfig(g_ffl_cockpit_key){
 	// check if there are no errors
 	if (editor.lastSchemaErrors.length==0){
 		var config_json = editor.getText();
@@ -52,9 +52,9 @@ function setConfig(){
 			headers: {
 			"Accept": "application/json",
 			"Content-Type": "application/json",
-			"x-api-key": gFFLCheckoutKey,
+			"x-api-key": g_ffl_cockpit_key,
 			},
-			body: JSON.stringify({"action": "update_subscription", "data": {"api_key": gFFLCheckoutKey, "updates": {"cockpit_configuration": config_json}}})
+			body: JSON.stringify({"action": "update_subscription", "data": {"api_key": g_ffl_cockpit_key, "updates": {"cockpit_configuration": config_json}}})
 		})
 		.then((response) => response.json())
 		.then((data) => {
