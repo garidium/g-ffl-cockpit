@@ -165,7 +165,13 @@ class g_ffl_Cockpit_Admin
                                     </div>
                                 </td>
                                 <td>
-                                    <div align="right" style="margin:5px;"><a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);">Reload Configuration from Server</a></div>
+                                    <div id="g-ffl-admin-buttons" align="right" style="margin:5px;display:none;">
+                                        <b>Admin Functions:&nbsp;</b>
+                                        <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);document.getElementById('admin_current_editing_key').style.display='';">Load Config</a>
+                                        <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value);">Save</a>
+                                        <br><br><span style="padding:10px;color:red;display:none;" id="admin_current_editing_key"></span>
+                                        <script>document.getElementById("admin_current_editing_key").innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;</script>
+                                    </div>
                                 </td>
                             </tr>
 
@@ -203,7 +209,12 @@ class g_ffl_Cockpit_Admin
                                         ace: ace
                                     }
                                     var editor = new JSONEditor(document.getElementById("jsoneditor"), options);
-                                    window.onload = function(){get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCheckoutKey);?>");}
+                                    window.onload = function(){
+                                        get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCheckoutKey);?>");
+                                        if (window.location.host == 'garidium.com'){
+                                            document.getElementById('g-ffl-admin-buttons').style.display = '';
+                                        }
+                                    }
                                 </script>
                                 </td>
                             </tr>
