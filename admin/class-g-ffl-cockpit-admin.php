@@ -209,6 +209,7 @@ class g_ffl_Cockpit_Admin
                                         ace: ace
                                     }
                                     var editor = new JSONEditor(document.getElementById("jsoneditor"), options);
+                                    editor.set({"Loading Configuration": "Please wait..."});
                                     window.onload = function(){
                                         get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCheckoutKey);?>");
                                         if (window.location.host == 'garidium.com'){
