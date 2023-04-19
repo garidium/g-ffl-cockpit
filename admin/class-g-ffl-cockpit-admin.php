@@ -231,22 +231,43 @@ class g_ffl_Cockpit_Admin
                     <div id="product_feed_table"></div>
                     <div style="padding:5px;"><button id="download_inventory_button" class="button alt" data-marker-id="">Download Inventory</button></div>
                     <script>
+                        function get_distributor_logo(code){
+                            if (code == "ZND"){
+                                return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_zanders.jpeg";
+                            }else if (code == "2AW"){
+                                return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_2aw.png";
+                            }else if (code == "CSSI"){
+                                return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_cssi.png";
+                            }else if (code == "DAV"){
+                                return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_davidsons.jpeg";
+                            }else if (code == "LIP"){
+                                return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_lipseys.jpeg";
+                            }else if (code == "RSR"){
+                                return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_rsr.png";
+                            }
+                            return "";
+                        }
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
                         new gridjs.Grid({
                             columns: [
                                 //formatter: (_, row) => `${row.cells[0].data?row.cells[2].data + '*':row.cells[2].data}`
                                 //{sort: false, name: "List", width: '50px', formatter: (cell) => `${cell?"Y":"N"}`}, 
-                                {name: "Dist", width: '60px'},
-                                {name: 'SKU', width: '150px'}, 
-                                {name: "UPC", width: '120px'},
-                                {name: "MFG", width: '175px'},
-                                {name: "MPN", width: '175px'},
+                                {name: 'Dist', width: '60px',
+                                    formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[0].data)}">`)
+                                },
+                                {name: 'SKU'}, 
+                                {name: 'Product Image',
+                                    formatter: (_, row) => gridjs.html(`<img width="100px" src="${row.cells[2].data[0]['src']}">`)
+                                },
+                                {name: 'Name', width: '200px'}, 
+                                {name: "UPC"},
+                                {name: "MFG"},
+                                {name: "MPN"},
                                 {name: "Qty", width: '55px'},
                                 {name: 'Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
                                 //{name: 'MAP', width: '80px', formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, 
                                 {name: 'Ship', width: '60px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
                                 {name: 'Total', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
-                                {name: 'Name'}, 
                                 //{name: "MPN", width: '150px'},
                                 //{name: "Category", width: '120px'},
                                 //{name: 'Price', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`},   
@@ -272,18 +293,15 @@ class g_ffl_Cockpit_Admin
                             },
                             resizable: true,
                             pagination: {
-                                limit: 25,
+                                limit: 100,
                                 server: {
                                     url: (prev, page, limit) => `${prev}&limit=${limit}&offset=${page * limit}`
                                 }
                             },
                             fixedHeader: true,
-                            //height: '400px',
+                            height: '400px',
                             //width: '1500px',
                             style: {
-                                table: { 
-                                    'white-space': 'nowrap',
-                                },
                                 td: {
                                     'padding': '3px'
                                 },
@@ -302,14 +320,15 @@ class g_ffl_Cockpit_Admin
                                 then: data => JSON.parse(data).products.map(product => [//product.is_best_item,
                                                                    product.distid, 
                                                                    product.distsku,
+                                                                   JSON.parse(product.images), // # change to image
+                                                                   product.name,
                                                                    product.upc, 
                                                                    product.mfg_name, //+ ' (' + product.mpn + ")",
                                                                    product.mpn,
                                                                    product.qty_on_hand, 
                                                                    product.unit_price,  
                                                                    product.shipping_cost,
-                                                                   product.total_cost,
-                                                                   product.name]),  
+                                                                   product.total_cost]),  
                                                                    //product.drop_ship_flg,
                                                                    //product.map_price, 
                                                                    //product.item_cat,                                          
