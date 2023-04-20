@@ -147,7 +147,7 @@ class g_ffl_Cockpit_Admin
             </div>
             <!-- Tab content -->
             <div id="configuration" class="tabcontent">
-            <h3>Configuration</h3>
+            <!--<h3>Configuration</h3>-->
                 <div class="postbox" style="padding: 10px;margin-top: 10px">
                     <form method="post" action="options.php" onSubmit="return setConfig('<?php echo esc_attr($gFFLCheckoutKey);?>');">
                         <?php settings_fields('g-ffl-cockpit-settings'); ?>
@@ -225,12 +225,12 @@ class g_ffl_Cockpit_Admin
                 </div>
             </div>
             <div id="product_feed" class="tabcontent">
-                <h3>Product Feed</h3>
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
-                    <p>The Product Feed is based on your Configuration. The synchronization process will run every 15-minutes, at which point any changes you make to your configuration will be applied. This list will show items from all distributors configured, and with quantities less than your minimum listing quantity. We list one product per UPC, based on availability and price.</p>
+                    <!-- <p>The Product Feed is based on your Configuration. The synchronization process will run every 15-minutes, at which point any changes you make to your configuration will be applied. This list will show items from all distributors configured, and with quantities less than your minimum listing quantity. We list one product per UPC, based on availability and price.</p> -->
                     <div id="product_feed_table"></div>
                     <div style="padding:5px;"><button id="download_inventory_button" class="button alt" data-marker-id="">Download Inventory</button></div>
                     <script>
+                        const window_height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) * 0.8;
                         function get_distributor_logo(code){
                             if (code == "ZND"){
                                 return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_zanders.jpeg";
@@ -256,8 +256,8 @@ class g_ffl_Cockpit_Admin
                                     formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[0].data)}">`)
                                 },
                                 {name: 'SKU'}, 
-                                {name: 'Product Image',
-                                    formatter: (_, row) => gridjs.html(`<img width="100px" src="${row.cells[2].data[0]['src']}">`)
+                                {sort: false, name: 'Product Image', 
+                                    formatter: (_, row) => gridjs.html(`<a style="cursor:pointer;" onclick="load_product_data('${row.cells[3].data.replace("\"","&quot;") + "','" + row.cells[0].data + "','" + row.cells[1].data + "','" + row.cells[2].data[0]['src']}')"><img width="100px" src="${row.cells[2].data[0]['src']}"></a>`)
                                 },
                                 {name: 'Name', width: '200px'}, 
                                 {name: "UPC"},
@@ -280,7 +280,7 @@ class g_ffl_Cockpit_Admin
                                         if (!columns.length) return prev;
                                         const col = columns[0];
                                         const dir = col.direction === 1 ? 'asc' : 'desc';
-                                        let colName = ['distid', 'distsku', 'upc', 'mfg_name', 'mpn', 'qty_on_hand', 'unit_price', 'shipping_cost', 'total_cost',  'name'][col.index];
+                                        let colName = ['distid', 'distsku', 'distsku', 'name', 'upc', 'mfg_name', 'mpn', 'qty_on_hand', 'unit_price', 'shipping_cost', 'total_cost'][col.index];
                                         let sortUrl = `${prev}&order_column=${colName}&order_direction=${dir}`;
                                         return sortUrl;
                                     }
@@ -299,7 +299,7 @@ class g_ffl_Cockpit_Admin
                                 }
                             },
                             fixedHeader: true,
-                            height: '400px',
+                            height: window_height,
                             //width: '1500px',
                             style: {
                                 td: {
@@ -358,6 +358,43 @@ class g_ffl_Cockpit_Admin
                             });
                         });
                     </script>
+                                    <!-- The Modal -->
+                <div id="myModal" class="modal">
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <div align="center" id="product_detail_div"></div>
+                    </div>
+                    <script>
+                        // Get the modal
+                        var modal = document.getElementById("myModal");
+
+                        // Get the button that opens the modal
+                        var btn = document.getElementById("myBtn");
+
+                        // Get the <span> element that closes the modal
+                        var span = document.getElementsByClassName("close")[0];
+
+                        function load_product_data(title, distributor, sku, img_url){
+                            //alert(data);
+                            modal.style.display = "block";
+                            document.getElementById("product_detail_div").innerHTML = "<h3>" + title + "</h3><br><img width='75%' src='" + img_url + "'/><br><img width=75 src='" + get_distributor_logo(distributor) + "'/><br>" + sku;
+                        }
+
+                        // When the user clicks on <span> (x), close the modal
+                        span.onclick = function() {
+                            modal.style.display = "none";
+                        }
+
+                        // When the user clicks anywhere outside of the modal, close it
+                        window.onclick = function(event) {
+                            if (event.target == modal) {
+                                modal.style.display = "none";
+                            }
+                        }
+                    </script>
+                </div>
+
                 </div>
             </div>
             <div id="fulfillment" class="tabcontent">
@@ -379,5 +416,6 @@ class g_ffl_Cockpit_Admin
                 </div>
             </div>
         </div>
+
     <?php }
 }
