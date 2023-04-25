@@ -167,10 +167,9 @@ class g_ffl_Cockpit_Admin
                                 <td>
                                     <div id="g-ffl-admin-buttons" align="right" style="margin:5px;display:none;">
                                         <b>Admin Functions:&nbsp;</b>
-                                        <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);document.getElementById('admin_current_editing_key').style.display='';">Load Config</a>
+                                        <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';">Load Config</a>
                                         <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value);">Save</a>
                                         <br><br><span style="padding:10px;color:red;display:none;" id="admin_current_editing_key"></span>
-                                        <script>document.getElementById("admin_current_editing_key").innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;</script>
                                     </div>
                                 </td>
                             </tr>
