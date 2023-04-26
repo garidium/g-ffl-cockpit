@@ -112,7 +112,8 @@ class g_ffl_Cockpit_Admin
 
     public function ffl_load_menu()
     {
-        add_menu_page('g-FFL Cockpit Settings Page', 'g-FFL Cockpit', 'manage_options', 'g-ffl-cockpit-settings', array($this, 'g_ffl_cockpit_settings_page'), 'dashicons-location-alt', 70);
+        $custom_plugin_name = (get_option('g_ffl_cockpit_plugin_name') != ''? get_option('g_ffl_cockpit_plugin_name') : 'g-FFL Cockpit');
+        add_menu_page('g-FFL Cockpit Settings Page', $custom_plugin_name, 'manage_options', 'g-ffl-cockpit-settings', array($this, 'g_ffl_cockpit_settings_page'), 'dashicons-location-alt', 70);
         add_action('admin_init', array($this, 'register_g_ffl_cockpit_settings'));
     }
 
@@ -121,6 +122,8 @@ class g_ffl_Cockpit_Admin
         //register our settings
         register_setting('g-ffl-cockpit-settings', 'g_ffl_cockpit_key');
         register_setting('g-ffl-cockpit-settings', 'g_ffl_cockpit_configuration');
+        register_setting('g-ffl-cockpit-settings', 'g_ffl_cockpit_plugin_name');
+        register_setting('g-ffl-cockpit-settings', 'g_ffl_cockpit_plugin_logo_url');
     }
 
     function g_ffl_cockpit_settings_page()
@@ -133,9 +136,7 @@ class g_ffl_Cockpit_Admin
         ?>
         
         <div class="wrap">
-            <a href="https://garidium.com" target="_blank" style="display: inline-block">
-                <img src="<?php echo plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png'?>">
-            </a>
+            <img src="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png');?>">
             <br><br>
             <!-- Tab links -->
             <div class="tab">
@@ -218,8 +219,25 @@ class g_ffl_Cockpit_Admin
                                 </script>
                                 </td>
                             </tr>
+                            <tr valign="top" id="white_label_settings_name" style="display:none;">
+                                <th scope="row">Plugin Name:</th>
+                                <td>
+                                    <input type="text" style="width: 30%" name="g_ffl_cockpit_plugin_name" maxlength=20
+                                            value="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_name') != '' ? get_option('g_ffl_cockpit_plugin_name') : 'g-FFL Cockpit'); ?>"/>
+                                </td>
+                            </tr>
+                            <tr valign="top" id="white_label_settings_url" style="display:none;">
+                                <th scope="row">Plugin Logo URL:</th>
+                                <td>
+                                    <input type="text" style="width: 500px;" name="g_ffl_cockpit_plugin_logo_url"
+                                            value="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png');?>"/>
+                                </td>
+                            </tr>
+
                         </table>
                         <?php submit_button(); ?>
+                        <br>
+                        <a style="cursor:pointer;" onclick="document.getElementById('white_label_settings_name').style.display='';document.getElementById('white_label_settings_url').style.display='';">&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;</a>
                     </form>
                 </div>
             </div>
