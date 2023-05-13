@@ -3,22 +3,22 @@ Contributors: garidium
 Tags: FFL, fulfillment, distributor feed, zanders, davidsons, lipseys, 2nd amendment, chatanooga, cssi, rsr, WooCommerce, FFL gun dealers, gun dealer
 Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
-Tested up to: 6.1.1
+Tested up to: 6.2
 Requires PHP: 7.0
 Stable tag: 1.0.0
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 ==Description==
-==Built by a FFL, for FFL's. This plugin will help streamline inventory management by synchronizing with a series of firearm distributors.==
-It was built to support my business, and I know it will help yours as well. See the plugin in-action on [garidium.com](https://garidium.com).
+== (Do not download, contact us at sales@garidium.com for beta-testing information) Built by FFL's, for FFL's. This plugin will help streamline inventory management, synchronizing product listings with a series of firearm distributors.==
+It was built to support our businesses, and we know it will help yours as well.
 
 ==Feature Highlights:==
 1. Configure 1-to-many supported distributors and feed products into your WooCommerce website.
-2. Inventory is then updated every 15-minutes to ensure in-stock quanities are updated continuously.
-3. Easily set pricing and listing options, along with configuring the inclusion/exclusion of specific brands.
-4. View a report of all items being listed, including pricing from each distributor.
-5. This plugin can also synchronize your Gunbroker Listings.
+2. This plugin also supports Gunbroker and AmmoSeek Feeds
+3. Inventory and Listings are then updated every 15-minutes to ensure quanity and pricing are updated continuously.
+4. Easily set pricing and listing options, along with configuring the inclusion/exclusion of specific items.
+5. View a report of all items being listed, including pricing from each distributor.
 6. Works with the g-FFL Checkout plugin to automatically mark firearms as requiring FFL selection during checkout.
 7. Automated Fulfillment (Coming Soon).
 
@@ -28,7 +28,7 @@ While the plugin is free to download and install, it does require you to purchas
 1. Access to a data services we manage that synchronizes distributor product data
 
 == To purchase a key, visit the g-FFL API product page: ==
-[g-FFL Product Page](https://garidium.com/g-ffl-cockpit/) 
+[g-FFL Cockpit Product Page](https://garidium.com/g-ffl-cockpit/) 
 
 ==Please review our Terms and Conditions: ==
 [Terms and Conditions](https://garidium.com/terms_of_sale/)
