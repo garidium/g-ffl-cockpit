@@ -134,7 +134,7 @@ class g_ffl_Cockpit_Admin
               </script>';
 
         ?>
-        
+
         <div class="wrap">
             <img src="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png');?>">
             <br><br>
@@ -168,7 +168,7 @@ class g_ffl_Cockpit_Admin
                                 <td>
                                     <div id="g-ffl-admin-buttons" align="right" style="margin:5px;display:none;">
                                         <b>Admin Functions:&nbsp;</b>
-                                        <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';">Load Config</a>
+                                        <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('submit_button_div').style.display='none';">Load Config</a>
                                         <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value);">Save</a>
                                         <br><br><span style="padding:10px;color:red;display:none;" id="admin_current_editing_key"></span>
                                     </div>
@@ -206,7 +206,1031 @@ class g_ffl_Cockpit_Admin
                                     var options = {
                                         modes: ['text', 'code', 'tree', 'form', 'view'],
                                         mode: 'tree',
-                                        ace: ace
+                                        ace: ace,
+                                        schema: {
+                                            "$schema": "http://json-schema.org/draft-04/schema#",
+                                            "title": "g-FFL Cockpit Configuration",
+                                            "description": "Configuration file for the g-FFL Cockpit WooCommerce Plugin",
+                                            "type": "object",
+                                            "required": ["distributors", "max_distributor_cost",
+                                                         "max_listing_count", "min_distributor_cost",
+                                                         "min_quantity_to_list", "notification_email",
+                                                         "pricing", "product_restrictions"],
+                                            "properties": {
+                                                "max_listing_count": {
+                                                    "description": "Maximum Listing Count",
+                                                    "type": "integer",
+                                                    "exclusiveMinimum": true,
+                                                    "minimum":0
+                                                },
+                                                "notification_email": {
+                                                    "description": "Email for System Notifications and Alerts",
+                                                    "type": "string"
+                                                },
+                                                "max_distributor_cost": {
+                                                    "description": "Maximum Distributor Cost for a Listed Item",
+                                                    "type": "number"
+                                                },
+                                                "min_distributor_cost": {
+                                                    "description": "Minimum Distributor Cost for a Listed Item",
+                                                    "type": "number"
+                                                },
+                                                "min_quantity_to_list": {
+                                                    "description": "Minimum In-Stock Quantity to List an Item",
+                                                    "type": "integer"
+                                                },
+                                                "product_restrictions": {
+                                                    "description": "Product Restrictions",
+                                                    "$ref": "#/definitions/product_restrictions"
+                                                },
+                                                "pricing": {
+                                                    "title": "Pricing",
+                                                    "description": "Pricing and Margin Configuration",
+                                                    "$ref": "#/definitions/pricing"
+                                                },
+                                                "distributors": {
+                                                    "description": "Firearms and Accessories Distributors",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "Lipseys": {
+                                                            "description": "Lipseys Product Feed Configuration",
+                                                            "$ref": "#/definitions/distributor_lipseys"
+                                                        },
+                                                        "Zanders": {
+                                                            "description": "Zanders Product Feed Configuration",
+                                                            "$ref": "#/definitions/distributor_zanders"
+                                                        },
+                                                        "Davidsons": {
+                                                            "description": "Davidsons Product Feed Configuration",
+                                                            "$ref": "#/definitions/distributor_davidsons"
+                                                        },
+                                                        "RSR Group": {
+                                                            "description": "RSR Group Product Feed Configuration",
+                                                            "$ref": "#/definitions/distributor_rsr"
+                                                        },
+                                                        "2nd Amendment Wholesale": {
+                                                            "description": "2nd Amendment Wholesale Product Feed Configuration",
+                                                            "$ref": "#/definitions/distributor_twoaw"
+                                                        },
+                                                        "Chatanooga Shooting Supplies": {
+                                                            "description": "Chatanooga Shooting Supplies Product Feed Configuration",
+                                                            "$ref": "#/definitions/distributor_cssi"
+                                                        }
+                                                    },
+                                                    "anyOf": [
+                                                        {
+                                                            "required": [
+                                                                "Chatanooga Shooting Supplies"
+                                                            ]
+                                                        },                 
+                                                        {
+                                                            "required": [
+                                                                "2nd Amendment Wholesale"
+                                                            ]
+                                                        },                {
+                                                            "required": [
+                                                                "RSR Group"
+                                                            ]
+                                                        },                {
+                                                            "required": [
+                                                                "Zanders"
+                                                            ]
+                                                        },                {
+                                                            "required": [
+                                                                "Davidsons"
+                                                            ]
+                                                        },                {
+                                                            "required": [
+                                                                "Lipseys"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "targets": {
+                                                    "title": "Targets",
+                                                    "description": "Targets to import products to, such as woocommerce, ammoseek or gunbroker",
+                                                    "type": "object",
+                                                    "additionalProperties": false,
+                                                    "properties": {
+                                                        "woo": {
+                                                            "description": "WooCommerce Product Feed Settings",
+                                                            "$ref": "#/definitions/target_woocommerce"
+                                                        },
+                                                        "ammoseek": {
+                                                            "description": "AmmoSeek Product Feed Settings",
+                                                            "$ref": "#/definitions/target_ammoseek"
+                                                        },
+                                                        "gunbroker": {
+                                                            "description": "Gunbroker Product Feed Settings",
+                                                            "$ref": "#/definitions/target_gunbroker"
+                                                        }
+                                                    }
+                                                },
+                                            },
+                                            "definitions":
+                                            {
+                                                "product_restrictions":{
+                                                    "properties": {
+                                                        "sku": {
+                                                            "properties": {
+                                                                "exclude": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "include": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "upc": {
+                                                            "properties": {
+                                                                "exclude": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "include": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "brand": {
+                                                            "properties": {
+                                                                "exclude": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "include": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "category": {
+                                                            "properties": {
+                                                                "exclude": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "include": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "product_class": {
+                                                            "properties": {
+                                                                "exclude": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "include": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "anyOf": [
+                                                        {
+                                                            "required": [
+                                                                "product_class"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "sku"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "category"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "brand"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "upc"
+                                                            ]
+                                                        } 
+                                                    ]
+                                                },
+                                                "pricing": {
+                                                    "properties": {
+                                                        "margin": {
+                                                            "properties": {
+                                                                "default": {
+                                                                    "$ref": "#/definitions/margin"
+                                                                },
+                                                                "firearms": {
+                                                                    "$ref": "#/definitions/margin"
+                                                                },
+                                                                "ammunition": {
+                                                                    "$ref": "#/definitions/margin"
+                                                                },
+                                                                "accessories": {
+                                                                    "$ref": "#/definitions/margin"
+                                                                },
+                                                                "custom1": {
+                                                                    "$ref": "#/definitions/margin"
+                                                                },
+                                                                "custom2": {
+                                                                    "$ref": "#/definitions/margin"
+                                                                },
+                                                                "custom3": {
+                                                                    "$ref": "#/definitions/margin"
+                                                                },
+                                                                "custom4": {
+                                                                    "$ref": "#/definitions/margin"
+                                                                },
+                                                                "custom5": {
+                                                                    "$ref": "#/definitions/margin"
+                                                                }
+                                                            }
+                                                        },
+                                                        "sales_tax_assumption": {
+                                                            "type": "number",
+                                                            "minimum":0,
+                                                            "maximum":0.99
+                                                        },
+                                                        "credit_card_fee_percent": {
+                                                            "type": "number",
+                                                            "minimum": 0,
+                                                            "maximum": 0.99
+                                                        },
+                                                        "round_to_nearest_dollar": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "include_shipping_in_price": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "credit_card_fee_transaction": {
+                                                            "type": "number"
+                                                        },
+                                                        "include_credit_card_fees_in_price": {
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "credit_card_fee_percent",
+                                                        "credit_card_fee_transaction",
+                                                        "include_credit_card_fees_in_price",
+                                                        "include_shipping_in_price",
+                                                        "margin",
+                                                        "round_to_nearest_dollar",
+                                                        "sales_tax_assumption"
+                                                    ]
+                                                },
+                                                "margin": {
+                                                    "properties": {
+                                                        "sku": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "upc": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "brand": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "category": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "product_class": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "margin_dollar": {
+                                                            "type": "number"
+                                                        },
+                                                        "margin_percentage": {
+                                                            "type": "number",
+                                                            "minimum": 0,
+                                                            "maximum": 0.99
+                                                        }
+                                                    },
+                                                    "anyOf": [
+                                                        {
+                                                            "required": [
+                                                                "margin_dollar"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "margin_percentage"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "flat_rate_shipping": {
+                                                    "title": "Flat Rate Shipping",
+                                                    "description": "Flat Rate Shipping Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "cost": {
+                                                            "type": "number"
+                                                        },
+                                                        "shipping_class": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "cost",
+                                                        "shipping_class"
+                                                    ]
+                                                },
+                                                "price_based_shipping_levels": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/price_based_shipping"
+                                                    }
+                                                },
+                                                "price_based_shipping": {
+                                                    "title": "Price-based Shipping",
+                                                    "description": "Price-based Shipping Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "flat_rate": {
+                                                            "$ref": "#/definitions/flat_rate_shipping"
+                                                        },
+                                                        "max_unit_cost": {
+                                                            "type": "integer"
+                                                        },
+                                                        "min_unit_cost": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "flat_rate",
+                                                        "min_unit_cost"
+                                                    ]
+                                                },
+                                                "shipping": {
+                                                    "title": "Shipping",
+                                                    "description": "Shipping Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "price_based_shipping_levels": {
+                                                            "$ref": "#/definitions/price_based_shipping_levels"
+                                                        },
+                                                        "flat_rate": {
+                                                            "$ref": "#/definitions/flat_rate_shipping"
+                                                        }
+                                                    },
+                                                    "oneOf": [
+                                                        {
+                                                            "required": [
+                                                                "price_based_shipping"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "flat_rate"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "target_ammoseek": {
+                                                    "title": "AmmoSeek",
+                                                    "description": "AmmoSeek Listing Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "active": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "listed_products": {
+                                                            "type": "object",
+                                                            "additionalProperties": false,
+                                                            "properties": {
+                                                                "guns": {
+                                                                    "description": "Guns Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"        
+                                                                },
+                                                                "brass": {
+                                                                    "description": "Brass Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"
+                                                                },
+                                                                "powder": {
+                                                                    "description": "Powder Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"
+                                                                },
+                                                                "bullets": {
+                                                                    "description": "Bullets Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"
+                                                                },
+                                                                "primers": {
+                                                                    "description": "Primers Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"
+                                                                },
+                                                                "magazines": {
+                                                                    "description": "Magazine Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"
+                                                                },
+                                                                "ammunition": {
+                                                                    "description": "Ammunition Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"
+                                                                },
+                                                                "reloading_misc": {
+                                                                    "description": "Reloading Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"
+                                                                }
+                                                            },
+                                                            "anyOf": [
+                                                                {
+                                                                    "required": [
+                                                                        "guns"
+                                                                    ]
+                                                                },                 
+                                                                {
+                                                                    "required": [
+                                                                        "brass"
+                                                                    ]
+                                                                },                {
+                                                                    "required": [
+                                                                        "powder"
+                                                                    ]
+                                                                },                {
+                                                                    "required": [
+                                                                        "bullets"
+                                                                    ]
+                                                                },                {
+                                                                    "required": [
+                                                                        "primers"
+                                                                    ]
+                                                                },                {
+                                                                    "required": [
+                                                                        "magazines"
+                                                                    ]
+                                                                },                {
+                                                                    "required": [
+                                                                        "ammunition"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "required": [
+                                                                        "reloading_misc"
+                                                                    ]
+                                                                }
+                                                            ],
+                                                            "title": "Listed Products"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "active",
+                                                        "listed_products"
+                                                    ]
+                                                },
+                                                "target_woocommerce": {
+                                                    "title": "WooCommerce",
+                                                    "description": "WooCommerce Listing Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "url": {
+                                                            "type": "string",
+                                                            "format": "uri",
+                                                            "qt-uri-protocols": [
+                                                                "https", "http"
+                                                            ]
+                                                        },
+                                                        "active": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "pricing": {
+                                                            "type": "object",
+                                                            "additionalProperties": false,
+                                                            "properties": {
+                                                                "margin_adjustment_dollar": {
+                                                                    "type": "number"
+                                                                },
+                                                                "margin_adjustment_percent": {
+                                                                    "type": "number",
+                                                                    "minimum": 0,
+                                                                    "maximum": 0.99
+                                                                }
+                                                            }
+                                                        },
+                                                        "consumer-key": {
+                                                            "type": "string"
+                                                        },
+                                                        "consumer-secret": {
+                                                            "type": "string"
+                                                        },
+                                                        "load_batch_count": {
+                                                            "description": "Number of products to load in each thread, suggested at 10.",
+                                                            "type": "integer"
+                                                        },
+                                                        "product_restrictions": {
+                                                            "description": "Product Restrictions",
+                                                            "$ref": "#/definitions/product_restrictions"
+                                                        },
+                                                        "manage_product_categories": {
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "active",
+                                                        "consumer-key",
+                                                        "consumer-secret",
+                                                        "load_batch_count",
+                                                        "manage_product_categories",
+                                                        "pricing",
+                                                        "url"
+                                                    ]
+                                                },
+                                                "target_gunbroker": {
+                                                    "title": "Gunbroker",
+                                                    "description": "Gunbroker Listing Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "key": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "url": {
+                                                            "type": "string",
+                                                            "format": "uri",
+                                                            "qt-uri-protocols": [
+                                                                "https"
+                                                            ]
+                                                        },
+                                                        "fees": {
+                                                            "description": "Gunbroker Fees",
+                                                            "title": "Fees",
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "compliance": {
+                                                                    "type": "number"
+                                                                },
+                                                                "tier_1_dollar": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "tier_1_percent": {
+                                                                    "type": "number",
+                                                                    "minimum": 0,
+                                                                    "maximum": 0.99
+                                                                },
+                                                                "tier_2_percent": {
+                                                                    "type": "number",
+                                                                    "minimum": 0,
+                                                                    "maximum": 0.99
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "compliance",
+                                                                "tier_1_dollar",
+                                                                "tier_1_percent",
+                                                                "tier_2_percent"
+                                                            ]
+                                                        },
+                                                        "active": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "pricing": {
+                                                            "type": "object",
+                                                            "additionalProperties": false,
+                                                            "properties": {
+                                                                "margin_adjustment_dollar": {
+                                                                    "type": "number"
+                                                                },
+                                                                "margin_adjustment_percent": {
+                                                                    "type": "number",
+                                                                    "minimum": 0,
+                                                                    "maximum": 0.99
+                                                                }
+                                                            }
+                                                        },
+                                                        "password": {
+                                                            "type": "string"
+                                                        },
+                                                        "username": {
+                                                            "type": "string"
+                                                        },
+                                                        "payment_methods": {
+                                                            "title": "PaymentMethods",
+                                                            "type": "object",
+                                                            "additionalProperties": false,
+                                                            "properties": {
+                                                                "COD": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "Amex": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "check": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "Escrow": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "PayPal": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "Discover": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "MoneyOrder": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "FreedomCoin": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "SeeItemDesc": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "CertifiedCheck": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "USPSMoneyOrder": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "VisaMastercard": {
+                                                                    "type": "boolean"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "Amex",
+                                                                "COD",
+                                                                "CertifiedCheck",
+                                                                "Discover",
+                                                                "Escrow",
+                                                                "FreedomCoin",
+                                                                "MoneyOrder",
+                                                                "PayPal",
+                                                                "SeeItemDesc",
+                                                                "USPSMoneyOrder",
+                                                                "VisaMastercard",
+                                                                "check"
+                                                            ]
+                                                        },
+                                                        "from_postal_code": {
+                                                            "type": "string"
+                                                        },
+                                                        "listing_duration": {
+                                                            "type": "integer"
+                                                        },
+                                                        "picture_flairing": {
+                                                            "type": "object",
+                                                            "additionalProperties": false,
+                                                            "properties": {
+                                                                "active": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "border": {
+                                                                    "type": "object",
+                                                                    "additionalProperties": false,
+                                                                    "properties": {
+                                                                        "color": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "active": {
+                                                                            "type": "boolean"
+                                                                        },
+                                                                        "pixel_width": {
+                                                                            "type": "integer"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "active",
+                                                                        "color",
+                                                                        "pixel_width"
+                                                                    ],
+                                                                    "title": "Border"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "active"
+                                                            ],
+                                                            "title": "Picture Flairing"
+                                                        },
+                                                        "standard_text_id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "inspection_period": {
+                                                            "type": "integer"
+                                                        },
+                                                        "product_restrictions": {
+                                                            "description": "Product Restrictions",
+                                                            "$ref": "#/definitions/product_restrictions"
+                                                        },
+                                                        "standard_description_html": {
+                                                            "type": "string",
+                                                            "description": "Text that appears in all Gunbroker Listings"
+                                                        },
+                                                        "drive_customers_to_website": {
+                                                            "type": "object",
+                                                            "additionalProperties": false,
+                                                            "properties": {
+                                                                "active": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "message": {
+                                                                    "description": "This message will appear above the listing to prompt the user to go to your website.",
+                                                                    "type": "string"
+                                                                },
+                                                                "website_banner": {
+                                                                    "description": "This is a place to put a image banner area, or some other branding material.",
+                                                                    "type": "string"
+                                                                },
+                                                                "product_qr_codes": {
+                                                                    "type": "object",
+                                                                    "additionalProperties": false,
+                                                                    "properties": {
+                                                                        "active": {
+                                                                            "type": "boolean"
+                                                                        },
+                                                                        "icon_url": {
+                                                                            "type": "string",
+                                                                            "format": "uri",
+                                                                            "qt-uri-protocols": [
+                                                                                "https", "http"
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "active",
+                                                                        "icon_url"
+                                                                    ],
+                                                                    "title": "Product QR Codes"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "active"
+                                                            ],
+                                                            "title": "DriveCustomersToWebsite"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "active",
+                                                        "fees",
+                                                        "from_postal_code",
+                                                        "inspection_period",
+                                                        "key",
+                                                        "listing_duration",
+                                                        "password",
+                                                        "payment_methods",
+                                                        "pricing",
+                                                        "standard_description_html",
+                                                        "standard_text_id",
+                                                        "url",
+                                                        "username"
+                                                    ]
+                                                },
+                                                "distributor_cssi": {
+                                                    "title": "Chatanooga Shooting Supplies",
+                                                    "description": "Chatanooga Shooting Supplies Product Feed Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "active": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "distid": {
+                                                            "type": "string",
+                                                            "const": "CSSI"
+                                                        },
+                                                        "api_sid": {
+                                                            "type": "string"
+                                                        },
+                                                        "api_token": {
+                                                            "type": "string"
+                                                        },
+                                                        "shipping": {
+                                                            "$ref": "#/definitions/shipping"
+                                                        },
+                                                        "drop_ship_only_items": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "product_restrictions": {
+                                                            "$ref": "#/definitions/product_restrictions"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "active",
+                                                        "distid",
+                                                        "drop_ship_only_items",
+                                                        "product_restrictions",
+                                                        "shipping"
+                                                    ]
+                                                },
+                                                "distributor_davidsons": {
+                                                    "title": "Davidsons",
+                                                    "description": "Davidsons Product Feed Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "active": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "distid": {
+                                                            "type": "string",
+                                                            "const": "DAV"
+                                                        },
+                                                        "ftp_user": {
+                                                            "type": "string"
+                                                        },
+                                                        "ftp_password": {
+                                                            "type": "string"
+                                                        },
+                                                        "shipping": {
+                                                            "$ref": "#/definitions/shipping"
+                                                        },
+                                                        "drop_ship_only_items": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "product_restrictions": {
+                                                            "$ref": "#/definitions/product_restrictions"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "active",
+                                                        "distid",
+                                                        "drop_ship_only_items",
+                                                        "product_restrictions",
+                                                        "shipping"
+                                                    ]
+                                                },
+                                                "distributor_lipseys": {
+                                                    "title": "Lipseys",
+                                                    "description": "Lipseys Product Feed Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "active": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "distid": {
+                                                            "type": "string",
+                                                            "const": "LIP"
+                                                        },
+                                                        "username": {
+                                                            "type": "string"
+                                                        },
+                                                        "password": {
+                                                            "type": "string"
+                                                        },
+                                                        "shipping": {
+                                                            "$ref": "#/definitions/shipping"
+                                                        },
+                                                        "drop_ship_only_items": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "product_restrictions": {
+                                                            "$ref": "#/definitions/product_restrictions"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "active",
+                                                        "distid",
+                                                        "drop_ship_only_items",
+                                                        "product_restrictions",
+                                                        "shipping"
+                                                    ]
+                                                },
+                                                "distributor_rsr": {
+                                                    "title": "RSR Group",
+                                                    "description": "RSR Group Product Feed Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "active": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "distid": {
+                                                            "type": "string",
+                                                            "const": "RSR"
+                                                        },
+                                                        "ftp_user": {
+                                                            "type": "string"
+                                                        },
+                                                        "ftp_password": {
+                                                            "type": "string"
+                                                        },
+                                                        "shipping": {
+                                                            "$ref": "#/definitions/shipping"
+                                                        },
+                                                        "drop_ship_only_items": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "product_restrictions": {
+                                                            "$ref": "#/definitions/product_restrictions"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "active",
+                                                        "distid",
+                                                        "drop_ship_only_items",
+                                                        "product_restrictions",
+                                                        "shipping"
+                                                    ]
+                                                },
+                                                "distributor_twoaw": {
+                                                    "title": "2nd Amendment Wholesale",
+                                                    "description": "2nd Amendment Wholesale Product Feed Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "active": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "distid": {
+                                                            "type": "string",
+                                                            "const": "2AW"
+                                                        },
+                                                        "username": {
+                                                            "type": "string"
+                                                        },
+                                                        "password": {
+                                                            "type": "string"
+                                                        },
+                                                        "shipping": {
+                                                            "$ref": "#/definitions/shipping"
+                                                        },
+                                                        "drop_ship_only_items": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "product_restrictions": {
+                                                            "$ref": "#/definitions/product_restrictions"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "active",
+                                                        "distid",
+                                                        "drop_ship_only_items",
+                                                        "product_restrictions",
+                                                        "shipping"
+                                                    ]
+                                                },
+                                                "distributor_zanders": {
+                                                    "title": "Zanders",
+                                                    "description": "Zanders Product Feed Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "active": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "distid": {
+                                                            "type": "string",
+                                                            "const": "ZND"
+                                                        },
+                                                        "ftp_user": {
+                                                            "type": "string"
+                                                        },
+                                                        "ftp_password": {
+                                                            "type": "string"
+                                                        },
+                                                        "shipping": {
+                                                            "$ref": "#/definitions/shipping"
+                                                        },
+                                                        "drop_ship_only_items": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "product_restrictions": {
+                                                            "$ref": "#/definitions/product_restrictions"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "active",
+                                                        "distid",
+                                                        "drop_ship_only_items",
+                                                        "product_restrictions",
+                                                        "shipping"
+                                                    ]
+                                                }
+                                            }
+                                        }
                                     }
                                     var editor = new JSONEditor(document.getElementById("jsoneditor"), options);
                                     editor.set({"Loading Configuration": "Please wait..."});
@@ -235,7 +1259,9 @@ class g_ffl_Cockpit_Admin
                             </tr>
 
                         </table>
-                        <?php submit_button(); ?>
+                        <div id="submit_button_div">
+                            <?php submit_button(); ?>
+                        </div>
                         <br>
                         <a style="cursor:pointer;" onclick="document.getElementById('white_label_settings_name').style.display='';document.getElementById('white_label_settings_url').style.display='';">&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;</a>
                     </form>
