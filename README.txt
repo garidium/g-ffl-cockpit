@@ -29,8 +29,8 @@ While the plugin is free to download and install, it does require you to purchas
 1. Access to a data services we manage that synchronizes distributor product data
 2. Ability to synchronize both woocommerce and gunbroker listings
 
-== To purchase a key, visit the g-FFL API product page: ==
-[g-FFL Cockpit Product Page](https://garidium.com/g-ffl-cockpit/) 
+== To purchase a key, visit the g-FFL Cockpit product page: ==
+[g-FFL Cockpit Product Page](https://garidium.com/product/g-ffl-cockpit/) 
 
 ==Please review our Terms and Conditions: ==
 [Terms and Conditions](https://garidium.com/terms_of_sale/)
