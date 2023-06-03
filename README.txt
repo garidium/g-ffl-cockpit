@@ -20,7 +20,8 @@ It was built to support our businesses, and we know it will help yours as well.
 4. Easily set pricing and listing options, along with configuring the inclusion/exclusion of specific items.
 5. View a report of all items being listed, including pricing from each distributor.
 6. Works with the g-FFL Checkout plugin to automatically mark firearms as requiring FFL selection during checkout.
-7. Automated Fulfillment (Coming Soon).
+7. Currently supported distributors: Zanders, Chatanooga, Davidsons, 2nd Amendment, RSR, Lipseys 
+8. Automated Fulfillment not available but Coming Soon.
 
 == API Subscription Required ==
 While the plugin is free to download and install, it does require you to purchase a license for a personalized API key. We also have a one-time setup fee. The plugin will not be useful without this key. The API key allows the plugin to connect to the required data services, providing the following features:
