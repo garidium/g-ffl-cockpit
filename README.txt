@@ -16,11 +16,11 @@ It was built to support our businesses, and we know it will help yours as well.
 ==Feature Highlights:==
 1. Configure 1-to-many supported distributors and feed products into your WooCommerce website.
 2. This plugin also supports Gunbroker and AmmoSeek Feeds
-3. Inventory and Listings are then updated every 15-minutes to ensure quanity and pricing are updated continuously.
+3. Inventory and Listings are then updated every 15-minutes to ensure quantity and pricing are updated continuously.
 4. Easily set pricing and listing options, along with configuring the inclusion/exclusion of specific items.
 5. View a report of all items being listed, including pricing from each distributor.
 6. Works with the g-FFL Checkout plugin to automatically mark firearms as requiring FFL selection during checkout.
-7. Currently supported distributors: Zanders, Chatanooga, Davidsons, 2nd Amendment, RSR, Lipseys 
+7. Currently supported distributors: Zanders, Lipseys, Chattanooga, Davidsons, 2nd Amendment, RSR 
 8. Automated Fulfillment not available but Coming Soon.
 
 == API Subscription Required ==
