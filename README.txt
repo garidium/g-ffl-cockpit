@@ -10,7 +10,7 @@ License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 ==Description==
-== (Do not download, contact us at sales@garidium.com for beta-testing information) Built by FFL's, for FFL's. This plugin will help streamline inventory management, synchronizing product listings with a series of firearm distributors.==
+== Built by FFL's, for FFL's. This plugin will help streamline inventory management, synchronizing product listings with a series of firearm distributors.==
 It was built to support our businesses, and we know it will help yours as well.
 
 ==Feature Highlights:==
@@ -23,9 +23,10 @@ It was built to support our businesses, and we know it will help yours as well.
 7. Automated Fulfillment (Coming Soon).
 
 == API Subscription Required ==
-While the plugin is free to download and install, it does require you to purchase a license for a personalized API key. The plugin will not be useful without this key. The API key allows the plugin to connect to the required data services, providing the following features:
+While the plugin is free to download and install, it does require you to purchase a license for a personalized API key. We also have a one-time setup fee. The plugin will not be useful without this key. The API key allows the plugin to connect to the required data services, providing the following features:
 
 1. Access to a data services we manage that synchronizes distributor product data
+2. Ability to synchronize both woocommerce and gunbroker listings
 
 == To purchase a key, visit the g-FFL API product page: ==
 [g-FFL Cockpit Product Page](https://garidium.com/g-ffl-cockpit/) 
@@ -58,4 +59,5 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+2. v1.0.1 Added a Load Config Button to reload configuration from database
 1. v1.0.0 Initial Release of the g-FFL Cockpit Plugin

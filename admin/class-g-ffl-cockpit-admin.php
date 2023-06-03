@@ -161,6 +161,7 @@ class g_ffl_Cockpit_Admin
                                             <input type="password" style="width: 350px;" name="g_ffl_cockpit_key" id="g_ffl_cockpit_key" 
                                                 aria-describedby="login_error" class="input password-input" size="20"
                                                 value="<?php echo esc_attr($gFFLCheckoutKey); ?>"/>
+                                                <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);">Load Config</a>
                                         </div>
                                         <p>Email sales@garidium.com to get a key, or if your key has expired.</p>
                                     </div>
@@ -181,24 +182,28 @@ class g_ffl_Cockpit_Admin
                                 <input type="hidden" name="g_ffl_cockpit_configuration" id="g_ffl_cockpit_configuration">
                                 <script>
                                     function get_and_set_cockpit_configuration(api_key){
-                                        fetch("https://ffl-api.garidium.com", {
-                                            method: "POST",
-                                            headers: {
-                                            "Accept": "application/json",
-                                            "Content-Type": "application/json",
-                                            "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey);?>",
-                                            },
-                                            body: JSON.stringify({"action": "get_subscription", "data": {"api_key": api_key}})
-                                        })
-                                        .then(response=>response.json())
-                                        .then(data=>{
-                                            try{
-                                                cockpit_configuration = JSON.parse(data[0].cockpit_configuration);
-                                                editor.set(cockpit_configuration);
-                                            } catch (error) {
-                                                console.error("No configuration found for this key, setting to default.");
-                                            }
-                                        });
+                                        if (api_key != null && api_key.length > 0){
+                                            fetch("https://ffl-api.garidium.com", {
+                                                method: "POST",
+                                                headers: {
+                                                "Accept": "application/json",
+                                                "Content-Type": "application/json",
+                                                "x-api-key": api_key,
+                                                },
+                                                body: JSON.stringify({"action": "get_subscription", "data": {"api_key": api_key}})
+                                            })
+                                            .then(response=>response.json())
+                                            .then(data=>{
+                                                try{
+                                                    cockpit_configuration = JSON.parse(data[0].cockpit_configuration);
+                                                    editor.set(cockpit_configuration);
+                                                } catch (error) {
+                                                    alert("No configuration found for this key, setting to default.");
+                                                }
+                                            });
+                                        }else{
+                                            alert("No API Key Configured");
+                                        }
                                     }
                                 </script>
                                 <script>
@@ -763,6 +768,9 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "manage_product_categories": {
                                                             "type": "boolean"
+                                                        },
+                                                        "manage_product_attributes": {
+                                                            "type": "boolean"
                                                         }
                                                     },
                                                     "required": [
@@ -771,6 +779,7 @@ class g_ffl_Cockpit_Admin
                                                         "consumer-secret",
                                                         "load_batch_count",
                                                         "manage_product_categories",
+                                                        "manage_product_attributes",
                                                         "pricing",
                                                         "url"
                                                     ]
