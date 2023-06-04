@@ -681,6 +681,10 @@ class g_ffl_Cockpit_Admin
                                                                     "description": "Reloading Product Restrictions",
                                                                     "$ref": "#/definitions/product_restrictions"
                                                                 },
+                                                                "reloading_misc": {
+                                                                    "description": "Miscellaneous Reloading Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"
+                                                                },
                                                                 "parts": {
                                                                     "description": "Parts Product Restrictions",
                                                                     "$ref": "#/definitions/product_restrictions"
@@ -724,6 +728,11 @@ class g_ffl_Cockpit_Admin
                                                                 {
                                                                     "required": [
                                                                         "reloading"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "required": [
+                                                                        "reloading_misc"
                                                                     ]
                                                                 },
                                                                 {
