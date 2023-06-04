@@ -72,7 +72,7 @@ class G_Ffl_Cockpit
         if (defined('G_FFL_COCKPIT_VERSION')) {
             $this->version = G_FFL_COCKPIT_VERSION;
         } else {
-            $this->version = '1.0.1';
+            $this->version = '1.0.0';
         }
         $this->plugin_name = 'g-ffl-cockpit';
 

@@ -5,7 +5,7 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.2
 Requires PHP: 7.0
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -60,5 +60,6 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+3. v1.0.2 Added gun.deals RSS Feed Support
 2. v1.0.1 Added a Load Config Button to reload configuration from database
 1. v1.0.0 Initial Release of the g-FFL Cockpit Plugin
