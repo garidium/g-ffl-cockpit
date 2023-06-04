@@ -323,7 +323,11 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "ammoseek": {
                                                             "description": "AmmoSeek Product Feed Settings",
-                                                            "$ref": "#/definitions/target_ammoseek"
+                                                            "$ref": "#/definitions/target_rss"
+                                                        },
+                                                        "gun.deals": {
+                                                            "description": "Gun.Deals Product Feed Settings",
+                                                            "$ref": "#/definitions/target_rss"
                                                         },
                                                         "gunbroker": {
                                                             "description": "Gunbroker Product Feed Settings",
@@ -633,9 +637,9 @@ class g_ffl_Cockpit_Admin
                                                         }
                                                     ]
                                                 },
-                                                "target_ammoseek": {
-                                                    "title": "AmmoSeek",
-                                                    "description": "AmmoSeek Listing Configuration",
+                                                "target_rss": {
+                                                    "title": "RSS Feed",
+                                                    "description": "RSS Feed Listing Configuration",
                                                     "type": "object",
                                                     "properties": {
                                                         "active": {
@@ -673,8 +677,16 @@ class g_ffl_Cockpit_Admin
                                                                     "description": "Ammunition Product Restrictions",
                                                                     "$ref": "#/definitions/product_restrictions"
                                                                 },
-                                                                "reloading_misc": {
+                                                                "reloading": {
                                                                     "description": "Reloading Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"
+                                                                },
+                                                                "parts": {
+                                                                    "description": "Parts Product Restrictions",
+                                                                    "$ref": "#/definitions/product_restrictions"
+                                                                },
+                                                                "other": {
+                                                                    "description": "Other Product Restrictions",
                                                                     "$ref": "#/definitions/product_restrictions"
                                                                 }
                                                             },
@@ -711,7 +723,17 @@ class g_ffl_Cockpit_Admin
                                                                 },
                                                                 {
                                                                     "required": [
-                                                                        "reloading_misc"
+                                                                        "reloading"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "required": [
+                                                                        "parts"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "required": [
+                                                                        "other"
                                                                     ]
                                                                 }
                                                             ],
