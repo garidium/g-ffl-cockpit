@@ -338,6 +338,35 @@ class g_ffl_Cockpit_Admin
                                             },
                                             "definitions":
                                             {
+                                                "alerts": {
+                                                    "title": "Alert Configuration",
+                                                    "description": "Alert Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "change_threshold_percent": {
+                                                            "type": "number",
+                                                            "minimum":0,
+                                                            "maximum":0.99
+                                                        },
+                                                        "delete_threshold_percent": {
+                                                            "type": "number",
+                                                            "minimum":0,
+                                                            "maximum":0.99
+                                                        }
+                                                    },
+                                                    "anyOf": [
+                                                        {
+                                                            "required": [
+                                                                "change_threshold_percent"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "delete_threshold_percent"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
                                                 "product_restrictions":{
                                                     "properties": {
                                                         "sku": {
@@ -796,6 +825,10 @@ class g_ffl_Cockpit_Admin
                                                         "product_restrictions": {
                                                             "description": "Product Restrictions",
                                                             "$ref": "#/definitions/product_restrictions"
+                                                        },
+                                                        "alerts": {
+                                                            "description": "Alert Configurations",
+                                                            "$ref": "#/definitions/alerts"
                                                         },
                                                         "manage_product_categories": {
                                                             "type": "boolean"
@@ -1487,10 +1520,40 @@ class g_ffl_Cockpit_Admin
                 </div>
             </div>            
             <div id="logs" class="tabcontent">
-                <h3>Logs</h3>
-                <div class="postbox" style="padding: 10px;margin-top: 10px">
-                    <p>Coming Soon! View Process Logs to Monitor Feeds</p>
-                </div>
+                <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
+                    <div id="log_table"></div>
+                    <script>
+                        // https://unpkg.com/browse/gridjs@5.1.0/dist/
+                        new gridjs.Grid({
+                            columns: [
+                                {name: 'Timestamp', width: '200px'}, 
+                                {name: "Message"}
+                            ],
+                            resizable: true,
+                            fixedHeader: true,
+                            style: {
+                                td: {
+                                    'padding': '3px'
+                                },
+                                th: {
+                                    'padding': '3px'
+                                }
+                            },
+                            server: {
+                                url: 'https://ffl-api.garidium.com',
+                                method: 'POST',
+                                headers: {
+                                    "Accept": "application/json",
+                                    "Content-Type": "application/json",
+                                    "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey);?>",
+			                    },
+                                body: JSON.stringify({"action": "get_logs", "data": {"api_key": "<?php echo esc_attr($gFFLCheckoutKey);?>", "log_count": 2}}),
+                                then: data => JSON.parse(data).logs.map(log => [
+                                                                   log.timestamp, 
+                                                                   log.message])
+                            } 
+                        }).render(document.getElementById("log_table"));
+                    </script>
             </div>  
             <div id="instructions" class="tabcontent">
                 <h3>Help Center</h3>
