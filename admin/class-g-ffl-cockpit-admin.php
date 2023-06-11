@@ -141,9 +141,9 @@ class g_ffl_Cockpit_Admin
             <!-- Tab links -->
             <div class="tab">
                 <button class="tablinks" onclick="openTab(event, 'configuration')" id="defaultOpen">Configuration</button>
-                <button class="tablinks" onclick="openTab(event, 'product_feed')">Product Feed</button>
+                <button class="tablinks" onclick="openTab(event, 'product_feed');product_grid.render(document.getElementById('product_feed_table'));">Product Feed</button>
                 <button class="tablinks" onclick="openTab(event, 'fulfillment')">Fulfillment</button>
-                <button class="tablinks" onclick="openTab(event, 'logs')">Logs</button>
+                <button class="tablinks" onclick="openTab(event, 'logs');log_grid.render(document.getElementById('log_table'));">Logs</button>
                 <button class="tablinks" onclick="openTab(event, 'instructions')">Help Center</button>
             </div>
             <!-- Tab content -->
@@ -1364,7 +1364,7 @@ class g_ffl_Cockpit_Admin
                             return "";
                         }
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
-                        new gridjs.Grid({
+                        var product_grid = new gridjs.Grid({
                             columns: [
                                 //formatter: (_, row) => `${row.cells[0].data?row.cells[2].data + '*':row.cells[2].data}`
                                 //{sort: false, name: "List", width: '50px', formatter: (cell) => `${cell?"Y":"N"}`}, 
@@ -1452,7 +1452,7 @@ class g_ffl_Cockpit_Admin
                                                                    //product.drop_ship_flg])
                                 total: data => JSON.parse(data).count
                             } 
-                        }).render(document.getElementById("product_feed_table"));
+                        });
                     
                         document.getElementById("download_inventory_button").addEventListener("click", function(){
                             document.getElementById("download_inventory_button").disabled = true;
@@ -1521,22 +1521,30 @@ class g_ffl_Cockpit_Admin
             </div>            
             <div id="logs" class="tabcontent">
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
+                <a class="button alt" onclick="log_grid.forceRender();">Refresh</a>                 
                     <div id="log_table"></div>
                     <script>
+                        const window_height2 = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) * 0.8;
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
-                        new gridjs.Grid({
+                        var log_grid = new gridjs.Grid({
                             columns: [
-                                {name: 'Timestamp', width: '200px'}, 
+                                {name: 'Timestamp', width: '160px', formatter: (cell) => `${new Date(cell).toLocaleString()}`}, 
                                 {name: "Message"}
                             ],
                             resizable: true,
                             fixedHeader: true,
                             style: {
                                 td: {
-                                    'padding': '3px'
+                                    'padding': '3px',
+                                    'background': 'black',
+                                    'color': '#a1e89f',
+                                    'border': 'solid #353333 1px'
                                 },
                                 th: {
-                                    'padding': '3px'
+                                    'padding': '3px',
+                                    'background': 'black',
+                                    'color': '#a1e89f',
+                                    'border': 'solid #353333 1px'
                                 }
                             },
                             server: {
@@ -1547,12 +1555,12 @@ class g_ffl_Cockpit_Admin
                                     "Content-Type": "application/json",
                                     "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey);?>",
 			                    },
-                                body: JSON.stringify({"action": "get_logs", "data": {"api_key": "<?php echo esc_attr($gFFLCheckoutKey);?>", "log_count": 2}}),
+                                body: JSON.stringify({"action": "get_logs", "data": {"api_key": "kTyrtuwuav8HUkodH9QcI5MoE4sfAXJJ2EMVzTJM", "log_count": 1}}),
                                 then: data => JSON.parse(data).logs.map(log => [
                                                                    log.timestamp, 
                                                                    log.message])
                             } 
-                        }).render(document.getElementById("log_table"));
+                        })
                     </script>
             </div>  
             <div id="instructions" class="tabcontent">
