@@ -1555,7 +1555,7 @@ class g_ffl_Cockpit_Admin
                                     "Content-Type": "application/json",
                                     "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey);?>",
 			                    },
-                                body: JSON.stringify({"action": "get_logs", "data": {"api_key": "kTyrtuwuav8HUkodH9QcI5MoE4sfAXJJ2EMVzTJM", "log_count": 1}}),
+                                body: JSON.stringify({"action": "get_logs", "data": {"api_key": "<?php echo esc_attr($gFFLCheckoutKey);?>", "log_count": 1}}),
                                 then: data => JSON.parse(data).logs.map(log => [
                                                                    log.timestamp, 
                                                                    log.message])
