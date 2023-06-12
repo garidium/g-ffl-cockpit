@@ -75,3 +75,28 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.video_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.video_grid div {
+  width: 100%;
+  background: white;
+  font-size: 14pt !important;
+}
+
+.video_grid div:last-child:nth-child(3n - 1) {
+  grid-column: span 2;
+  height: auto;
+  padding-bottom: 0;
+}
+
+@media (max-width: 400px) {
+  .video_grid {
+    grid-template-columns: 1fr;
+  }
+}

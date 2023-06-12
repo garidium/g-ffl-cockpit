@@ -144,7 +144,7 @@ class g_ffl_Cockpit_Admin
                 <button class="tablinks" onclick="openTab(event, 'product_feed');product_grid.render(document.getElementById('product_feed_table'));">Product Feed</button>
                 <button class="tablinks" onclick="openTab(event, 'fulfillment')">Fulfillment</button>
                 <button class="tablinks" onclick="openTab(event, 'logs');log_grid.render(document.getElementById('log_table'));">Logs</button>
-                <button class="tablinks" onclick="openTab(event, 'instructions')">Help Center</button>
+                <button class="tablinks" onclick="openTab(event, 'help_center');load_help_videos();">Help Center</button>
             </div>
             <!-- Tab content -->
             <div id="configuration" class="tabcontent">
@@ -1475,41 +1475,41 @@ class g_ffl_Cockpit_Admin
                         });
                     </script>
                                     <!-- The Modal -->
-                <div id="myModal" class="modal">
-                    <!-- Modal content -->
-                    <div class="modal-content">
-                        <span class="close">&times;</span>
-                        <div align="center" id="product_detail_div"></div>
-                    </div>
-                    <script>
-                        // Get the modal
-                        var modal = document.getElementById("myModal");
+                    <div id="myModal" class="modal">
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <div align="center" id="product_detail_div"></div>
+                        </div>
+                        <script>
+                            // Get the modal
+                            var modal = document.getElementById("myModal");
 
-                        // Get the button that opens the modal
-                        var btn = document.getElementById("myBtn");
+                            // Get the button that opens the modal
+                            var btn = document.getElementById("myBtn");
 
-                        // Get the <span> element that closes the modal
-                        var span = document.getElementsByClassName("close")[0];
+                            // Get the <span> element that closes the modal
+                            var span = document.getElementsByClassName("close")[0];
 
-                        function load_product_data(title, distributor, sku, img_url){
-                            //alert(data);
-                            modal.style.display = "block";
-                            document.getElementById("product_detail_div").innerHTML = "<h3>" + title + "</h3><br><img width='75%' src='" + img_url + "'/><br><img width=75 src='" + get_distributor_logo(distributor) + "'/><br>" + sku;
-                        }
+                            function load_product_data(title, distributor, sku, img_url){
+                                //alert(data);
+                                modal.style.display = "block";
+                                document.getElementById("product_detail_div").innerHTML = "<h3>" + title + "</h3><br><img width='75%' src='" + img_url + "'/><br><img width=75 src='" + get_distributor_logo(distributor) + "'/><br>" + sku;
+                            }
 
-                        // When the user clicks on <span> (x), close the modal
-                        span.onclick = function() {
-                            modal.style.display = "none";
-                        }
-
-                        // When the user clicks anywhere outside of the modal, close it
-                        window.onclick = function(event) {
-                            if (event.target == modal) {
+                            // When the user clicks on <span> (x), close the modal
+                            span.onclick = function() {
                                 modal.style.display = "none";
                             }
-                        }
-                    </script>
-                </div>
+
+                            // When the user clicks anywhere outside of the modal, close it
+                            window.onclick = function(event) {
+                                if (event.target == modal) {
+                                    modal.style.display = "none";
+                                }
+                            }
+                        </script>
+                    </div>
 
                 </div>
             </div>
@@ -1518,10 +1518,10 @@ class g_ffl_Cockpit_Admin
                 <div class="postbox" style="padding: 10px;margin-top: 10px">
                     <p>Coming Soon! Automated Fulfillment Orders will be reported on here</p>
                 </div>
-            </div>            
+            </div>         
             <div id="logs" class="tabcontent">
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
-                <a class="button alt" onclick="log_grid.forceRender();">Refresh</a>                 
+                    <a class="button alt" onclick="log_grid.forceRender();">Refresh</a>                 
                     <div id="log_table"></div>
                     <script>
                         const window_height2 = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) * 0.8;
@@ -1562,13 +1562,36 @@ class g_ffl_Cockpit_Admin
                             } 
                         })
                     </script>
-            </div>  
-            <div id="instructions" class="tabcontent">
-                <h3>Help Center</h3>
-                <div class="postbox" style="padding: 10px;margin-top: 10px">
-                    <p>This is where the help documentation and videos will go. In the meantime, email sales@garidium.com with any questions.</p>
                 </div>
             </div>
+            <div id="help_center" class="tabcontent">
+                <script>
+                    function load_help_videos(){
+                        fetch("https://ffl-api.garidium.com", {
+                            method: "POST",
+                            headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json",
+                            "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey); ?>",
+                            },
+                            body: JSON.stringify({"action": "get_training_videos"})
+                        })
+                        .then(response=>response.json())
+                        .then(data=>{ 
+                            var video_div = document.getElementById("training_videos");
+                            video_div.innerHTML = '';
+                            for (var i = 0, l = data.length; i < l; i++) {
+                                var innerDiv = document.createElement("div");
+                                innerDiv.innerHTML = '<div style="width:390px;"><iframe class="rumble" width="370" height="208" src="' + data[i].url + '" frameborder="0" allowfullscreen></iframe><br><span style="width:99%;">' + data[i].title + '</span><br><span style="color:#a29f9f !important;width:99%;height:50px;">' + data[i].description + '</span></div>';
+                                video_div.appendChild(innerDiv);
+                            }
+                        });
+                    }
+                </script>
+                <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
+                    <div class="video_grid" id="training_videos"></div>
+                </div>
+            </div>    
         </div>
 
     <?php }
