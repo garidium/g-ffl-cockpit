@@ -52,7 +52,7 @@ function setConfig(g_ffl_cockpit_key){
 			headers: {
 			"Accept": "application/json",
 			"Content-Type": "application/json",
-			"x-api-key": gFFLCheckoutKey,
+			"x-api-key": gFFLCockpitKey,
 			},
 			body: JSON.stringify({"action": "update_subscription", "data": {"api_key": g_ffl_cockpit_key, "updates": {"cockpit_configuration": config_json}}})
 		})

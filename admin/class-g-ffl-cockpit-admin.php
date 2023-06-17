@@ -128,9 +128,9 @@ class g_ffl_Cockpit_Admin
 
     function g_ffl_cockpit_settings_page()
     {
-        $gFFLCheckoutKey = get_option('g_ffl_cockpit_key');
+        $gFFLCockpitKey = get_option('g_ffl_cockpit_key');
         echo '<script type="text/javascript">
-                let gFFLCheckoutKey = "' . esc_attr($gFFLCheckoutKey) . '"
+                let gFFLCockpitKey = "' . esc_attr($gFFLCockpitKey) . '"
               </script>';
 
         ?>
@@ -150,7 +150,7 @@ class g_ffl_Cockpit_Admin
             <div id="configuration" class="tabcontent">
             <!--<h3>Configuration</h3>-->
                 <div class="postbox" style="padding: 10px;margin-top: 10px">
-                    <form method="post" action="options.php" onSubmit="return setConfig('<?php echo esc_attr($gFFLCheckoutKey);?>');">
+                    <form method="post" action="options.php" onSubmit="return setConfig('<?php echo esc_attr($gFFLCockpitKey);?>');">
                         <?php settings_fields('g-ffl-cockpit-settings'); ?>
                         <table class="form-table">
                         <tr>
@@ -160,7 +160,7 @@ class g_ffl_Cockpit_Admin
                                         <div class="wp-pwd">
                                             <input type="password" style="width: 350px;" name="g_ffl_cockpit_key" id="g_ffl_cockpit_key" 
                                                 aria-describedby="login_error" class="input password-input" size="20"
-                                                value="<?php echo esc_attr($gFFLCheckoutKey); ?>"/>
+                                                value="<?php echo esc_attr($gFFLCockpitKey); ?>"/>
                                                 <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);">Load Config</a>
                                         </div>
                                         <p>Email sales@garidium.com to get a key, or if your key has expired.</p>
@@ -1308,7 +1308,7 @@ class g_ffl_Cockpit_Admin
                                     var editor = new JSONEditor(document.getElementById("jsoneditor"), options);
                                     editor.set({"Loading Configuration": "Please wait..."});
                                     window.onload = function(){
-                                        get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCheckoutKey);?>");
+                                        get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCockpitKey);?>");
                                         if (window.location.host == 'garidium.com'){
                                             document.getElementById('g-ffl-admin-buttons').style.display = '';
                                         }
@@ -1431,7 +1431,7 @@ class g_ffl_Cockpit_Admin
                                 headers: {
                                     "Accept": "application/json",
                                     "Content-Type": "application/json",
-                                    "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey); ?>",
+                                    "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
 			                    },
                                 then: data => JSON.parse(data).products.map(product => [//product.is_best_item,
                                                                    product.distid, 
@@ -1462,7 +1462,7 @@ class g_ffl_Cockpit_Admin
                                 headers: {
                                 "Accept": "application/json",
                                 "Content-Type": "application/json",
-                                "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey); ?>",
+                                "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
                                 },
                                 body: JSON.stringify({"action": "download_inventory"})
                             })
@@ -1523,6 +1523,7 @@ class g_ffl_Cockpit_Admin
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
                     <a class="button alt" onclick="log_grid.forceRender();">Refresh</a>                 
                     <div id="log_table"></div>
+                    <a class="button alt" onclick="log_grid.forceRender();">Refresh</a>                 
                     <script>
                         const window_height2 = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) * 0.8;
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
@@ -1553,9 +1554,9 @@ class g_ffl_Cockpit_Admin
                                 headers: {
                                     "Accept": "application/json",
                                     "Content-Type": "application/json",
-                                    "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey);?>",
+                                    "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>",
 			                    },
-                                body: JSON.stringify({"action": "get_logs", "data": {"api_key": "<?php echo esc_attr($gFFLCheckoutKey);?>", "log_count": 1}}),
+                                body: JSON.stringify({"action": "get_logs", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey);?>", "log_count": 1}}),
                                 then: data => JSON.parse(data).logs.map(log => [
                                                                    log.timestamp, 
                                                                    log.message])
@@ -1572,7 +1573,7 @@ class g_ffl_Cockpit_Admin
                             headers: {
                             "Accept": "application/json",
                             "Content-Type": "application/json",
-                            "x-api-key": "<?php echo esc_attr($gFFLCheckoutKey); ?>",
+                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
                             },
                             body: JSON.stringify({"action": "get_training_videos"})
                         })
