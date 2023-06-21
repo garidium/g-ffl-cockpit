@@ -21,8 +21,8 @@ function g_ffl_checkout_fulfillment_options_html()
     $order = new WC_Order( $post_id );
     $aKey = get_option('g_ffl_cockpit_key');
     $orderId = $order->get_id();
-    //$aKey = "kTyrtuwuav8HUkodH9QcI5MoE4sfAXJJ2EMVzTJM";
-    //$orderId = "156142";
+    //$aKey = "";
+    //$orderId = "";
 
     echo '
         <table style="width:100%;">
