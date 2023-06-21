@@ -206,7 +206,7 @@ function g_ffl_checkout_fulfillment_options_html()
                         let col = document.createElement("td");
                         col.innerHTML = "<input id=\"check_" + row_key + "\" type=\"checkbox\" value=\"" + row_key + "\">";
                         if (fulfillment_options[i].ffl_req){
-                            col.innerHTML += "<br><span style=\"font-size:9pt;font-style:italic;color:red;\">FFL Req</span>";
+                            col.innerHTML += "<br><span style=\"font-size:9pt;font-style:italic;color:gray;\">FFL Req</span>";
                         }
                         col.addEventListener("click", function(e) {
                             let row = document.getElementById(row_key);
@@ -228,7 +228,6 @@ function g_ffl_checkout_fulfillment_options_html()
             }
 
             function load_order_grid(orders){
-                orders = JSON.parse(orders);
                 let table = document.createElement("table");
                 let thead = document.createElement("thead");
                 let tbody = document.createElement("tbody");
@@ -261,6 +260,7 @@ function g_ffl_checkout_fulfillment_options_html()
                     row.appendChild(col);
                     tbody.appendChild(row);
                 }else{
+                    orders = JSON.parse(orders);
                     for (var i = 0; i < orders.length; i++) {
                         let row = document.createElement("tr");
                         let row_key = orders[i].order_id + "|" + orders[i].distributor_order_id;
@@ -285,7 +285,7 @@ function g_ffl_checkout_fulfillment_options_html()
                         // add actions column
                         let col = document.createElement("td");
                         col.innerHTML = "<a target=_blank href=\"" + orders[i].order_url + "\">View</a>";
-                        if (orders[i].ship_date.length == 0){
+                        if (orders[i].ship_date == null){
                             col.innerHTML += " | <a style=\"text-decoration:underline;cursor:pointer;\" onclick=\"cancelOrder(\'" + orders[i].distributor_order_id + "\');\">Cancel</a>";
                         }
                         col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";

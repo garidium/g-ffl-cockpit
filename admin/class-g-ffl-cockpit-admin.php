@@ -188,7 +188,7 @@ class g_ffl_Cockpit_Admin
                                                 headers: {
                                                 "Accept": "application/json",
                                                 "Content-Type": "application/json",
-                                                "x-api-key": api_key,
+                                                "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>",
                                                 },
                                                 body: JSON.stringify({"action": "get_subscription", "data": {"api_key": api_key}})
                                             })
@@ -1309,7 +1309,7 @@ class g_ffl_Cockpit_Admin
                                     editor.set({"Loading Configuration": "Please wait..."});
                                     window.onload = function(){
                                         get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCockpitKey);?>");
-                                        if (window.location.host == 'garidium.com'){
+                                        if (window.location.host == 'garidium.com' || window.location.host == 'localhost:8000'){
                                             document.getElementById('g-ffl-admin-buttons').style.display = '';
                                         }
                                     }

@@ -60,7 +60,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
-9. v1.1.0 Added Fulfillment Ordering via Order Details View
+9. v1.1.0 (Testing Only) Added Fulfillment Ordering via Order Details View
 8. v1.0.8 Added Fulfillment Section to Order Details to view options for Fulfillment (no order automation yet though)
 7. v1.0.7 Added Help Center
 6. v1.0.6 Logging tab improvements, and on-demand loaging for products and logs
