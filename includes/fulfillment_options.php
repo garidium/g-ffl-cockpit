@@ -204,23 +204,27 @@ function g_ffl_checkout_fulfillment_options_html()
 
                         // add selection box
                         let col = document.createElement("td");
-                        col.innerHTML = "<input id=\"check_" + row_key + "\" type=\"checkbox\" value=\"" + row_key + "\">";
-                        if (fulfillment_options[i].ffl_req){
-                            col.innerHTML += "<br><span style=\"font-size:9pt;font-style:italic;color:gray;\">FFL Req</span>";
-                        }
-                        col.addEventListener("click", function(e) {
-                            let row = document.getElementById(row_key);
-                            let checkbox = document.getElementById("check_" + row_key);
-                            if (checkbox.checked){
-                                row.style.cssText = "background:#cddfca;";
-                                document.getElementById("qty_" + row_key).style.background = "#cddfca";
-                            }else{
-                                row.style.cssText = "";
-                                document.getElementById("qty_" + row_key).style.background = "#ffffff";
+                        if (fulfillment_options[i].qty_on_hand > 0){
+                            col.innerHTML = "<input id=\"check_" + row_key + "\" type=\"checkbox\" value=\"" + row_key + "\">";
+                            if (fulfillment_options[i].ffl_req){
+                                col.innerHTML += "<br><span style=\"font-size:9pt;font-style:italic;color:gray;\">FFL Req</span>";
                             }
-                            showHideOrderButton();
-                        }, false);
-                        col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
+                            col.addEventListener("click", function(e) {
+                                let row = document.getElementById(row_key);
+                                let checkbox = document.getElementById("check_" + row_key);
+                                if (checkbox.checked){
+                                    row.style.cssText = "background:#cddfca;";
+                                    document.getElementById("qty_" + row_key).style.background = "#cddfca";
+                                }else{
+                                    row.style.cssText = "";
+                                    document.getElementById("qty_" + row_key).style.background = "#ffffff";
+                                }
+                                showHideOrderButton();
+                            }, false);
+                            col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
+                        }else{
+                            col.innerHTML = "";
+                        }    
                         row.appendChild(col);
                         tbody.appendChild(row);
                     }
