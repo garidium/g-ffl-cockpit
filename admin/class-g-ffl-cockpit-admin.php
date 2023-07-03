@@ -142,7 +142,7 @@ class g_ffl_Cockpit_Admin
             <div class="tab">
                 <button class="tablinks" onclick="openTab(event, 'configuration')" id="defaultOpen">Configuration</button>
                 <button class="tablinks" onclick="openTab(event, 'product_feed');product_grid.render(document.getElementById('product_feed_table'));">Product Feed</button>
-                <button class="tablinks" onclick="openTab(event, 'fulfillment')">Fulfillment</button>
+                <button class="tablinks" onclick="openTab(event, 'fulfillment');of_grid.render(document.getElementById('order_fulfillment_table'));">Fulfillment</button>
                 <button class="tablinks" onclick="openTab(event, 'logs');log_grid.render(document.getElementById('log_table'));">Logs</button>
                 <button class="tablinks" onclick="openTab(event, 'help_center');load_help_videos();">Help Center</button>
             </div>
@@ -1372,8 +1372,8 @@ class g_ffl_Cockpit_Admin
                                     formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[0].data)}">`)
                                 },
                                 {name: 'SKU'}, 
-                                {sort: false, name: 'Product Image', 
-                                    formatter: (_, row) => gridjs.html(`<a style="cursor:pointer;" onclick="load_product_data('${row.cells[3].data.replace("\"","&quot;") + "','" + row.cells[0].data + "','" + row.cells[1].data + "','" + row.cells[2].data[0]['src']}')"><img width="100px" src="${row.cells[2].data[0]['src']}"></a>`)
+                                {sort: false, name: 'Product Image',
+                                    formatter: (_, row) => gridjs.html(`<a style="cursor:pointer;" onclick="load_product_data('${row.cells[3].data.replace("\"","&quot;") + "','" + row.cells[0].data + "','" + row.cells[1].data + "','" + row.cells[2].data[0]['src']}')"><img style="max-height:40px;max-width:100px;height:auto;width:auto;" src="${row.cells[2].data[0]['src']}"></a>`)
                                 },
                                 {name: 'Name', width: '200px'}, 
                                 {name: "UPC"},
@@ -1514,9 +1514,117 @@ class g_ffl_Cockpit_Admin
                 </div>
             </div>
             <div id="fulfillment" class="tabcontent">
-                <h3>Fulfillment</h3>
+                <h3>Fulfillment History</h3>
                 <div class="postbox" style="padding: 10px;margin-top: 10px">
-                    <p>Coming Soon! Automated Fulfillment Orders will be reported on here</p>
+
+                    <!-- <p>The Product Feed is based on your Configuration. The synchronization process will run every 15-minutes, at which point any changes you make to your configuration will be applied. This list will show items from all distributors configured, and with quantities less than your minimum listing quantity. We list one product per UPC, based on availability and price.</p> -->
+                    <div id="order_fulfillment_table"></div>
+                    <div style="padding:5px;"><button id="download_fulfillment_history_button" class="button alt" data-marker-id="">Download Fulfillment History</button></div>
+                    <script>
+                        // https://unpkg.com/browse/gridjs@5.1.0/dist/
+                        var of_grid = new gridjs.Grid({
+                            columns: [
+                                {name: 'Order', width: '75px',
+                                    formatter: (_, row) => gridjs.html(`<a target=_blank href="/wp-admin/post.php?post=${row.cells[0].data}&action=edit">${row.cells[0].data}</a>`)
+                                },
+                                {name: 'Dist', width: '60px',
+                                    formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[1].data)}">`)
+                                },
+                                {name: 'Dist. Order', width: '100px',}, 
+                                {name: 'Customer Name'}, 
+                                {name: 'Phone', width: '100px',}, 
+                                {name: 'Email',
+                                    formatter: (_, row) => gridjs.html(`<a href="mailto:${row.cells[5].data}">${row.cells[5].data}</a>`)
+                                },
+                                {name: 'Ordered', width: '125px',
+                                    formatter: (cell) => `${cell.substring(0,16)}`
+                                },
+                                {name: 'Shipped', width: '100px',
+                                    formatter: (cell) => `${cell.substring(0,10)}`
+                                },
+                                {name: "Tracking", width: '100px',
+                                    formatter: (_, row) => gridjs.html(`<a target=_blank href="${row.cells[8].data}">Track</a>`)
+                                },
+                                {name: "Ship Status"}
+                            ],
+                            sort: {
+                                multiColumn: false,
+                                server: {
+                                    url: (prev, columns) => {
+                                        if (!columns.length) return prev;
+                                        const col = columns[0];
+                                        const dir = col.direction === 1 ? 'asc' : 'desc';
+                                        let colName = ["order_id", "distid", "distributor_order_id", "customer_name", "customer_phone", "customer_email", "ship_date","ship_tracking_url", "ship_status"][col.index];
+                                        let sortUrl = `${prev}&order_column=${colName}&order_direction=${dir}`;
+                                        return sortUrl;
+                                    }
+                                }
+                            },
+                            search: {
+                                server: {
+                                    url: (prev, keyword) => `${prev}&search=${keyword}`
+                                }
+                            },
+                            resizable: true,
+                            pagination: {
+                                limit: 100,
+                                server: {
+                                    url: (prev, page, limit) => `${prev}&limit=${limit}&offset=${page * limit}`
+                                }
+                            },
+                            fixedHeader: true,
+                            style: {
+                                td: {
+                                    'padding': '3px'
+                                },
+                                th: {
+                                    'padding': '3px'
+                                }
+                            },
+                            server: {
+                                url: 'https://ffl-api.garidium.com/product?action=get_order_history',
+                                method: 'GET',
+                                headers: {
+                                    "Accept": "application/json",
+                                    "Content-Type": "application/json",
+                                    "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+			                    },                                
+                                then: data => JSON.parse(data).orders.map(order => [
+                                                                   order.order_id, 
+                                                                   order.distid, 
+                                                                   order.distributor_order_id,
+                                                                   order.customer_name,
+                                                                   order.customer_phone,
+                                                                   order.customer_email,
+                                                                   order.order_date,
+                                                                   order.ship_date, 
+                                                                   order.ship_tracking_url,
+                                                                   order.ship_status]),  
+                                                                 
+                                total: data => JSON.parse(data).count
+                            } 
+                        });
+                  
+                        document.getElementById("download_fulfillment_history_button").addEventListener("click", function(){
+                            document.getElementById("download_fulfillment_history_button").disabled = true;
+                            document.getElementById('download_fulfillment_history_button').innerText = 'Please Wait...';
+                            fetch("https://ffl-api.garidium.com/download", {
+                                method: "POST",
+                                headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/json",
+                                "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                },
+                                body: JSON.stringify({"action": "download_fulfillment_history"})
+                            })
+                            .then(response=>response.json())
+                            .then(data=>{ 
+                                window.open(data);  
+                                document.getElementById("download_fulfillment_history_button").disabled = false; 
+                                document.getElementById('download_fulfillment_history_button').innerText = 'Download Fulfillment History';     
+                            });
+                        });
+                    </script>
                 </div>
             </div>         
             <div id="logs" class="tabcontent">
