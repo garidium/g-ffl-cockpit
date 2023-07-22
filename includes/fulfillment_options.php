@@ -60,6 +60,30 @@ function g_ffl_checkout_fulfillment_options_html()
         </table>';
     echo '
         <script>
+
+            function addFFlToHoldOrder(distid, distributor_order_id){
+                try{
+                    fetch("https://ffl-api.garidium.com", {
+                        method: "POST",
+                        headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                        "x-api-key": "',esc_attr($aKey),'",
+                        },
+                        body: JSON.stringify({"action": "add_ffl_to_hold_order", "data": {"api_key": "',esc_attr($aKey),'" , "order_id": ',esc_attr($orderId),', "distributor_order_id": distributor_order_id, "distid": distid}})
+                    })
+                    .then(response=>response.json())
+                    .then(data=>{
+                        if (!data.success["status"]){
+                            alert("Failed to add FFL to hold-order, please make sure to upload the FFL documentation and try again. If this still fails, email the FFL documentation to your distributor sales rep and contact support@garidium.com so we can address the problem ASAP.");
+                        }   
+                        load_order_grid(data.fulfillment_orders); 
+                    });
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
             function createOrder(){
                 document.getElementById("create_order_button").innerHTML = "Sending Order, Please wait...";
                 document.getElementById("create_order_button").disabled = true;
@@ -71,47 +95,58 @@ function g_ffl_checkout_fulfillment_options_html()
                     if (i>0) order_json += ", ";
                     qty = document.getElementById(checkedCbs[i].id.replace("check","qty")).value;
                     var order_items = checkedCbs[i].value.split("|");
-                    order_json += "{\"distid\": \"" + order_items[0] + "\", \"distsku\": \"" + order_items[1] + "\",  \"upc\": \"" + order_items[2] + "\",  \"ffl_req\": \"" + order_items[3] + "\",  \"qty\": " + qty + "}";
+                    order_json += "{\"distid\": \"" + order_items[0] + "\", \"distsku\": \"" + order_items[1] + "\",  \"upc\": \"" + order_items[2] + "\",  \"ffl_req\": " + order_items[3] + ",  \"qty\": " + qty + "}";
                     has_items = true;
                 }
                 order_json += "]";
-                
+                order_json = JSON.parse(order_json);
+
                 if (has_items){
-                    fetch("https://ffl-api.garidium.com", {
-                        method: "POST",
-                        headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json",
-                        "x-api-key": "',esc_attr($aKey),'",
-                        },
-                        body: JSON.stringify({"action": "place_distributor_order", "data": {"api_key": "',esc_attr($aKey),'" , "order_id": ',esc_attr($orderId),', "items": order_json}})
-                    })
-                    .then(response=>response.json())
-                    .then(data=>{  
-                        document.getElementById("fulfillment_status").innerHTML = "Status: <b>" + data.status + "</b>";
-                        load_order_grid(data.distributor_orders); 
-                        document.getElementById("create_order_button").innerHTML = "Create Order";
-                        document.getElementById("create_order_button").disabled = false;
-                    });
+                    try{
+                        fetch("https://ffl-api.garidium.com", {
+                            method: "POST",
+                            headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json",
+                            "x-api-key": "',esc_attr($aKey),'",
+                            },
+                            body: JSON.stringify({"action": "place_distributor_order", "data": {"api_key": "',esc_attr($aKey),'" , "order_id": ',esc_attr($orderId),', "items": order_json}})
+                        })
+                        .then(response=>response.json())
+                        .then(data=>{  
+                            load_order_grid(data.fulfillment_orders); 
+                            document.getElementById("create_order_button").innerHTML = "Create Order";
+                            document.getElementById("create_order_button").disabled = false;
+                        });
+                    } catch (error) {
+                        console.error(error);
+                    }
+                    
                 }
             }
 
-            function cancelOrder(distributor_order_id){
+            function cancelOrder(distid, distributor_order_id){
                 if (window.confirm("Are you sure you want to cancel order: " + distributor_order_id)){
-                    fetch("https://ffl-api.garidium.com", {
-                        method: "POST",
-                        headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json",
-                        "x-api-key": "',esc_attr($aKey),'",
-                        },
-                        body: JSON.stringify({"action": "cancel_distributor_order", "data": {"api_key": "',esc_attr($aKey),'" , "order_id": ',esc_attr($orderId),', "distributor_order_id": distributor_order_id}})
-                    })
-                    .then(response=>response.json())
-                    .then(data=>{  
-                        document.getElementById("fulfillment_status").innerHTML = "Status: <span style=\"font-weight:bold;color:red;\">" + data.status + "</span>";
-                        load_order_grid(data.distributor_orders); 
-                    });
+                    try{
+                        fetch("https://ffl-api.garidium.com", {
+                            method: "POST",
+                            headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json",
+                            "x-api-key": "',esc_attr($aKey),'",
+                            },
+                            body: JSON.stringify({"action": "cancel_distributor_order", "data": {"api_key": "',esc_attr($aKey),'", "distid": distid, "order_id": ',esc_attr($orderId),', "distributor_order_id": distributor_order_id}})
+                        })
+                        .then(response=>response.json())
+                        .then(data=>{  
+                            if (!data.success["status"]){
+                                alert("Failed to Cancel the Order, please try again, and if it continues to fail email the cancellation request to your distributor sales rep and contact support@garidium.com so we can address the problem ASAP.");
+                            }  
+                            load_order_grid(data.fulfillment_orders); 
+                        });
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             }
 
@@ -156,7 +191,6 @@ function g_ffl_checkout_fulfillment_options_html()
 
                 // Adding the entire table to the body tag
                 document.getElementById("product_fulfillment_table").appendChild(table);
-                
                 let columns = ["Dist", "Name", "SKU", "UPC", "Avail", "Cost", "Ship", "Total", "Qty", "Order"];
                 let fields = ["distid", "name", "distsku", "upc", "qty_on_hand", "unit_price", "shipping_cost", "total_cost"];
                 let header_row = document.createElement("tr");     
@@ -169,6 +203,9 @@ function g_ffl_checkout_fulfillment_options_html()
                 thead.appendChild(header_row);
 
                 // now go through the fulfillment options
+                if (fulfillment_options != null && fulfillment_options != "undefined"){
+                    fulfillment_options = JSON.parse(fulfillment_options);
+                }
                 if (fulfillment_options == null || fulfillment_options.length == 0){
                     let row = document.createElement("tr");
                     let col = document.createElement("td");
@@ -204,7 +241,7 @@ function g_ffl_checkout_fulfillment_options_html()
 
                         // add selection box
                         let col = document.createElement("td");
-                        if (fulfillment_options[i].qty_on_hand > 0){
+                        if (fulfillment_options[i].qty_on_hand > 0 && fulfillment_options[i].cockpit_fulfillable){
                             col.innerHTML = "<input id=\"check_" + row_key + "\" type=\"checkbox\" value=\"" + row_key + "\">";
                             if (fulfillment_options[i].ffl_req){
                                 col.innerHTML += "<br><span style=\"font-size:9pt;font-style:italic;color:gray;\">FFL Req</span>";
@@ -213,7 +250,7 @@ function g_ffl_checkout_fulfillment_options_html()
                                 let row = document.getElementById(row_key);
                                 let checkbox = document.getElementById("check_" + row_key);
                                 if (checkbox.checked){
-                                    row.style.cssText = "background:#cddfca;";
+                                    row.style.cssText = "background:#e8f8e6;";
                                     document.getElementById("qty_" + row_key).style.background = "#cddfca";
                                 }else{
                                     row.style.cssText = "";
@@ -223,7 +260,8 @@ function g_ffl_checkout_fulfillment_options_html()
                             }, false);
                             col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
                         }else{
-                            col.innerHTML = "";
+                            col.innerHTML = "<span>--</span>";
+                            col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
                         }    
                         row.appendChild(col);
                         tbody.appendChild(row);
@@ -254,8 +292,11 @@ function g_ffl_checkout_fulfillment_options_html()
                     header_row.append(heading);
                 }
                 thead.appendChild(header_row);
-
-                if (orders == null || orders.length == 0){
+                
+                if (orders != null && orders != "undefined"){
+                    orders = JSON.parse(orders);
+                }
+                if (orders == null || orders == "undefined" || orders.length == 0){
                     let row = document.createElement("tr");
                     let col = document.createElement("td");
                     col.colSpan = columns.length;
@@ -264,7 +305,6 @@ function g_ffl_checkout_fulfillment_options_html()
                     row.appendChild(col);
                     tbody.appendChild(row);
                 }else{
-                    orders = JSON.parse(orders);
                     for (var i = 0; i < orders.length; i++) {
                         let row = document.createElement("tr");
                         let row_key = orders[i].order_id + "|" + orders[i].distributor_order_id;
@@ -274,6 +314,12 @@ function g_ffl_checkout_fulfillment_options_html()
                             if (fields[c] == "distid"){
                                 col.innerHTML = "<img width=\"40\" src=\"" + get_distributor_logo(orders[i][fields[c]]) + "\"/>";
                                 col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
+                            }else if (fields[c] == "order_status"){
+                                col.innerHTML = orders[i].order_status;
+                                if (orders[i].distid == "ZND" && orders[i].order_status != null && orders[i].order_status == "FFL Hold"){
+                                    col.innerHTML = "<span style=\"color:red;font-weight:bold;\">" + orders[i].order_status + "</span> | <a style=\"text-decoration:underline;cursor:pointer;\" onclick=\"addFFlToHoldOrder(\'" + orders[i].distid + "\', \'" + orders[i].distributor_order_id + "\');\">Add FFL</a>"; 
+                                }
+                                col.style.cssText = "text-align:left;border: 1px solid #e5e7eb;";
                             }else if (fields[c] == "ship_tracking_number"){
                                 col.innerHTML = "";
                                 if (orders[i].ship_tracking_url != null){
@@ -289,8 +335,8 @@ function g_ffl_checkout_fulfillment_options_html()
                         // add actions column
                         let col = document.createElement("td");
                         col.innerHTML = "<a target=_blank href=\"" + orders[i].order_url + "\">View</a>";
-                        if (orders[i].ship_date == null){
-                            col.innerHTML += " | <a style=\"text-decoration:underline;cursor:pointer;\" onclick=\"cancelOrder(\'" + orders[i].distributor_order_id + "\');\">Cancel</a>";
+                        if (orders[i].ship_date == null && (orders[i].distid == "ZND")){
+                            col.innerHTML += " | <a style=\"text-decoration:underline;cursor:pointer;\" onclick=\"cancelOrder(\'" + orders[i].distid + "\', \'" + orders[i].distributor_order_id + "\');\">Cancel</a>";
                         }
                         col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
                         row.appendChild(col);

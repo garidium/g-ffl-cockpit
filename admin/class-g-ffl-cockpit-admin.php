@@ -1540,10 +1540,10 @@ class g_ffl_Cockpit_Admin
                                     formatter: (cell) => `${cell.substring(0,16)}`
                                 },
                                 {name: 'Shipped', width: '100px',
-                                    formatter: (cell) => `${cell.substring(0,10)}`
+                                    formatter: (cell) => `${cell!=null?cell.substring(0,10):""}`
                                 },
                                 {name: "Tracking", width: '100px',
-                                    formatter: (_, row) => gridjs.html(`<a target=_blank href="${row.cells[8].data}">Track</a>`)
+                                    formatter: (_, row) => row.cells[8].data!=null?gridjs.html(`<a target=_blank href="${row.cells[8].data}">Track</a>`):''
                                 },
                                 {name: "Ship Status"}
                             ],
@@ -1664,7 +1664,7 @@ class g_ffl_Cockpit_Admin
                                     "Content-Type": "application/json",
                                     "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>",
 			                    },
-                                body: JSON.stringify({"action": "get_logs", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey);?>", "log_count": 1}}),
+                                body: JSON.stringify({"action": "get_logs", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey);?>", "log_count": 2}}),
                                 then: data => JSON.parse(data).logs.map(log => [
                                                                    log.timestamp, 
                                                                    log.message])

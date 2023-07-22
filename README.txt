@@ -5,29 +5,34 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.2
 Requires PHP: 7.0
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 ==Description==
-== Built by FFL's, for FFL's. This plugin will help streamline inventory management, synchronizing product listings with a series of firearm distributors.==
-It was built to support our businesses, and we know it will help yours as well.
+== Built by a FFL, for FFL's. This plugin will synchronize site inventory and automate order fulfillment with multiple firearm distributors.==
+It was built to support our businesses, and we know it will help yours. Please contact us at sales@garidium.com before purchasing a license key so we can discuss your needs.
 
 ==Feature Highlights:==
 1. Configure 1-to-many supported distributors and feed products into your WooCommerce website.
-2. This plugin also supports Gunbroker and AmmoSeek Feeds
-3. Inventory and Listings are then updated every 15-minutes to ensure quantity and pricing are updated continuously.
-4. Easily set pricing and listing options, along with configuring the inclusion/exclusion of specific items.
-5. View a report of all items being listed, including pricing from each distributor.
-6. Works with the g-FFL Checkout plugin to automatically mark firearms as requiring FFL selection during checkout.
-7. Currently supported distributors: Zanders, Lipseys, Chattanooga, Davidsons, 2nd Amendment, RSR 
-8. Automated Fulfillment not available but Coming Soon.
+2. Currently supported distributors for Inventory Feeds: Zanders, Lipseys, Chattanooga, Davidsons, 2nd Amendment, RSR 
+3. Fulfillment (via Order Page) and Automated-Fulfillment processes are now available for Lipseys, Zanders, RSR, and Chattanooga.
+4. Fulfillment automation includes monitoring distributors for shipping updates, and notifying both you and your customer.
+5. This plugin also supports feeding product to Gunbroker, Gun.Deals, WikiArms, and AmmoSeek
+6. Inventory and Listings are then updated every 20-minutes to ensure quantity and pricing are updated continuously.
+7. Easily set pricing and listing options, along with configuring the inclusion/exclusion of specific items.
+8. Keep your customers updated on the order status with configurable email templates
+9. View a report of all items being listed, including pricing from each distributor, there is also an Excel export.
+10. Works tightly with the g-FFL Checkout plugin to automatically mark firearms as requiring FFL selection during checkout.
+11. Integrated Help Videos (under development)
+12. Integrated Log files, so you can monitor the status of your inventory synchronization
+13. Fulfillment Reports
 
 == API Subscription Required ==
 While the plugin is free to download and install, it does require you to purchase a license for a personalized API key. We also have a one-time setup fee. The plugin will not be useful without this key. The API key allows the plugin to connect to the required data services, providing the following features:
 
 1. Access to a data services we manage that synchronizes distributor product data
-2. Ability to synchronize both woocommerce and gunbroker listings
+2. Ability to synchronize product to different sites, and automated fulfillment
 
 == To purchase a key, visit the g-FFL Cockpit product page: ==
 [g-FFL Cockpit Product Page](https://garidium.com/product/g-ffl-cockpit/) 
@@ -60,8 +65,9 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+10. v1.2.0 (Beta) Fulfillment and Automated-Fulfillment now available for (Lipseys. Zanders, RSR, and Chattanooga)
 9. v1.1.2 (Testing Only) Added Fulfillment Ordering via Order Details View
-8. v1.0.8 Added Fulfillment Section to Order Details to view options for Fulfillment (no order automation yet though)
+8. v1.0.8 (Testing Only) Added Fulfillment Section to Order Details to view options for Fulfillment
 7. v1.0.7 Added Help Center
 6. v1.0.6 Logging tab improvements, and on-demand loaging for products and logs
 5. v1.0.5 Logging now visible in Log Tab
