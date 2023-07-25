@@ -207,7 +207,43 @@ class g_ffl_Cockpit_Admin
                                     }
                                 </script>
                                 <script>
-                                    // create the editor
+                                    var all_brands = ["10 Ring","1791","1791 Gunleather","2 Monkey Trading","2 Monkey Trading llc.","2A Armament","30-06 Outdoors","3M/Peltor","A-Zoom","AAC - Advanced Armament Company","AAC (Advanced Armament)","Accu-Tac","AccuSharp","ACE","Action Target","Adams Arms","Adams Arms Llc","Adaptive Tactical","ADCO","ADCO Arms","Advanced Tech","Advantage Arms","Aero Precision","AeroPrecision","AGM Global Vision","Aguila","Aguila Ammunition","AimCam","AimShot","Aimtech","Akkar","Alex Pro Firearms","Alexander Arms","ALG Defense","Alien gear","Alien Gear Holsters","Allen","Altus Brands","Amend2","American Buffalo Knife & Tool","American Built Arms Company","American Classic","American Defense","American Defense Mfg.","American Hunter","American Precision Firearms","American Tactical","American Tactical Inc","American Tactical Inc-ATI","Ameriglo","Ammo Inc","Ammunition Storage Components","AMS Bowfishing","Anderson","Anderson Manufacturing","Andro Corp Industries","Angstadt Arms","Ani-Logics Outdoors","Anschutz","Antler King","Apex Tactical Specialties","APF Armory - Alex Pro Firearms","Apollo Custom|Glock","Aquamira","Ar-mor","ARB","Arctic Ice","Arctic Shield","Arex Defense","Arisaka Defense","ARMA ZEKA","Armalite","Armasight","Armaspec","Armsco","Armsco Inc  Orthos Arms Otus","Armscor","Armscor|Rock Island Armory","Arsenal","Arsenal Firearms","Arsenal, Inc.","Athlon","ATI","ATI Outdoors","ATN","Atomic Ammunition","Atsko","Auto Ordnance","Auto-Ordnance","Auto-Ordnance - Thompson","Avian X","Avidity Arms","Axcel","Axe","AXEON","B&T","B&T USA","B3 Archery","B5 Systems","Backup Tactical","Ballistic Advantage","Barnaul Ammunition","Barnes","Barrett","Barrett Firearms","Barska","Bastion","Battle Arms Development","Bear & Son","Bear Archery","Bear Edge","Bear Ops","Beartooth Products","Bee Stinger","Beeman","Benchmaster","Benjamin","Benjamin Sheridan","Beretta","Beretta U.S.A.","Beretta|Sako","Beretta|Tikka","Bergara","Bergara Rifles","Berger Bullets","Bersa","Bianchi","Big Bobber","Bino Dock","Birchwood Casey","Black Aces Tactical","Black Rain Ordnance","Black Rain Ordnance Inc","Black Spider LLC","BLACKHAWK","BlackPoint Tactical","Blaser Sauer USA","Blaser USA Inc.","Blazer Ammunition","Block Targets","Blue Book Publications","Blue Force Gear","Blue Line Diana","BLUE LINE GLOBAL","Blue Line Solutions","Bob Allen","Bog","Bohning","Bond Arms","Bond Arms Inc.","BoneView","Bootleg","BoreSnake","Bounty Hunter","Bravo Company","Bravo Company Mfg.","Bravo Concealment","BrazTech|Rossi","Break Free","BreakFree","Breakthrough Clean Technologies","Breakthrough cleaning","Brigade MFG","Browning","Browning Firearms","Browning/Winchester Repeating Arms","BSA","BSA Optics","Bubba Blade","Bubba Rope","Buck Bomb","Buck Wear","Buffalo Cartridge Company","Bulldog","Bulldog Cases","BulletSafe","Burris","Bushmaster","Bushmaster Firearms","Bushmaster Firearms Inc.","Bushnell","Butler Creek","Byrna Technologies","C Products Defense","C-More Systems","C&H Precision Weapons","CAA","Cajun Bowfishing","Caldwell","Camelbak","Cameleon","CANIK","Carbon Express","Carlson","CCI","CenterPoint","Century","Century Arms","CGS Group","Champion","Champion Traps & Targets","Chaos Gear Supply","Charles Daly","Charter Arms","Cheytac USA","Chiappa Firearms","Chiappa Firearms USA Ltd","CHILD GUARD","Chipmunk","Christensen Arms","Cimarron","Cimarron Fac","Citadel","CIVIVI","Cleanshot","Cloud Defensive","CMC Products","CMC Triggers","CMMG","Cmmg Inc.","Cobra Archery","Cobratec Knives","Code Blue","Cold Steel","Cole-TAC","Coleman","Colt","Colt Manufacturing","Colt's Manufacturing","Columbia River Knife & Tool","Comp-Tac","ConQuest","Cor-Bon","CorBon","Covert Camera's","Coyote Light","CRANFORD MFG.","Crickett","Crimson Trace","Crimson Trace Corporation","CRKT Knives","Crosman","Cross Industries","Crossfire","Crucial Concealment","Cruxord","Cuddeback","Custom Bow Equipment","CVA","Cyclops","CZ","CZ Custom","CZ-USA","Cz-Usa Firearms","CZ-USA|Dan Wesson","D-Lead","D.T. Systems","D&H Tactical","DAC","Daisy","Dan Wesson","Daniel Defense","Dead Air Armament","Dead Air Silencers","Dead Down Wind","Del-Ton","DeSantis","DeSantis Gunhide","Desert Eagle","Desert Tech","Diamondback Barrels","Diamondback Firearms","Diamondhead USA Inc.","Dickinson Arms","DNZ","DNZ Products","Do All Traps","Double Take Archery","Doublestar Corp.","DoubleTap Ammunition","DPMS","Drago Gear","DRD Tactical","Drymate","Dura Sight","DURAMAG","E.M.F","EAA","EAA - European American Armory Corp","EAA Corp","EAA|Girsan","Eagle Industries","Easton","Ed Brown","Ed Brown Products","Edgar Sherman Design","Element Outdoors","Eley","Elftmann Tactical","Elite Tactical Systems Group","EMF Inc. DBA Pietta","Energizer","EOTech","Ergo Grip","ET Arms","European Am. Arms","European American Armory","European American Armory|Girsan","Eva-Dry","Evolution Gun Works","Evolution Outdoor","Excel Arms","Exothermic Technologies","F-1 Firearms","F.A.B. Defense","Fail Zero","FailZero","Faxon Firearms","Federal","FightLite","FIME","Fime Group","Fiocchi","Fiocchi Ammunition","Firearm Safety Devices Corporation","Firefield","Firestorm","FK BRNO","Flextone Calls","Flextone Decoys","FLIR","Flitz International","Flying Arrow Archery","FMK Firearms","FMK Firearms Inc.","FN","FN America","FN America Law Enf","Fobus","Fortis Manufacturing, Inc.","Fortune Products (Accusharp)","Fostech","Four Peaks","Frankford Arsenal","Franklin Armory","Freedom Ordance","Freedom Ordnance","Frogg Toggs","FrogLube","FRONTIER","Frontier Cartridge","FSDC","Full Forge Gear","Fusion Firearms","G2 Research","G5 OUTDOORS","G96 Products","Galco","Gamo","Garaysar","Gatco","Geissele","Geissele Automatics","Gemtech","German Precision Optics","German Sport","GForce Arms","GG&G, Inc.","Ghost Inc","Ghost Inc.","Girsan","Glaser","Glaser Ammunition","GlenDel","Glock","Glock Inc.","God'a Grip","Gold Tip","Gorilla Ammunition Company LLC","GPS","Grace USA","Great Lakes Firearms & Ammo","Great Lakes Firearms & Ammunition","Grey Ghost Gear","Grey Ghost Precision","Griffin Armament","Grim Reaper","Grip Pod","GrovTec","Guard dog security","Gun Storage Solutions","GunMate","Guntec USA","GunVault","H&N Sport Pellets","HABIT","Halo Optics","Hammerli Arms","Hamskea Archery","Harris","Harris Engineering","Harvester","Hatsan Airguns","Hatsan USA / Escort Shotguns","Havalon","Havalon Knives","Hawk","Haydel's","Heckler & Koch","Heckler and Koch (HK USA)","Heizer Defense","Henry","Henry Repeating Arms","Henry Repeating Arms Company","Hera USA","Heritage","Heritage Manufacturing","Heritage Manufacturing Inc","HEVI-Shot","HEXMAG","HHA Sports","Hi-Point","Hi-Point Firearms","Hi-Viz","High Mountain Defense Inc dba - Old West Firearms","High Speed Gear","Hiperfire","Hiviz","HK","HKS","HME Products","Hodgdon","Hogue","Holosun","Holosun Technologies","Honeywell Safety Products","Hook's Custom Calls","Hooyman","Hoppe's","Hoppes","Hornady","Hot Shot","Hot Shot Archery","HotHands","Howa","Howard Leight","HSM Ammo","Hunter Safety System","Hunter's Kloak","Hunters Specialties","Hurricane","Huskemaw Optics","HUXWRX Safety Company","Impact Weapons Components","Impala Plus","Industrial Revolution","INFORCE","Inland","Inland Manufacturing","Insights Hunting","International Firearm Corporation","IQ Bowsight","IRAYUSA","IRON CITY RIFLE WORKS","Israel Weapon Industries","ISSC","Istanbul Silah","Italian Firearms Group","Iver Johnson","IWI","IWI - Israel Weapon Industries","IWI US (Israel Weapon Industries)","IWI US, Inc","IWI-US","J&E Machine Tech","Jacob Grey Custom","Johnny Stewart","JTS Group","Just Right Carbine","Just Right Carbines","Ka-Bar Knives","KABAR","Kahr","Kahr Arms","Kahr Arms|Auto-Ordnance","Kahr Arms|Thompson","Kalashnikov USA","KCI USA","KCI USA Inc","KE Arms","Kel-Tec","Kel-Tec Cnc Industries Inc.","Keltec","Keng's","Kershaw","Kestrel","Kestrel Ballistics","Keystone Sporting Arms","Kick's Industries","Kimber","Kinetic Development Group, LLC","Kleen-Bore","Knights Armament Company","KNS Precision","KNS Precision, Inc.","Konus","Koola Buck","Kriss","Kriss USA","KRISS USA, Inc","Kynshot","L.A.G. Tactical, Inc.","Lancer","Landor Arms","Lansky Sharpeners","LanTac USA LLC","Lapua","Laserlyte","LaserMax","LBE Unlimited","Leapers, Inc. - UTG","Lee","Lee Armory","Legacy Sports International","Legacy Sports/Citadel","Leupold","Liberty","Lightfield","LIMBSAVER","Live Free Armory","LKCI","Lockdown","Lone Wolf Distributors","Longshot Target Camera","Lucas Oil","Lucid Optics","Lumenok","Luth-AR","LWRC","Lwrc International","Lyman","M-PRO 7","M+M Industries","Mace","Mace Security International","Mag Storage Solutions","Maglula","Maglula ltd.","MagnetoSpeed","Magnum Research","Magnus Broadheads","MagPod","Magpul","Magpul Industries","Magpump","Magtech","Manticore Arms","Manticore Arms, Inc.","Mantis","Marlin","Master Cutlery","MasterLock","MasterPiece Arms","Mauser","Maverick","Maverick Arms","Max-Ops","Maxim Defense","Maxim Defense Industries","Maxpedition","MCCOY","McCoy Shotguns","MDT","MEC","Mec-Gar Magazines","Mecgar","Mechanix Wear","Meprolight","Mesa Tactical","Metalform Magazines","Metro Arms|American Classic","Michaels","Midwest Industries","Military Armament Corp","Military Arms Corporation","Millennium Marine","Millennium Treestands","Mission Archery","Mission First Tactical","MKS SUPPLY LLC","Mobile Warming","Modern Muzzleloader","Moisture King","MOJO OUTDOORS","Montana Decoy Company","Morakniv","Morrell Targets","Mossberg","Mossberg & Sons Inc.","Mossberg|Mossberg International","Moultrie","Mountain Mike's","Mountain Tactical","MPA","Mr.Heater","MTM","Muddy","Muzzy","NCSTAR","Nemo Arms","New Archery Products","Nexbelt","Night Fision","Nightstick","Nine Line Apparel","Nobelsport","Nockturnal","Nomad","Nordic Components","North American Arms","North American Rescue","Northeast Products","Nose Jammer","NOSLER","Nosler Bullets","Noveske","NXT Generation Toys","Odin Works","Old Timer","Old West","OPSOL","Otis","Otis Technology","Otto","Outdoor Edge","Outers","Pachmayr","Para Ordnance","Pathfinder","Patriot Ordnance Factory","Pearce Grip","Pearce Grips Inc.","Peet Dryer","Pelican","PepperBall","Peregrine Outdoors","Phase 5","Phase 5 Weapon Systems","Phoenix","Phoenix Arms","Pietta","Pine Ridge Archery","Pioneer Arms","Pioneer Arms|Radom","Pitbull Tactical","Pittman Game Calls","Plano","PMC","POF USA","POF-USA","Pointer","Polymer80","PowerBelt Bullets","Predator Tactics","Primary Weapons Systems","Primos","Pro Ears","Pro Mag","Pro-Shot Products","ProMag","Proof Research Inc","Prvi Partizan","PS Products","PSE Archery","PSP Products","PTR Industries","Pulsar","Pulsar Thermal","Puma","Q","Q LLC","QAD","Quake","Quaker Boy","Radian Weapons","Radians","Radical Firearms","RAGE","Ramcat","Ranch Products","Rapid Force","Rapid Rope","Raven Concealment Systems","Ravenwood International","Ravin Crossbows","Rayovac","RCBS","Real Avid","Realtree","Reapr","Red Rock Gear","Redball Sports","REMARMS","Remington","Remington Cutlery","Remington Firearms","Reptilia","Retay USA","Rhino","Rifle Basix","RIG","Riley Defense","Rise Armament","Riton","Riton Optics","Rival Arms","Rivers Edge","Rizzini","Rock Isand Armory","Rock Island Armory","Rock River Arms","Rocket Broadheads","Rocky Mountain","Rocky Mountain Hunting Calls","Rosco Manufacturing","Rossi","RS Regulate","Ruger","Rugged Suppressors","RW Minis","RWC Group LLC - dba Kalashinkov USA","RWS","Sabre","Safariland","Sako","Samson Manufacturing Corp.","San Tan Tactical","SAR USA","SAR USA by Sarsilmaz","Sauer","Savage","Savage Arms","Savage Arms|Stevens","SB Tactical","SCCY","SCCY Firearms","Sccy Industries","Scent Thief","Scentcrusher","Scentlok","Schrade","Scopecoat","Scott Archery","Scout","SDS Imports","Seekins Precision","Sellier & Bellot","SENCUT","SGM Tactical","Shadow Systems","Shadow Systems dba Shadow Gunworks","Shark Coast Tactical","Sharps Bros.","Sheffield","Shield Arms","Shield Sights","Shooter's Choice","Shooters Choice","Shooters Ridge","Shooting Made Easy","Sierra Bullets","SIG","Sig Sauer","Sightmark","Sightron","SilencerCo","Silver Shadow","Simmons","Sionyx","SKB Sports","Skull Hooker","Slick Trick","Slip 2000","Slogan Outdoors","SME Products","Smith & Wesson","Smith & Wesson Inc.","Smith & Wesson Law Enf","Smith & Wesson|Smith & Wesson Performance Ctr","Smith and Wesson","Smith Wesson Dba Thompson Cent","SnapSafe","SOG","SOG Knives & Tools","Sons of Liberty Gun Works","Southern Bloomer","Southern Bloomers","Spartan Camera","Speer","Speer Ammunition","Spike's Tactical","SportDog","Spot Hogg","Springfield","Springfield Armory","Spyderco","Spypoint","SRM Arms","SRM ARMS INC.","Stack-On","Stag Arms","Stag Arms LLC","Standard Manufacturing","Standard Manufacturing Company","Standard Mfg Co","Standard MFG Co LLC","Standard MFG.","Stars and Stripes Defense Ammunition","Stealth Cam","Stealth Operator","Stealth Operator Holster","Steiner","Stern Defense","Stevens","Steyr","Steyr Arms","Sticky Holsters","STREAK Ammunition","Streamlight","Strike Industries","Striker","Strongsuit","Sturm Ruger & Co","STV Technology","Summit","Surefire","Surefire Llc","Surgeon","Swab-Its","Swagger","Swhacker","Sylvan Arms","SZCO Rite Edge","SZCO Sawmill","SZCO Sierra Zulu","SZCO Steel Stag","T.R.U. Ball Archery","Tac Shield","TAC VANES","Tacfire Inc.","TacStar","Tactacam","Tactical Innovations","Tactical Solutions","Tactical Superiority","Tagua","Talley Manufacturing","TALON Grips Inc","Tanfoglio","TangoDown","Tannerite","Target Sports","Tasco","Taser","Taurus","Taurus International - Heritage","Taurus International Inc.","Taurus InternationalInc - Rossi","Techna Clip","Techna Clips","TekMat","Templar Knife","TEN POINT","Tenzing","The Outdoor Connection","Thermacell","Thompson","Thompson Center","Thorn Broadheads","Thril","Tight Spot","Tikka","Timney","Timney Triggers","Tinks","Tippmann Arms Company","Tipton","Tisas","Titan 3D","Tnw Firearms","Tokarev Shotguns","Tokarev USA","Top Brass","Tornado Personal Defense","Torrent Suppressors","TPS Arms","TR Imports","Traditions","Traditions Performance Firearms","Trailblazer","Trailblazer Firearms","TriggerTech","Trijicon","Trijicon Electro Optics","TriStar","TriStar Arms Inc.","TriStar Sporting Arms","Trius","Trophy Ridge","Trophy Taker","Troy","Troy Industries","True Precision","Trufire","Truglo","Truglo Bowfishing","Two Two Three Innovations","Ulfhednar","Ultimate Survival Technologies","Ultradot","Ultradyne","Ultradyne USA","Umarex","Umarex USA","Unbranded AR","UNBRANDEDAR","Uncle Henry","Uncle Mike's","Underwood Ammo","Unity Tactical","US Optics","US Palm","US PeaceKeeper","Used Glock|Glock","UST - Ultimate Survival Technologies","UTAS","VaporTrail","VersaCarry","Vertx","Victory Archery","Viper Archery Products","Viridian","Viridian Weapon Technologies","Volquartsen Firearms","Walker's","Walkers","Walther","Walther Arms","Walther Arms Inc","Walther Arms Inc|Colt","Warne","Warne Scope Mounts","Wasp Archery Products","WE Knife","Weatherby","Weaver","Western Rivers","Wheeler","Whitetail Institute","Wicked Ridge","Wicked Tree Gear","Wildlife Research","Williams Gunsight Co.","Wilson Combat","Winchester","Winchester Ammunition","Winchester Repeating Arms","Windham Weaponry","WMD Guns","Woodhaven Calls","Woox","Wraithworks","X-GRIP","Xpedition Crossbows","XS Sight Systems","XS Sights","Yankee Hill Machine","Yankee Hill Machine Co","Yankee Hill Machine Company","Zac Brown's Southern Grind","Zaffiri Precision","Zastava","Zastava Arms USA","Zenith Firearms","ZEV Technologies","ZRO DELTA","ZRO Delta LLC"]
+                                    /*
+                                    fetch("https://ffl-api.garidium.com", {
+                                        method: "POST",
+                                        headers: {
+                                        "Accept": "application/json",
+                                        "Content-Type": "application/json",
+                                        "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>",
+                                        },
+                                        body: JSON.stringify({"action": "get_product_restriction_options"})
+                                    })
+                                    .then(response=>response.json())
+                                    .then(data=>{
+                                        try{
+                                            data.forEach(item => {
+                                                if (item.type == "brand"){
+                                                    if (!all_brands.includes(item.value)) {
+                                                        all_brands.push(item.value);
+                                                    }
+                                                }
+                                                if (item.type == "category"){
+                                                    if (!all_categories.includes(item.value)) {
+                                                        all_categories.push(item.value);
+                                                    }
+                                                }
+                                                if (item.type == "product_class"){
+                                                    if (!all_product_classes.includes(item.value)) {
+                                                        all_product_classes.push(item.value);
+                                                    }
+                                                }
+                                            });
+                                        } catch (error) {
+                                            alert("No product restrictions found for this key");
+                                        }
+                                    });
+                                    */
+
                                     var options = {
                                         modes: ['text', 'code', 'tree', 'form', 'view'],
                                         mode: 'tree',
@@ -230,7 +266,8 @@ class g_ffl_Cockpit_Admin
                                                 },
                                                 "notification_email": {
                                                     "description": "Email for System Notifications and Alerts",
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "format": "email"
                                                 },
                                                 "max_distributor_cost": {
                                                     "description": "Maximum Distributor Cost for a Listed Item",
@@ -406,13 +443,15 @@ class g_ffl_Cockpit_Admin
                                                                 "exclude": {
                                                                     "type": "array",
                                                                     "items": {
-                                                                        "type": "string"
+                                                                        "type": "string",
+                                                                        "enum": all_brands
                                                                     }
                                                                 },
                                                                 "include": {
                                                                     "type": "array",
                                                                     "items": {
-                                                                        "type": "string"
+                                                                        "type": "string",
+                                                                        "enum": all_brands
                                                                     }
                                                                 }
                                                             }
@@ -438,13 +477,59 @@ class g_ffl_Cockpit_Admin
                                                                 "exclude": {
                                                                     "type": "array",
                                                                     "items": {
-                                                                        "type": "string"
+                                                                        "type": "string",
+                                                                        "enum": ["AC","AG","AO","AP","AR","BP","FA","FI","FP","HT","HZ","KN","MG","MZ","OP","OT","RL","SO"]
+                                                                        /*
+                                                                        "oneOf": [
+                                                                            {const: "AC", title: "Accessories"},
+                                                                            {const: "AG", title: "Air Guns & Accessories"},
+                                                                            {const: "AO", title: "Ammunition"},
+                                                                            {const: "AP", title: "Apparel"},
+                                                                            {const: "AR", title: "Archery"},
+                                                                            {const: "BP", title: "Black Powder Firearms"},
+                                                                            {const: "FA", title: "Firearms"},
+                                                                            {const: "FI", title: "Fishing"},
+                                                                            {const: "FP", title: "Firearms Parts"},
+                                                                            {const: "HT", title: "Hunting"},
+                                                                            {const: "HZ", title: "Hazardous"},
+                                                                            {const: "KN", title: "Knives"},
+                                                                            {const: "MG", title: "Magazines"},
+                                                                            {const: "MZ", title: "Muzzleloading"},
+                                                                            {const: "OP", title: "Optics"},
+                                                                            {const: "OT", title: "Other"},
+                                                                            {const: "RL", title: "Reloading"},
+                                                                            {const: "SO", title: "SOT"}
+                                                                        ]
+                                                                        */
                                                                     }
                                                                 },
                                                                 "include": {
                                                                     "type": "array",
                                                                     "items": {
-                                                                        "type": "string"
+                                                                        "type": "string",
+                                                                        "enum": ["AC","AG","AO","AP","AR","BP","FA","FI","FP","HT","HZ","KN","MG","MZ","OP","OT","RL","SO"]
+                                                                        /*
+                                                                        "oneOf": [
+                                                                            {const: "AC", title: "Accessories"},
+                                                                            {const: "AG", title: "Air Guns & Accessories"},
+                                                                            {const: "AO", title: "Ammunition"},
+                                                                            {const: "AP", title: "Apparel"},
+                                                                            {const: "AR", title: "Archery"},
+                                                                            {const: "BP", title: "Black Powder Firearms"},
+                                                                            {const: "FA", title: "Firearms"},
+                                                                            {const: "FI", title: "Fishing"},
+                                                                            {const: "FP", title: "Firearms Parts"},
+                                                                            {const: "HT", title: "Hunting"},
+                                                                            {const: "HZ", title: "Hazardous"},
+                                                                            {const: "KN", title: "Knives"},
+                                                                            {const: "MG", title: "Magazines"},
+                                                                            {const: "MZ", title: "Muzzleloading"},
+                                                                            {const: "OP", title: "Optics"},
+                                                                            {const: "OT", title: "Other"},
+                                                                            {const: "RL", title: "Reloading"},
+                                                                            {const: "SO", title: "SOT"}
+                                                                        ]
+                                                                        */
                                                                     }
                                                                 }
                                                             }
@@ -1098,12 +1183,6 @@ class g_ffl_Cockpit_Admin
                                                             "type": "string",
                                                             "const": "CSSI"
                                                         },
-                                                        "api_sid": {
-                                                            "type": "string"
-                                                        },
-                                                        "api_token": {
-                                                            "type": "string"
-                                                        },
                                                         "shipping": {
                                                             "$ref": "#/definitions/shipping"
                                                         },
@@ -1133,12 +1212,6 @@ class g_ffl_Cockpit_Admin
                                                         "distid": {
                                                             "type": "string",
                                                             "const": "DAV"
-                                                        },
-                                                        "ftp_user": {
-                                                            "type": "string"
-                                                        },
-                                                        "ftp_password": {
-                                                            "type": "string"
                                                         },
                                                         "shipping": {
                                                             "$ref": "#/definitions/shipping"
@@ -1170,12 +1243,6 @@ class g_ffl_Cockpit_Admin
                                                             "type": "string",
                                                             "const": "LIP"
                                                         },
-                                                        "username": {
-                                                            "type": "string"
-                                                        },
-                                                        "password": {
-                                                            "type": "string"
-                                                        },
                                                         "shipping": {
                                                             "$ref": "#/definitions/shipping"
                                                         },
@@ -1205,12 +1272,6 @@ class g_ffl_Cockpit_Admin
                                                         "distid": {
                                                             "type": "string",
                                                             "const": "RSR"
-                                                        },
-                                                        "ftp_user": {
-                                                            "type": "string"
-                                                        },
-                                                        "ftp_password": {
-                                                            "type": "string"
                                                         },
                                                         "shipping": {
                                                             "$ref": "#/definitions/shipping"
@@ -1242,12 +1303,6 @@ class g_ffl_Cockpit_Admin
                                                             "type": "string",
                                                             "const": "2AW"
                                                         },
-                                                        "username": {
-                                                            "type": "string"
-                                                        },
-                                                        "password": {
-                                                            "type": "string"
-                                                        },
                                                         "shipping": {
                                                             "$ref": "#/definitions/shipping"
                                                         },
@@ -1277,12 +1332,6 @@ class g_ffl_Cockpit_Admin
                                                         "distid": {
                                                             "type": "string",
                                                             "const": "ZND"
-                                                        },
-                                                        "ftp_user": {
-                                                            "type": "string"
-                                                        },
-                                                        "ftp_password": {
-                                                            "type": "string"
                                                         },
                                                         "shipping": {
                                                             "$ref": "#/definitions/shipping"
@@ -1336,6 +1385,27 @@ class g_ffl_Cockpit_Admin
                             <?php submit_button(); ?>
                         </div>
                         <br>
+                        <table style="border: solid black 1px;">
+                            <tr style="background-color:#EEEEEE;weight:bold;font-style:italic;"><td colspan=2>Product Class Code Reference</td></tr>
+                            <tr><td><b>AC</b></td><td>Accessories</td></tr>
+                            <tr><td><b>AG</b></td><td>Air Guns & Accessories</td></tr>
+                            <tr><td><b>AO</b></td><td>Ammunition</td></tr>
+                            <tr><td><b>AP</b></td><td>Apparel</td></tr>
+                            <tr><td><b>AR</b></td><td>Archery</td></tr>
+                            <tr><td><b>BP</b></td><td>Black Powder Firearms</td></tr>
+                            <tr><td><b>FA</b></td><td>Firearms</td></tr>
+                            <tr><td><b>FI</b></td><td>Fishing</td></tr>
+                            <tr><td><b>FP</b></td><td>Firearms Parts</td></tr>
+                            <tr><td><b>HT</b></td><td>Hunting</td></tr>
+                            <tr><td><b>HZ</b></td><td>Hazardous</td></tr>
+                            <tr><td><b>KN</b></td><td>Knives</td></tr>
+                            <tr><td><b>MG</b></td><td>Magazines</td></tr>
+                            <tr><td><b>MZ</b></td><td>Muzzleloading</td></tr>
+                            <tr><td><b>OP</b></td><td>Optics</td></tr>
+                            <tr><td><b>OT</b></td><td>Other</td></tr>
+                            <tr><td><b>RL</b></td><td>Reloading</td></tr>
+                            <tr><td><b>SO</b></td><td>SOT</td></tr>
+                        </table>
                         <a style="cursor:pointer;" onclick="document.getElementById('white_label_settings_name').style.display='';document.getElementById('white_label_settings_url').style.display='';">&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;</a>
                     </form>
                 </div>
@@ -1531,6 +1601,7 @@ class g_ffl_Cockpit_Admin
                                     formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[1].data)}">`)
                                 },
                                 {name: 'Dist. Order', width: '100px',}, 
+                                {name: 'Status'}, 
                                 {name: 'Customer Name'}, 
                                 {name: 'Phone', width: '100px',}, 
                                 {name: 'Email',
@@ -1554,7 +1625,7 @@ class g_ffl_Cockpit_Admin
                                         if (!columns.length) return prev;
                                         const col = columns[0];
                                         const dir = col.direction === 1 ? 'asc' : 'desc';
-                                        let colName = ["order_id", "distid", "distributor_order_id", "customer_name", "customer_phone", "customer_email", "ship_date","ship_tracking_url", "ship_status"][col.index];
+                                        let colName = ["order_id", "distid", "distributor_order_id", "order_status", "customer_name", "customer_phone", "customer_email", "order_date", "ship_date","ship_tracking_url", "ship_status"][col.index];
                                         let sortUrl = `${prev}&order_column=${colName}&order_direction=${dir}`;
                                         return sortUrl;
                                     }
@@ -1593,6 +1664,7 @@ class g_ffl_Cockpit_Admin
                                                                    order.order_id, 
                                                                    order.distid, 
                                                                    order.distributor_order_id,
+                                                                   order.order_status,
                                                                    order.customer_name,
                                                                    order.customer_phone,
                                                                    order.customer_email,
