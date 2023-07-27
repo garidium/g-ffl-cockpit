@@ -110,7 +110,7 @@ function g_ffl_checkout_fulfillment_options_html()
                             "Content-Type": "application/json",
                             "x-api-key": "',esc_attr($aKey),'",
                             },
-                            body: JSON.stringify({"action": "place_distributor_order", "data": {"api_key": "',esc_attr($aKey),'" , "order_id": ',esc_attr($orderId),', "items": order_json}})
+                            body: JSON.stringify({"action": "place_distributor_order", "data": {"api_key": "',esc_attr($aKey),'" , "order_source": "woocommerce", "order_id": ',esc_attr($orderId),', "items": order_json}})
                         })
                         .then(response=>response.json())
                         .then(data=>{  

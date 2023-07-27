@@ -5,7 +5,7 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.2
 Requires PHP: 7.0
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -65,6 +65,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+12. v1.2.2 Minor change on fulfillment processing, passing through order source
 11. v1.2.1 Added some helpers for brand and product class settings in the configuration
 10. v1.2.0 (Beta) Fulfillment and Automated-Fulfillment now available for (Lipseys. Zanders, RSR, and Chattanooga)
 9. v1.1.2 (Testing Only) Added Fulfillment Ordering via Order Details View
