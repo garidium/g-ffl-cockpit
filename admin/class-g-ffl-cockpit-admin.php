@@ -1594,29 +1594,40 @@ class g_ffl_Cockpit_Admin
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
                         var of_grid = new gridjs.Grid({
                             columns: [
-                                {name: 'Order', width: '75px',
-                                    formatter: (_, row) => gridjs.html(`<a target=_blank href="/wp-admin/post.php?post=${row.cells[0].data}&action=edit">${row.cells[0].data}</a>`)
+                                {name: 'Order', width: '90px',
+                                    formatter: (_, row) => {
+                                        if (row.cells[12].data == "gunbroker"){
+                                            return gridjs.html(`Gunbroker <a target=_blank href="https://www.gunbroker.com/order?orderid=${row.cells[0].data}">${row.cells[0].data}</a>`);
+                                        }else{
+                                            return gridjs.html(`<a target=_blank href="/wp-admin/post.php?post=${row.cells[0].data}&action=edit">${row.cells[0].data}</a>`);
+                                        }
+                                    }
                                 },
                                 {name: 'Dist', width: '60px',
                                     formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[1].data)}">`)
                                 },
-                                {name: 'Dist. Order', width: '100px',}, 
-                                {name: 'Status'}, 
+                                {name: 'Dist. Order', width: '75px',
+                                    formatter: (_, row) => gridjs.html(`<a target=_blank href="${row.cells[11].data}">${row.cells[2].data}</a>`)
+                                },
+                                {name: 'Status', width: '100px'}, 
                                 {name: 'Customer Name'}, 
-                                {name: 'Phone', width: '100px',}, 
-                                {name: 'Email',
-                                    formatter: (_, row) => gridjs.html(`<a href="mailto:${row.cells[5].data}">${row.cells[5].data}</a>`)
+                                {name: 'Phone', width: '100px'}, 
+                                {name: 'Email', width: '75px',
+                                    formatter: (_, row) => gridjs.html(`<a href="mailto:${row.cells[6].data}">Email</a>`)
                                 },
                                 {name: 'Ordered', width: '125px',
-                                    formatter: (cell) => `${cell.substring(0,16)}`
+                                    formatter: (cell) => `${cell.substring(0,10)}`
                                 },
                                 {name: 'Shipped', width: '100px',
                                     formatter: (cell) => `${cell!=null?cell.substring(0,10):""}`
                                 },
                                 {name: "Tracking", width: '100px',
-                                    formatter: (_, row) => row.cells[8].data!=null?gridjs.html(`<a target=_blank href="${row.cells[8].data}">Track</a>`):''
+                                    formatter: (_, row) => row.cells[9].data!=null?gridjs.html(`<a target=_blank href="${row.cells[9].data}">Track</a>`):''
                                 },
-                                {name: "Ship Status"}
+                                {name: "Ship Status"},
+                                {name: "Order URL", hidden: true},
+                                {name: "Order Source", hidden: true},
+                                
                             ],
                             sort: {
                                 multiColumn: false,
@@ -1671,7 +1682,10 @@ class g_ffl_Cockpit_Admin
                                                                    order.order_date,
                                                                    order.ship_date, 
                                                                    order.ship_tracking_url,
-                                                                   order.ship_status]),  
+                                                                   order.ship_status,
+                                                                   order.order_url,
+                                                                   order.order_source
+                                                                ]),  
                                                                  
                                 total: data => JSON.parse(data).count
                             } 
