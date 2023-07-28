@@ -1594,26 +1594,41 @@ class g_ffl_Cockpit_Admin
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
                         var of_grid = new gridjs.Grid({
                             columns: [
+                                {name: 'Source', width: '90px',
+                                    formatter: (_, row) => {
+                                        if (row.cells[0].data == "gunbroker"){
+                                            return gridjs.html(`Gunbroker`);
+                                        }else if (row.cells[0].data == "woocommerce"){
+                                            return gridjs.html(`Website`);
+                                        }
+                                    }
+                                }, 
                                 {name: 'Order', width: '90px',
                                     formatter: (_, row) => {
-                                        if (row.cells[12].data == "gunbroker"){
-                                            return gridjs.html(`Gunbroker <a target=_blank href="https://www.gunbroker.com/order?orderid=${row.cells[0].data}">${row.cells[0].data}</a>`);
+                                        if (row.cells[0].data == "gunbroker"){
+                                            return gridjs.html(`<a target=_blank href="https://www.gunbroker.com/order?orderid=${row.cells[1].data}">${row.cells[1].data}</a>`);
                                         }else{
-                                            return gridjs.html(`<a target=_blank href="/wp-admin/post.php?post=${row.cells[0].data}&action=edit">${row.cells[0].data}</a>`);
+                                            return gridjs.html(`<a target=_blank href="/wp-admin/post.php?post=${row.cells[1].data}&action=edit">${row.cells[1].data}</a>`);
                                         }
                                     }
                                 },
                                 {name: 'Dist', width: '60px',
-                                    formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[1].data)}">`)
+                                    formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[2].data)}">`)
                                 },
                                 {name: 'Dist. Order', width: '75px',
-                                    formatter: (_, row) => gridjs.html(`<a target=_blank href="${row.cells[11].data}">${row.cells[2].data}</a>`)
+                                    formatter: (_, row) => {
+                                        if (row.cells[12].data == null){
+                                            return gridjs.html(row.cells[3].data);
+                                        }else{
+                                            return gridjs.html(`<a target=_blank href="${row.cells[12].data}">${row.cells[3].data}</a>`);
+                                        }
+                                    }
                                 },
                                 {name: 'Status', width: '100px'}, 
                                 {name: 'Customer Name'}, 
-                                {name: 'Phone', width: '100px'}, 
-                                {name: 'Email', width: '75px',
-                                    formatter: (_, row) => gridjs.html(`<a href="mailto:${row.cells[6].data}">Email</a>`)
+                                {name: 'Phone', width: '120px'}, 
+                                {name: 'Email', width: '100px',
+                                    formatter: (_, row) => gridjs.html(`<a href="mailto:${row.cells[7].data}">Email</a>`)
                                 },
                                 {name: 'Ordered', width: '125px',
                                     formatter: (cell) => `${cell.substring(0,10)}`
@@ -1621,12 +1636,23 @@ class g_ffl_Cockpit_Admin
                                 {name: 'Shipped', width: '100px',
                                     formatter: (cell) => `${cell!=null?cell.substring(0,10):""}`
                                 },
-                                {name: "Tracking", width: '100px',
-                                    formatter: (_, row) => row.cells[9].data!=null?gridjs.html(`<a target=_blank href="${row.cells[9].data}">Track</a>`):''
+                                {name: "Ship Status",
+                                    formatter: (_, row) => {
+                                        if (row.cells[11].data == "delivered"){
+                                            return gridjs.html(`<a target=_blank href="${row.cells[10].data}"><span style="color:green;">Delivered</span></a>`);
+                                        }else if (row.cells[11].data == "return_to_sender"){
+                                            return gridjs.html(`<a target=_blank href="${row.cells[10].data}"><span style="color:red;">Return to Sender</span></a>`);
+                                        }else{
+                                            if (row.cells[10].data != null) {
+                                                return gridjs.html(`<a target=_blank href="${row.cells[10].data}">${row.cells[11].data==null?"In Transit":row.cells[11].data}</a>`);
+                                            }else{
+                                                return gridjs.html(row.cells[11].data);
+                                            }
+                                        }
+                                    }
                                 },
-                                {name: "Ship Status"},
                                 {name: "Order URL", hidden: true},
-                                {name: "Order Source", hidden: true},
+                                {name: "Tracking URL", hidden: true},
                                 
                             ],
                             sort: {
@@ -1636,7 +1662,7 @@ class g_ffl_Cockpit_Admin
                                         if (!columns.length) return prev;
                                         const col = columns[0];
                                         const dir = col.direction === 1 ? 'asc' : 'desc';
-                                        let colName = ["order_id", "distid", "distributor_order_id", "order_status", "customer_name", "customer_phone", "customer_email", "order_date", "ship_date","ship_tracking_url", "ship_status"][col.index];
+                                        let colName = ["order_source","order_id", "distid", "distributor_order_id", "order_status", "customer_name", "customer_phone", "customer_email", "order_date", "ship_date", "ship_status"][col.index];
                                         let sortUrl = `${prev}&order_column=${colName}&order_direction=${dir}`;
                                         return sortUrl;
                                     }
@@ -1672,6 +1698,7 @@ class g_ffl_Cockpit_Admin
                                     "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
 			                    },                                
                                 then: data => JSON.parse(data).orders.map(order => [
+                                                                   order.order_source,
                                                                    order.order_id, 
                                                                    order.distid, 
                                                                    order.distributor_order_id,
@@ -1683,8 +1710,7 @@ class g_ffl_Cockpit_Admin
                                                                    order.ship_date, 
                                                                    order.ship_tracking_url,
                                                                    order.ship_status,
-                                                                   order.order_url,
-                                                                   order.order_source
+                                                                   order.order_url
                                                                 ]),  
                                                                  
                                 total: data => JSON.parse(data).count
