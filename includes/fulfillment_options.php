@@ -282,8 +282,8 @@ function g_ffl_checkout_fulfillment_options_html()
                 document.getElementById("distributor_order_table").innerHTML = "";
                 document.getElementById("distributor_order_table").appendChild(table);
 
-                let columns = ["Dist", "Order ID", "Ordered", "Status", "Shipped", "Tracking", "Ship Status", "Actions"];
-                let fields = ["distid", "distributor_order_id", "order_date", "order_status", "ship_date", "ship_tracking_number", "ship_status"];
+                let columns = ["Dist", "Order ID", "Ordered", "Status", "Shipped", "Ship Status", "Actions"];
+                let fields = ["distid", "distributor_order_id", "order_date", "order_status", "ship_date", "ship_status"];
                 let header_row = document.createElement("tr");     
                 for (var i = 0; i < columns.length; i++) {
                     heading = document.createElement("th");
@@ -320,10 +320,26 @@ function g_ffl_checkout_fulfillment_options_html()
                                     col.innerHTML = "<span style=\"color:red;font-weight:bold;\">" + orders[i].order_status + "</span> | <a style=\"text-decoration:underline;cursor:pointer;\" onclick=\"addFFlToHoldOrder(\'" + orders[i].distid + "\', \'" + orders[i].distributor_order_id + "\');\">Add FFL</a>"; 
                                 }
                                 col.style.cssText = "text-align:left;border: 1px solid #e5e7eb;";
-                            }else if (fields[c] == "ship_tracking_number"){
+                            }else if (fields[c] == "ship_date"){
                                 col.innerHTML = "";
-                                if (orders[i].ship_tracking_url != null){
-                                    col.innerHTML = "<a target=_blank href=\"" + orders[i].ship_tracking_url + "\">" + orders[i][fields[c]] + "</a>";
+                                if (orders[i].ship_date != null){
+                                    col.innerHTML = orders[i].ship_date.substring(0,10);
+                                }
+                                col.style.cssText = "text-align:left;border: 1px solid #e5e7eb;";
+                            }else if (fields[c] == "ship_status"){
+                                col.innerHTML = "";
+                                if (orders[i].ship_status!=null){
+                                    if (orders[i].ship_status == "delivered"){
+                                        col.innerHTML = "<a target=_blank href=\"" + orders[i].ship_tracking_url + "\"><span style=\"color:green;\">Delivered</span></a>";
+                                    }else if (orders[i].ship_status == "return_to_sender"){
+                                        col.innerHTML = "<a target=_blank href=\"" + orders[i].ship_tracking_url + "\"><span style=\"color:red;\">Return to Sender</span></a>";
+                                     }else{
+                                        if (orders[i].ship_tracking_url!=null){
+                                            col.innerHTML = "<a target=_blank href=\"" + orders[i].ship_tracking_url + "\">In-Transit</a>";
+                                        }else{
+                                            col.innerHTML = "In-Transit";
+                                        }
+                                    }
                                 }
                                 col.style.cssText = "text-align:left;border: 1px solid #e5e7eb;";
                             }else{

@@ -161,7 +161,7 @@ class g_ffl_Cockpit_Admin
                                             <input type="password" style="width: 350px;" name="g_ffl_cockpit_key" id="g_ffl_cockpit_key" 
                                                 aria-describedby="login_error" class="input password-input" size="20"
                                                 value="<?php echo esc_attr($gFFLCockpitKey); ?>"/>
-                                                <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);">Load Config</a>
+                                                <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, false);">Load Config</a>
                                         </div>
                                         <p>Email sales@garidium.com to get a key, or if your key has expired.</p>
                                     </div>
@@ -169,7 +169,7 @@ class g_ffl_Cockpit_Admin
                                 <td>
                                     <div id="g-ffl-admin-buttons" align="right" style="margin:5px;display:none;">
                                         <b>Admin Functions:&nbsp;</b>
-                                        <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('submit_button_div').style.display='none';">Load Config</a>
+                                        <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, true);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('submit_button_div').style.display='none';">Load Config</a>
                                         <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value);">Save</a>
                                         <br><br><span style="padding:10px;color:red;display:none;" id="admin_current_editing_key"></span>
                                     </div>
@@ -181,14 +181,18 @@ class g_ffl_Cockpit_Admin
                                 <div id="jsoneditor" style="width: 100%; height: 500px;"></div>
                                 <input type="hidden" name="g_ffl_cockpit_configuration" id="g_ffl_cockpit_configuration">
                                 <script>
-                                    function get_and_set_cockpit_configuration(api_key){
+                                    function get_and_set_cockpit_configuration(api_key, isAdminRequest){
                                         if (api_key != null && api_key.length > 0){
+                                            var admin_key = api_key;
+                                            if (isAdminRequest){
+                                                admin_key = "<?php echo esc_attr($gFFLCockpitKey);?>";
+                                            }
                                             fetch("https://ffl-api.garidium.com", {
                                                 method: "POST",
                                                 headers: {
                                                 "Accept": "application/json",
                                                 "Content-Type": "application/json",
-                                                "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>",
+                                                "x-api-key": admin_key,
                                                 },
                                                 body: JSON.stringify({"action": "get_subscription", "data": {"api_key": api_key}})
                                             })
@@ -1357,7 +1361,7 @@ class g_ffl_Cockpit_Admin
                                     var editor = new JSONEditor(document.getElementById("jsoneditor"), options);
                                     editor.set({"Loading Configuration": "Please wait..."});
                                     window.onload = function(){
-                                        get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCockpitKey);?>");
+                                        get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCockpitKey);?>", false);
                                         if (window.location.host == 'garidium.com' || window.location.host == 'localhost:8000'){
                                             document.getElementById('g-ffl-admin-buttons').style.display = '';
                                         }
