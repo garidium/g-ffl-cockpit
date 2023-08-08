@@ -379,6 +379,125 @@ class g_ffl_Cockpit_Admin
                                             },
                                             "definitions":
                                             {
+                                                "include_exclude": {
+                                                    "title": "Include Exclude Options",
+                                                    "description": "Include Exclude Options",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "exclude": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "include": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    },"anyOf": [
+                                                        {
+                                                            "required": [
+                                                                "exclude"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "include"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "include_exclude_product_class": {
+                                                    "title": "Include Exclude Product Class Options",
+                                                    "description": "Include Product Class Exclude Options",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "exclude": {
+                                                            "$ref": "#/definitions/product_classes"
+                                                        },
+                                                        "include": {
+                                                            "$ref": "#/definitions/product_classes"
+                                                        }
+                                                    },"anyOf": [
+                                                        {
+                                                            "required": [
+                                                                "exclude"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "include"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "brands": {
+                                                    "title": "Brand Selections",
+                                                    "description": "Brand Selections",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "enum": all_brands
+                                                    }
+                                                },
+                                                "product_classes": {
+                                                    "title": "Product Class Selections",
+                                                    "description": "Product Class  Selections",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "enum": ["AC","AG","AO","AP","AR","BP","FA","FI","FP","HT","HZ","KN","MG","MZ","OP","OT","RL","SO"]
+                                                    }
+                                                },
+                                                "include_exclude_brand": {
+                                                    "title": "Include Exclude Brand Otions",
+                                                    "description": "Include Exclude Brand Options",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "exclude": {
+                                                            "$ref": "#/definitions/brands"
+                                                        },
+                                                        "include": {
+                                                            "$ref": "#/definitions/brands"
+                                                        }
+                                                    },"anyOf": [
+                                                        {
+                                                            "required": [
+                                                                "exclude"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "include"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "gunbroker_shipping_profile": {
+                                                    "title": "Gunbroker Shipping Profile",
+                                                    "description": "Gunbroker Shipping Profile",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "profile_id": {
+                                                            "type": "number"
+                                                        },
+                                                        "distributors": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string",
+                                                                "enum": ["LIP","ZND","CSSI","2AW","DAV","RSR","TSW"]
+                                                            }
+                                                        },
+                                                        "product_restrictions": {
+                                                            "$ref": "#/definitions/product_restrictions"
+                                                        }
+                                                    },
+                                                     "required": [
+                                                        "profile_id"
+                                                    ]
+                                                },
                                                 "alerts": {
                                                     "title": "Alert Configuration",
                                                     "description": "Alert Configuration",
@@ -411,132 +530,19 @@ class g_ffl_Cockpit_Admin
                                                 "product_restrictions":{
                                                     "properties": {
                                                         "sku": {
-                                                            "properties": {
-                                                                "exclude": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    }
-                                                                },
-                                                                "include": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    }
-                                                                }
-                                                            }
+                                                            "$ref": "#/definitions/include_exclude"
                                                         },
                                                         "upc": {
-                                                            "properties": {
-                                                                "exclude": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    }
-                                                                },
-                                                                "include": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    }
-                                                                }
-                                                            }
+                                                            "$ref": "#/definitions/include_exclude"
                                                         },
                                                         "brand": {
-                                                            "properties": {
-                                                                "exclude": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "string",
-                                                                        "enum": all_brands
-                                                                    }
-                                                                },
-                                                                "include": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "string",
-                                                                        "enum": all_brands
-                                                                    }
-                                                                }
-                                                            }
+                                                            "$ref": "#/definitions/include_exclude_brand"
                                                         },
                                                         "category": {
-                                                            "properties": {
-                                                                "exclude": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    }
-                                                                },
-                                                                "include": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    }
-                                                                }
-                                                            }
+                                                            "$ref": "#/definitions/include_exclude"
                                                         },
                                                         "product_class": {
-                                                            "properties": {
-                                                                "exclude": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "string",
-                                                                        "enum": ["AC","AG","AO","AP","AR","BP","FA","FI","FP","HT","HZ","KN","MG","MZ","OP","OT","RL","SO"]
-                                                                        /*
-                                                                        "oneOf": [
-                                                                            {const: "AC", title: "Accessories"},
-                                                                            {const: "AG", title: "Air Guns & Accessories"},
-                                                                            {const: "AO", title: "Ammunition"},
-                                                                            {const: "AP", title: "Apparel"},
-                                                                            {const: "AR", title: "Archery"},
-                                                                            {const: "BP", title: "Black Powder Firearms"},
-                                                                            {const: "FA", title: "Firearms"},
-                                                                            {const: "FI", title: "Fishing"},
-                                                                            {const: "FP", title: "Firearms Parts"},
-                                                                            {const: "HT", title: "Hunting"},
-                                                                            {const: "HZ", title: "Hazardous"},
-                                                                            {const: "KN", title: "Knives"},
-                                                                            {const: "MG", title: "Magazines"},
-                                                                            {const: "MZ", title: "Muzzleloading"},
-                                                                            {const: "OP", title: "Optics"},
-                                                                            {const: "OT", title: "Other"},
-                                                                            {const: "RL", title: "Reloading"},
-                                                                            {const: "SO", title: "SOT"}
-                                                                        ]
-                                                                        */
-                                                                    }
-                                                                },
-                                                                "include": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "string",
-                                                                        "enum": ["AC","AG","AO","AP","AR","BP","FA","FI","FP","HT","HZ","KN","MG","MZ","OP","OT","RL","SO"]
-                                                                        /*
-                                                                        "oneOf": [
-                                                                            {const: "AC", title: "Accessories"},
-                                                                            {const: "AG", title: "Air Guns & Accessories"},
-                                                                            {const: "AO", title: "Ammunition"},
-                                                                            {const: "AP", title: "Apparel"},
-                                                                            {const: "AR", title: "Archery"},
-                                                                            {const: "BP", title: "Black Powder Firearms"},
-                                                                            {const: "FA", title: "Firearms"},
-                                                                            {const: "FI", title: "Fishing"},
-                                                                            {const: "FP", title: "Firearms Parts"},
-                                                                            {const: "HT", title: "Hunting"},
-                                                                            {const: "HZ", title: "Hazardous"},
-                                                                            {const: "KN", title: "Knives"},
-                                                                            {const: "MG", title: "Magazines"},
-                                                                            {const: "MZ", title: "Muzzleloading"},
-                                                                            {const: "OP", title: "Optics"},
-                                                                            {const: "OT", title: "Other"},
-                                                                            {const: "RL", title: "Reloading"},
-                                                                            {const: "SO", title: "SOT"}
-                                                                        ]
-                                                                        */
-                                                                    }
-                                                                }
-                                                            }
+                                                            "$ref": "#/definitions/include_exclude_product_class"
                                                         }
                                                     },
                                                     "anyOf": [
@@ -648,10 +654,7 @@ class g_ffl_Cockpit_Admin
                                                             }
                                                         },
                                                         "brand": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "type": "string"
-                                                            }
+                                                            "$ref": "#/definitions/brands"
                                                         },
                                                         "category": {
                                                             "type": "array",
@@ -660,10 +663,7 @@ class g_ffl_Cockpit_Admin
                                                             }
                                                         },
                                                         "product_class": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "type": "string"
-                                                            }
+                                                            "$ref": "#/definitions/product_classes"
                                                         },
                                                         "margin_dollar": {
                                                             "type": "number"
@@ -949,6 +949,17 @@ class g_ffl_Cockpit_Admin
                                                         "environment": {
                                                             "type": "string",
                                                             "enum": ["sandbox","production"]
+                                                        },
+                                                        "shipping_profiles": {
+                                                            "description": "Gunbroker Shipping Profiles",
+                                                            "title": "Shipping Profiles",
+                                                            "type": "object",
+                                                            "properties": {},
+                                                            "patternProperties": {
+                                                                "[a-zA-Z0-9_ ]*": {
+                                                                    "$ref": "#/definitions/gunbroker_shipping_profile"
+                                                                }
+                                                            }
                                                         },
                                                         "fees": {
                                                             "description": "Gunbroker Fees",
