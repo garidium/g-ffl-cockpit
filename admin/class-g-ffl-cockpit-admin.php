@@ -946,12 +946,9 @@ class g_ffl_Cockpit_Admin
                                                             "type": "string",
                                                             "format": "uuid"
                                                         },
-                                                        "url": {
+                                                        "environment": {
                                                             "type": "string",
-                                                            "format": "uri",
-                                                            "qt-uri-protocols": [
-                                                                "https"
-                                                            ]
+                                                            "enum": ["sandbox","production"]
                                                         },
                                                         "fees": {
                                                             "description": "Gunbroker Fees",
@@ -1164,14 +1161,13 @@ class g_ffl_Cockpit_Admin
                                                         "fees",
                                                         "from_postal_code",
                                                         "inspection_period",
-                                                        "key",
                                                         "listing_duration",
                                                         "password",
                                                         "payment_methods",
                                                         "pricing",
                                                         "standard_description_html",
                                                         "standard_text_id",
-                                                        "url",
+                                                        "environment",
                                                         "username"
                                                     ]
                                                 },
