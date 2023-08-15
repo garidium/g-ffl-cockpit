@@ -176,6 +176,8 @@ function g_ffl_checkout_fulfillment_options_html()
                     return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_lipseys.jpeg";
                 }else if (code == "RSR"){
                     return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_rsr.png";
+                }else if (code == "TSW"){
+                    return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_sports_south.png";
                 }
                 return "";
             }
