@@ -113,7 +113,7 @@ class g_ffl_Cockpit_Admin
     public function ffl_load_menu()
     {
         $custom_plugin_name = (get_option('g_ffl_cockpit_plugin_name') != ''? get_option('g_ffl_cockpit_plugin_name') : 'g-FFL Cockpit');
-        add_menu_page('g-FFL Cockpit Settings Page', $custom_plugin_name, 'manage_options', 'g-ffl-cockpit-settings', array($this, 'g_ffl_cockpit_settings_page'), 'dashicons-location-alt', 70);
+        add_menu_page('g-FFL Cockpit Settings Page', $custom_plugin_name, 'manage_options', 'g-ffl-cockpit-settings', array($this, 'g_ffl_cockpit_settings_page'), 'dashicons-database-import', 70);
         add_action('admin_init', array($this, 'register_g_ffl_cockpit_settings'));
     }
 
@@ -1887,7 +1887,7 @@ class g_ffl_Cockpit_Admin
                             video_div.innerHTML = '';
                             for (var i = 0, l = data.length; i < l; i++) {
                                 var innerDiv = document.createElement("div");
-                                innerDiv.innerHTML = '<div style="width:390px;"><iframe class="rumble" width="370" height="208" src="' + data[i].url + '" frameborder="0" allowfullscreen></iframe><br><span style="width:99%;">' + data[i].title + '</span><br><span style="color:#a29f9f !important;width:99%;height:50px;">' + data[i].description + '</span></div>';
+                                innerDiv.innerHTML = '<div style="width:390px;"><iframe width="370" height="208" src="' + data[i].url + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br><span style="width:99%;">' + data[i].title + '</span><br><span style="color:#a29f9f !important;width:99%;height:50px;">' + data[i].description + '</span></div>';
                                 video_div.appendChild(innerDiv);
                             }
                         });

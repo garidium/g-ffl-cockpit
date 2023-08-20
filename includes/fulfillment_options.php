@@ -62,25 +62,27 @@ function g_ffl_checkout_fulfillment_options_html()
         <script>
 
             function addFFlToHoldOrder(distid, distributor_order_id){
-                try{
-                    fetch("https://ffl-api.garidium.com", {
-                        method: "POST",
-                        headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json",
-                        "x-api-key": "',esc_attr($aKey),'",
-                        },
-                        body: JSON.stringify({"action": "add_ffl_to_hold_order", "data": {"api_key": "',esc_attr($aKey),'" , "order_id": ',esc_attr($orderId),', "distributor_order_id": distributor_order_id, "distid": distid}})
-                    })
-                    .then(response=>response.json())
-                    .then(data=>{
-                        if (!data.success["status"]){
-                            alert("Failed to add FFL to hold-order, please make sure to upload the FFL documentation and try again. If this still fails, email the FFL documentation to your distributor sales rep and contact support@garidium.com so we can address the problem ASAP.");
-                        }   
-                        load_order_grid(data.fulfillment_orders); 
-                    });
-                } catch (error) {
-                    console.error(error);
+                if (window.confirm("Have you uploaded a copy of the FFL within the FFL Information section of this page? If so, hit Ok. Otherwise upload the FFL first, then try again.")){
+                    try{
+                        fetch("https://ffl-api.garidium.com", {
+                            method: "POST",
+                            headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json",
+                            "x-api-key": "',esc_attr($aKey),'",
+                            },
+                            body: JSON.stringify({"action": "add_ffl_to_hold_order", "data": {"api_key": "',esc_attr($aKey),'" , "order_id": ',esc_attr($orderId),', "distributor_order_id": distributor_order_id, "distid": distid}})
+                        })
+                        .then(response=>response.json())
+                        .then(data=>{
+                            if (!data.success["status"]){
+                                alert("Failed to add FFL to hold-order, please make sure to upload the FFL documentation and try again. If this still fails, email the FFL documentation to your distributor sales rep and contact support@garidium.com so we can address the problem ASAP.");
+                            }   
+                            load_order_grid(data.fulfillment_orders); 
+                        });
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             }
 
@@ -319,7 +321,7 @@ function g_ffl_checkout_fulfillment_options_html()
                             }else if (fields[c] == "order_status"){
                                 col.innerHTML = orders[i].order_status;
                                 if (orders[i].distid == "ZND" && orders[i].order_status != null && orders[i].order_status == "FFL Hold"){
-                                    col.innerHTML = "<span style=\"color:red;font-weight:bold;\">" + orders[i].order_status + "</span> | <a style=\"text-decoration:underline;cursor:pointer;\" onclick=\"addFFlToHoldOrder(\'" + orders[i].distid + "\', \'" + orders[i].distributor_order_id + "\');\">Add FFL</a>"; 
+                                    col.innerHTML = "<span style=\"color:red;font-weight:bold;\">" + orders[i].order_status + "</span> | <a style=\"text-decoration:underline;cursor:pointer;\" onclick=\"addFFlToHoldOrder(\'" + orders[i].distid + "\', \'" + orders[i].distributor_order_id + "\');\">Update</a>"; 
                                 }
                                 col.style.cssText = "text-align:left;border: 1px solid #e5e7eb;";
                             }else if (fields[c] == "ship_date"){
