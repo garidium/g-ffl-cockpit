@@ -452,7 +452,7 @@ class g_ffl_Cockpit_Admin
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string",
-                                                        "enum": ["AC","AG","AO","AP","AR","BP","FA","FI","FP","HS","HT","HZ","KN","LL","MG","MZ","OP","OT","RC","RL","SO"]
+                                                        "enum": ["AC","AG","AO","AP","AR","BP","BS","FA","FI","FP","HS","HT","HZ","KN","LL","MG","MZ","OP","OT","RC","RL","SF","SO"]
                                                     }
                                                 },
                                                 "include_exclude_brand": {
