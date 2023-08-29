@@ -1,20 +1,11 @@
 {
   "pricing": {
     "margin": {
-      "custom": {
-        "upc": [],
-        "margin_dollar": 23,
-        "margin_percentage": 0
-      },
       "default": {
-        "margin_dollar": 50,
-        "margin_percentage": 0
+        "margin_dollar": 0,
+        "margin_percentage": 0.25
       },
       "firearms": {
-        "sku": [],
-        "upc": [],
-        "brand": [],
-        "category": [],
         "margin_dollar": 50,
         "product_class": [
           "FA"
@@ -25,7 +16,6 @@
         "sku": [],
         "upc": [],
         "brand": [],
-        "category": [],
         "margin_dollar": 0,
         "product_class": [
           "AO"
@@ -36,10 +26,14 @@
         "sku": [],
         "upc": [],
         "brand": [],
-        "category": [],
         "margin_dollar": 0,
-        "product_class": [],
-        "margin_percentage": 0.3
+        "product_class": [
+          "FP",
+          "OP",
+          "MG",
+          "AC"
+        ],
+        "margin_percentage": 0.2
       }
     },
     "sales_tax_assumption": 0.08,
@@ -51,14 +45,17 @@
   },
   "targets": {
     "woo": {
-      "url": "https://abc123.com",
+      "url": "https://cherokeetactical.com",
       "active": false,
+      "alerts": {
+        "delete_threshold_percent": 0.25
+      },
       "pricing": {
         "margin_adjustment_dollar": 0,
         "margin_adjustment_percent": 0.035
       },
-      "consumer-key": "ck_XXXXXXX",
-      "consumer-secret": "cs_XXXXXXXXX",
+      "consumer-key": "ck_15b039200ff221ea6e8584a56f5559f331bb6340",
+      "consumer-secret": "cs_43533e4b04c413cb9b4d87c942b6c19d803145fe",
       "load_batch_count": 10,
       "product_restrictions": {
         "sku": {
@@ -73,322 +70,15 @@
           "exclude": [],
           "include": []
         },
-        "category": {
-          "exclude": [],
-          "include": []
-        },
         "product_class": {
           "exclude": [],
           "include": []
         }
       },
-      "manage_product_attributes": false,
-      "manage_product_categories": false
-    },
-    "ammoseek": {
-      "active": false,
-      "listed_products": {
-        "guns": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "brass": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "powder": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "bullets": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "primers": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "magazines": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "ammunition": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          },
-          "purchase_limit": 10
-        },
-        "reloading_misc": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        }
-      }
-    },
-    "gun.deals": {
-      "active": false,
-      "listed_products": {
-        "guns": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": [
-              "Revolvers"
-            ]
-          }
-        },
-        "brass": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "other": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "parts": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "bullets": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "primers": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "reloading": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        },
-        "ammunition": {
-          "sku": {
-            "exclude": [],
-            "include": []
-          },
-          "upc": {
-            "exclude": [],
-            "include": []
-          },
-          "brand": {
-            "exclude": [],
-            "include": []
-          },
-          "category": {
-            "exclude": [],
-            "include": []
-          }
-        }
-      }
+      "manage_product_attributes": true,
+      "manage_product_categories": true
     },
     "gunbroker": {
-      "key": "1111c111-111f-1111-1d1d-d1a1f111d11c",
-      "url": "https://sandbox.gunbroker.com/v1",
       "fees": {
         "compliance": 0.01,
         "tier_1_dollar": 325,
@@ -397,11 +87,12 @@
       },
       "active": false,
       "pricing": {
-        "margin_adjustment_dollar": 0,
+        "margin_adjustment_dollar": -5,
         "margin_adjustment_percent": 0
       },
-      "password": "your_password",
-      "username": "your_user",
+      "password": "XXXX",
+      "username": "XXXX",
+      "environment": "sandbox",
       "payment_methods": {
         "COD": false,
         "Amex": true,
@@ -416,7 +107,7 @@
         "USPSMoneyOrder": false,
         "VisaMastercard": true
       },
-      "from_postal_code": "34983",
+      "from_postal_code": "90210",
       "listing_duration": 90,
       "picture_flairing": {
         "active": true,
@@ -426,8 +117,19 @@
           "pixel_width": 5
         }
       },
-      "standard_text_id": 0,
+      "standard_text_id": 12345,
       "inspection_period": 14,
+      "shipping_profiles": {
+        "Example": {
+          "profile_id": 12345,
+          "distributors": [],
+          "product_restrictions": {
+            "product_class": {
+              "include": []
+            }
+          }
+        }
+      },
       "product_restrictions": {
         "sku": {
           "exclude": [],
@@ -441,43 +143,41 @@
           "exclude": [],
           "include": []
         },
-        "category": {
-          "exclude": [],
-          "include": []
-        },
         "product_class": {
           "exclude": [],
           "include": [
             "FA"
           ]
         }
-      }
+      },
+      "automated_fulfillment": true,
+      "standard_description_html": "<p style=\"text-align: left;\"><br /><strong><u>WE ARE COMMITTED TO CUSTOMER SERVICE</u>:</strong><br /><span\n            style=\"color: blue;\"><strong>While we are new to Gunbroker, we are small business owners and new FFL holders who\n                value great service in the firearms industry. </strong></span>While we have been on Gunbroker a limited time\n        as a seller, we have been buying guns for decades now. <strong>We know what good service looks like</strong>. We\n        promise to ensure that your experience with us is positive. We want to earn your business on this sale and\n        future sales. Once payment has been received, we will provide a tracking number (within two business days). If not, \n        we will communicate clearly to you if there are any delays and the reason why. Our mission is to do our part to ensure \n        every American can fully exercise their Second Amendment rights, well at least those in the Free States.   <br />\n    </p>\n\n    <p><br /><strong><u>SHIPPING POLICY</u><font color=red>*</font>:</strong><br />Shipping cost on the listing applies only to shipments within the contiguous 48 US States. Should you reside outside of these states, we will invoice \n        you for the difference from our normal shipping costs. We do not make a profit on shipping. Contact us for an estimate. \n        We do not ship internationally.</p>\n\n    <p><br /><strong><u>THIS IS A DROP-SHIPPED ITEM, WHAT DOES THAT MEAN?</u></strong><br />\n    Drop-shipping is when an item for sale is not in our local inventory. Once you place the order with us, we then place the order \n    with our distributor who will ship the item directly to your shipping address, the FFL if it's a firearm. <b>Our distributor \n    will process the order within <font color=blue><u>2-6 business days</u></font> of receiving it from us, depending on their order volume. Holidays could introduce additional processing time. After processing, we will receive a tracking number \n    that we will then provide to you. Our distributor does not work weekends, so that is not included in the estimate. </b> While not all of our listed \n    items are drop-shipped, most are. This is what allows us to have very low prices and low (or free) shipping. Our listings are managed automatically with a \n    direct feed from the distributor to ensure we are not selling items that are out of stock. If there is high demand for the item, and we can't get \n    the order in immediately, there is a risk of the item selling out. This is why its important to have the signed FFL ready immediately, so we can process the order fast.\n    </p>\n\n    <p><br /><strong><u>WILL NOT SHIP WHERE PROHIBITED</u>:</strong><br />Please understand your local laws before bidding.\n        You will be expected to cover our listing costs and fees should we not be able to complete the sale or\n        transfer. If you have questions about the law, contact your local FFL you selected for transfer. Talk to them about the firearm on this listing. They will be more familiar with your local laws than we will.<br /><br />\n    </p>\n    <p><strong><u>HOW THIS WORKS:</u></strong><br />Purchasing a firearm online is easy!</p>\n    <p><strong>    You only need to send us 2 things: </strong></p>\n    <ul>\n        <li>Payment, which should be via Immediate Checkout as it's our only option right now</li>\n        <li>If purchasing a firearm, a signed copy of a Federal Firearms License (FFL) from a licensed dealer in your state. This would be a file that you can email us. You can locate a dealer in your\n            area by clicking here: <a target=_blank href=https://www.gunbroker.com/ffl/index>FIND AN FFL DEALER</a> <strong>Make sure they are still in business (accepting transfers)\n                before sending us the FFL.</strong></li>\n        <li>Having a signed copy of the FFL prior to submitting your order is ideal. If the FFL already has a eFFL on file with Gunbroker, you're done. If not, once placing the order you are given our contact information to email the FFL. Sending it immediately will make sure that we can process your order fast and that stock doesn't run out.</li>\n    </ul>\n    <p><strong>    After placing your order what is next? </strong></p>\n    <ul>\n        <li>We will immediately process your order if a valid FFL has been provided (if purchasing a firearm)</li>\n        <li>If we have the items onsite, we will pack them up carefully and get it shipped. If we are drop-shipping the item, we will place the order with our distributor.</li>\n        <li>We will provide you a tracking number within two business days</li>\n        <li>If ordering a firearm, you will then pick up your firearm at your selected FFL. </li>\n        <li><font color=red>IMPORTANT</font>: Inspect your firearm, make sure it's the correct item, and no damage exists prior to doing the transfer with the FFL. <b><font color=red>If you complete the transfer, we will not be able to process a return.</font></b> You would then need to address any issues directly with the manufacturer.</li>\n     </ul>\n\n    <p><br /><strong><u>QUESTIONS</u>:</strong><br />If you have any questions or need any assistance please feel free to contact us using the Ask Seller a Question link\n        at the top of the page\n    </p>\n    <br>",
     }
   },
   "fulfillment": {
     "emailer": {
       "templates": {
         "ffl_request": {
-          "message": "[customer_first_name],<br>In order to complete the processing of your order, we will need to get a copy of your selected dealers FFL License. Please reach out to your dealer and have them send their latest signed copy to your@email.com<br><br>Thank you again for the order,<br><b>Your Name</b><br>Your Company LLC",
+          "message": "[customer_first_name],<br>In order to complete the processing of your order, we will need to get a copy of your selected dealers FFL License. Please reach out to your dealer and have them send their latest signed copy to sales@cherokeetactical.com<br><br>Thank you again for the order,<br><b>Chris</b><br>Garidium LLC",
           "subject": "Order On-Hold, Requires copy of FFL"
         },
         "order_shipped": {
           "subject": "Order SHIPPED",
-          "message_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have received a Tracking Number and wanted to pass it along. If the estimated time of arrival is not shown yet, it usually updates by the evening. <br><br><a href=\"[tracking_number_url]\">[tracking_number_url]</a><br><br>I hope the order meets you well. <b>When you pick it up at your FFL, make sure to inspect it prior to the FFL performing the transfer</b>, otherwise we won't be able to process a return. If you have any issues, give me a call or text at -818-0708. You can also call or text if you happen to be shopping for any other guns. You can also visit my website at <a href=\"https://www.garidium.com\">https://www.garidium.com</a><br><br>Thank you again,<br><b>Gary</b><br>Garidium LLC",
-          "message_non_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have received a Tracking Number and wanted to pass it along. If the estimated time of arrival is not shown yet, it usually updates by the evening. <br><br><a href=\"[tracking_number_url]\">[tracking_number_url]</a><br><br>I hope the order meets you well. If you have any issues, give me a call or text at XXX-XXX-XXXX. You can also call or text if you happen to be shopping for any other guns. You can also visit my website at <a href=\"https://www.yoursite.com\">https://www.yoursite.com</a><br><br>Thank you again,<br><b>Gary</b><br>Garidium LLC"
+          "message_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have received a Tracking Number and wanted to pass it along. If the estimated time of arrival is not shown yet, it usually updates by the evening. <br><br><a href=\"[tracking_number_url]\">[tracking_number_url]</a><br><br>I hope the order meets you well. <b>When you pick it up at your FFL, make sure to inspect it prior to the FFL performing the transfer</b>, otherwise we won't be able to process a return. If you have any issues, give me a call or text at XXX-XXX-XXXX. You can also call or text if you happen to be shopping for any other guns. You can also visit my website at <a href=\"https://www.cherokeetactical.com\">https://www.cherokeetactical.com</a><br><br>Thank you again,<br><b>Chris</b><br>Garidium LLC",
+          "message_non_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have received a Tracking Number and wanted to pass it along. If the estimated time of arrival is not shown yet, it usually updates by the evening. <br><br><a href=\"[tracking_number_url]\">[tracking_number_url]</a><br><br>I hope the order meets you well. If you have any issues, give me a call or text at XXX-XXX-XXXX. You can also call or text if you happen to be shopping for any other guns. You can also visit my website at <a href=\"https://www.cherokeetactical.com\">https://www.cherokeetactical.com</a><br><br>Thank you again,<br><b>Chris</b><br>Garidium LLC"
         },
         "order_delivered": {
           "subject": "Order DELIVERED",
-          "message_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have received a notification that your item has arrived at your FFL location. If you haven't already picked it up, make sure to inspect it prior to the FFL performing the transfer, otherwise we won't be able to process a return. If you have any issues, give me a call or text at XXX-XXX-XXXX. If you happen to be shopping for any other firearms or accessories, please think of visiting my website: <a href=\"https://www.yoursite.com\">https://www.yoursite.com</a><br><br>Thank you,<br><b>Gary</b><br>Your Company LLC",
-          "message_non_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have received a notification that your item has arrived. If you have any issues, give me a call or text at XXX-XXX-XXXX. If you happen to be shopping for any other firearms or accessories, please think of visiting my website: <a href=\"https://www.yousite.com\">https://www.yoursite.com</a><br><br>Thank you,<br><b>Your Name</b><br>Your Company LLC"
+          "message_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have received a notification that your item has arrived at your FFL location. If you haven't already picked it up, make sure to inspect it prior to the FFL performing the transfer, otherwise we won't be able to process a return. If you have any issues, give me a call or text at XXX-XXX-XXXX. If you happen to be shopping for any other firearms or accessories, please think of visiting my website: <a href=\"https://www.cherokeetactical.com\">https://www.cherokeetactical.com</a><br><br>Thank you,<br><b>Chris</b><br>Garidium LLC",
+          "message_non_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have received a notification that your item has arrived. If you have any issues, give me a call or text at XXX-XXX-XXXX. If you happen to be shopping for any other firearms or accessories, please think of visiting my website: <a href=\"https://www.cherokeetactical.com\">https://www.cherokeetactical.com</a><br><br>Thank you,<br><b>Chris</b><br>Garidium LLC"
         },
         "order_processed": {
-          "subject": "THANK YOU from Your Company LLC",
-          "message_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have processed the order with our distributor and will reach out again as soon as we receive a tracking number. This can take 2-6 business days (not including weekends), depending on the volumes of orders being processed. If you have any questions, give me a call, or text me at XXX-XXX-XXXX. If you happen to be shopping for any other firearms or accessories, please think of visiting my website: <a href=\"https://www.yoursite.com\">https://www.yoursite.com</a><br><br>Thank you,<br><b>Gary</b><br>Your Company LLC",
-          "message_non_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have processed the order with our distributor and will reach out again as soon as we receive a tracking number. This can take 2-6 business days (not including weekends), depending on the volumes of orders being processed. If you have any questions, give me a call, or text me at XXX-XXX-XXXX. If you happen to be shopping for any other firearms or accessories, please think of visiting my website: <a href=\"https://www.yoursite.com\">https://www.yoursite.com</a><br><br>Thank you,<br><b>Gary</b><br>Your Company LLC"
+          "subject": "THANK YOU from XXXXX",
+          "message_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have processed the order with our distributor and will reach out again as soon as we receive a tracking number. This can take 2-6 business days (not including weekends), depending on the volumes of orders being processed. If you have any questions, give me a call, or text me at XXX-XXX-XXXX. If you happen to be shopping for any other firearms or accessories, please think of visiting my website: <a href=\"https://www.cherokeetactical.com\">https://www.cherokeetactical.com</a><br><br>Thank you,<br><b>Chris</b><br>Garidium LLC",
+          "message_non_ffl_order": "[customer_first_name],<br>I wanted to <b><u>Thank You</u></b> for trusting us with your order. We have processed the order with our distributor and will reach out again as soon as we receive a tracking number. This can take 2-6 business days (not including weekends), depending on the volumes of orders being processed. If you have any questions, give me a call, or text me at XXX-XXX-XXXX. If you happen to be shopping for any other firearms or accessories, please think of visiting my website: <a href=\"https://www.cherokeetactical.com\">https://www.cherokeetactical.com</a><br><br>Thank you,<br><b>Chris</b><br>Garidium LLC"
         }
       },
-      "from_email": "your_approved_email@garidium.com"
+      "from_email": "chris@cherokee-tactical.com"
     },
     "local_inventory": {
       "product_tag": "Local Inventory",
@@ -491,20 +191,20 @@
   },
   "distributors": {
     "Lipseys": {
-      "active": false,
+      "active": true,
       "distid": "LIP",
       "shipping": {
         "flat_rate": {
-          "cost": 8,
+          "cost": 9.95,
           "shipping_class": "flat_rate_lipseys"
         }
       },
       "fulfillment": {
-        "API_HOST": "your_host_namem",
-        "API_USER": "your_user@whatever.com",
-        "API_PASSWORD": "XXXXXXX",
+        "API_HOST": "cherokeetactical.com",
+        "API_USER": "chris@cherokee-tactical.com",
+        "API_PASSWORD": "VYkav5k4nvG!qfn1",
         "ffl_recipient_emails": [
-          "your_email@whatever.com",
+          "chris@cherokee-tactical.com",
           "validateffl@lipseys.com"
         ]
       },
@@ -520,16 +220,13 @@
         },
         "brand": {
           "exclude": [
-            "Heckler & Koch",
-            "Heckler and Koch (HK USA)",
+            "Daniel Defense",
+            "Heckler & Koch / H&K",
             "Browning",
-            "Browning Firearms",
-            "Browning/Winchester Repeating Arms"
+            "Winchester",
+            "Winchester Guns",
+            "Gemtech"
           ],
-          "include": []
-        },
-        "category": {
-          "exclude": [],
           "include": []
         },
         "product_class": {
@@ -541,7 +238,7 @@
       }
     },
     "Zanders": {
-      "active": false,
+      "active": true,
       "distid": "ZND",
       "shipping": {
         "price_based_shipping": [
@@ -563,11 +260,17 @@
         ]
       },
       "fulfillment": {
-        "API_USER": "XXXXXX@gzanders.org",
-        "API_PASSWORD": "XXXXXXXX",
+        "firearms": {
+          "api_user": "XXXXX@gzanders.org",
+          "api_password": "XXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX"
+        },
+        "accessories": {
+          "api_user": "XXXXX@gzanders.org",
+          "api_password": "XXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX"
+        },
         "ffl_recipient_emails": [
           "ffltransfer@gzanders.com",
-          "your_email@whatever.com"
+          "chris@cherokee-tactical.com"
         ]
       },
       "drop_ship_only_items": true,
@@ -584,10 +287,6 @@
           "exclude": [],
           "include": []
         },
-        "category": {
-          "exclude": [],
-          "include": []
-        },
         "product_class": {
           "exclude": [],
           "include": [
@@ -597,7 +296,7 @@
       }
     },
     "Davidsons": {
-      "active": false,
+      "active": true,
       "distid": "DAV",
       "shipping": {
         "flat_rate": {
@@ -619,10 +318,6 @@
           "exclude": [],
           "include": []
         },
-        "category": {
-          "exclude": [],
-          "include": []
-        },
         "product_class": {
           "exclude": [],
           "include": [
@@ -632,20 +327,20 @@
       }
     },
     "RSR Group": {
-      "active": false,
+      "active": true,
       "distid": "RSR",
       "shipping": {
         "flat_rate": {
-          "cost": 15,
+          "cost": 10,
           "shipping_class": "flat_rate_rsr"
         }
       },
       "fulfillment": {
-        "API_HOST": "https://test.rsrgroup.com/api/rsrbridge/1.0/pos/",
-        "API_USER": 99901,
-        "API_PASSWORD": "webuser1",
+        "API_HOST": "https://www.rsrgroup.com/api/rsrbridge/1.0/pos/",
+        "API_USER": 99999,
+        "API_PASSWORD": "XXXXXXX",
         "ffl_recipient_emails": [
-          "your_email@whatever.com",
+          "chris@cherokee-tactical.com",
           "dropship@rsrgroup.com"
         ]
       },
@@ -660,32 +355,44 @@
           "include": []
         },
         "brand": {
-          "exclude": [],
-          "include": []
-        },
-        "category": {
-          "exclude": [],
+          "exclude": [
+            "CRKT Knives",
+            "Camelbak",
+            "FLIR",
+            "Glock",
+            "Holosun",
+            "Holosun Technologies",
+            "Kestrel",
+            "Pelican",
+            "Vertx"
+          ],
           "include": []
         },
         "product_class": {
-          "exclude": [],
+          "exclude": [
+            "SO",
+            "FA"
+          ],
           "include": []
         }
       }
     },
-    "2nd Amendment Wholesale": {
-      "active": false,
-      "distid": "2AW",
+    "Sports South": {
+      "active": true,
+      "distid": "TSW",
       "shipping": {
         "flat_rate": {
-          "cost": 11.99,
-          "shipping_class": "flat_rate_2aw"
+          "cost": 10.95,
+          "shipping_class": "flat_rate_sports_south"
         }
       },
       "fulfillment": {
-        "API_TOKEN": "XXXXXX",
+        "api_user": 99999,
+        "api_password": 99999,
+        "api_customer_number": 99999,
         "ffl_recipient_emails": [
-          "dropship@2ndamendmentwholesale.com "
+          "fulfillment@sportssouth.biz",
+          "chris@cherokee-tactical.com"
         ]
       },
       "drop_ship_only_items": true,
@@ -699,25 +406,24 @@
           "include": []
         },
         "brand": {
-          "exclude": [],
+          "exclude": [
+            "Daniel Defense",
+            "Heckler & Koch / H&K",
+            "Winchester Guns",
+            "Browning"
+          ],
           "include": []
-        },
-        "category": {
-          "exclude": [],
-          "include": [
-            "1",
-            "5",
-            "6"
-          ]
         },
         "product_class": {
           "exclude": [],
-          "include": []
+          "include": [
+            "FA"
+          ]
         }
       }
     },
     "Chattanooga Shooting Supplies": {
-      "active": false,
+      "active": true,
       "distid": "CSSI",
       "shipping": {
         "flat_rate": {
@@ -731,8 +437,8 @@
         "require_adult_signature": false
       },
       "fulfillment": {
-        "API_SID": "XXXXXX",
-        "API_TOKEN": "XXXXXX"
+        "API_SID": "XXXX",
+        "API_TOKEN": "XXXX"
       },
       "drop_ship_only_items": true,
       "product_restrictions": {
@@ -745,11 +451,14 @@
           "include": []
         },
         "brand": {
-          "exclude": [],
-          "include": []
-        },
-        "category": {
-          "exclude": [],
+          "exclude": [
+            "Retay USA",
+            "Polymer 80 Inc",
+            "CZ-USA",
+            "Colt",
+            "Colt Mfg",
+            "Colt Rimfire"
+          ],
           "include": []
         },
         "product_class": {
@@ -761,17 +470,10 @@
       }
     }
   },
-  "max_listing_count": 10000,
-  "payment_processor": {
-    "bluedog": {
-      "api_key": "api_XXXXXXXXXX",
-      "api_base_url": "https://app.bluedogpayments.com/api",
-      "validate_transactions": false
-    }
-  },
-  "notification_email": "your_email@whatever.com",
-  "max_distributor_cost": 10000,
-  "min_distributor_cost": 300,
+  "max_listing_count": 100000,
+  "notification_email": "chris@cherokee-tactical.com",
+  "max_distributor_cost": 99999,
+  "min_distributor_cost": 0,
   "min_quantity_to_list": 2,
   "product_restrictions": {
     "sku": {
@@ -789,37 +491,27 @@
         "ATN",
         "Alien gear",
         "Athlon",
-        "Barrett",
+        "Barrett Firearms",
         "Beretta",
-        "Beretta U.S.A.",
+        "Beretta USA",
         "Cobra Archery",
         "Colt",
-        "Colt Manufacturing",
         "Comp-Tac",
         "Crimson Trace",
-        "FN",
-        "FN America",
-        "FN America Law Enf",
+        "FN America / FN Herstal",
         "FSDC",
         "Flying Arrow Archery",
         "Franklin Armory",
         "Frogg Toggs",
         "G5 OUTDOORS",
-        "Gemtech",
         "Glock",
-        "Glock Inc.",
         "HHA Sports",
         "Havalon",
-        "Henry",
-        "Hi-Point",
-        "Hi-Point Firearms",
+        "Henry Repeating Arms",
+        "Hi Point Firearms",
         "Hogue",
         "Holosun",
-        "IWI",
         "IWI - Israel Weapon Industries",
-        "IWI US, Inc",
-        "IWI-US",
-        "Israel Weapon Industries",
         "Kestrel",
         "Kynshot",
         "Leupold",
@@ -827,10 +519,9 @@
         "Nine Line Apparel",
         "Peet Dryer",
         "Pelican",
-        "Q",
         "Q LLC",
         "Ravin Crossbows",
-        "Ruger",
+        "Ruger / Sturm, Ruger & Co.",
         "SOG",
         "Scentcrusher",
         "Scentlok",
@@ -838,11 +529,7 @@
         "Sionyx",
         "Skull Hooker",
         "Slick Trick",
-        "Smith & Wesson",
-        "Smith & Wesson Inc.",
-        "Smith & Wesson Law Enf",
-        "Smith Wesson Dba Thompson Cent",
-        "Smith and Wesson",
+        "Smith & Wesson / S&W",
         "SportDog",
         "Spypoint",
         "Streamlight",
@@ -850,17 +537,13 @@
         "Tactacam",
         "Thorn Broadheads",
         "Trijicon",
+        "Trijicon Electro Optics",
         "Umarex",
         "Viridian",
-        "Walther",
         "Walther Arms",
         "Winchester",
-        "Winchester Repeating Arms"
+        "CZ-USA"
       ],
-      "include": []
-    },
-    "category": {
-      "exclude": [],
       "include": []
     },
     "product_class": {

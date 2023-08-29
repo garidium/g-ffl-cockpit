@@ -452,7 +452,7 @@ class g_ffl_Cockpit_Admin
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string",
-                                                        "enum": ["AC","AG","AO","AP","AR","BP","FA","FI","FP","HT","HZ","KN","MG","MZ","OP","OT","RL","SO"]
+                                                        "enum": ["AC","AG","AO","AP","AR","BP","FA","FI","FP","HS","HT","HZ","KN","LL","MG","MZ","OP","OT","RC","RL","SO"]
                                                     }
                                                 },
                                                 "include_exclude_brand": {
@@ -620,6 +620,10 @@ class g_ffl_Cockpit_Admin
                                                             "minimum": 0,
                                                             "maximum": 0.99
                                                         },
+                                                        "rounding": {
+                                                            "type": "string",
+                                                            "enum": ["none","round_to_nearest_dollar", "round_up_to_99_cents"]
+                                                        },
                                                         "round_to_nearest_dollar": {
                                                             "type": "boolean"
                                                         },
@@ -639,7 +643,6 @@ class g_ffl_Cockpit_Admin
                                                         "include_credit_card_fees_in_price",
                                                         "include_shipping_in_price",
                                                         "margin",
-                                                        "round_to_nearest_dollar",
                                                         "sales_tax_assumption"
                                                     ]
                                                 },
@@ -671,6 +674,12 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "margin_dollar": {
                                                             "type": "number"
+                                                        },
+                                                        "price_based_margin":{
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/price_based_margin"
+                                                            }
                                                         },
                                                         "margin_percentage": {
                                                             "type": "number",
@@ -713,6 +722,43 @@ class g_ffl_Cockpit_Admin
                                                     "items": {
                                                         "$ref": "#/definitions/price_based_shipping"
                                                     }
+                                                },
+                                                "price_based_margin": {
+                                                    "title": "Price-based Margin",
+                                                    "description": "Price-based Margin Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "maximum_unit_cost": {
+                                                            "type": "number"
+                                                        },
+                                                        "minimum_unit_cost": {
+                                                            "type": "number"
+                                                        },
+                                                        "margin_percentage":{
+                                                            "type": "number",
+                                                            "minimum": 0,
+                                                            "maximum": 0.99
+                                                        },
+                                                        "margin_dollar": {
+                                                            "type": "number"
+                                                        }
+                                                    },
+                                                    "oneOf": [
+                                                        {
+                                                            "required": [
+                                                                "minimum_unit_cost",
+                                                                "maximum_unit_cost",
+                                                                "margin_percentage"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "minimum_unit_cost",
+                                                                "maximum_unit_cost",
+                                                                "margin_dollar"
+                                                            ]
+                                                        }
+                                                    ]
                                                 },
                                                 "price_based_shipping": {
                                                     "title": "Price-based Shipping",
@@ -1438,17 +1484,22 @@ class g_ffl_Cockpit_Admin
                             <tr><td><b>AP</b></td><td>Apparel</td></tr>
                             <tr><td><b>AR</b></td><td>Archery</td></tr>
                             <tr><td><b>BP</b></td><td>Black Powder Firearms</td></tr>
+                            <tr><td><b>BS</b></td><td>Binoculars & Spotting</td></tr>
                             <tr><td><b>FA</b></td><td>Firearms</td></tr>
                             <tr><td><b>FI</b></td><td>Fishing</td></tr>
                             <tr><td><b>FP</b></td><td>Firearms Parts</td></tr>
+                            <tr><td><b>HS</b></td><td>Holsters</td></tr>
                             <tr><td><b>HT</b></td><td>Hunting</td></tr>
                             <tr><td><b>HZ</b></td><td>Hazardous</td></tr>
                             <tr><td><b>KN</b></td><td>Knives</td></tr>
+                            <tr><td><b>LL</b></td><td>Lights & Lasers</td></tr>
                             <tr><td><b>MG</b></td><td>Magazines</td></tr>
                             <tr><td><b>MZ</b></td><td>Muzzleloading</td></tr>
                             <tr><td><b>OP</b></td><td>Optics</td></tr>
                             <tr><td><b>OT</b></td><td>Other</td></tr>
+                            <tr><td><b>RC</b></td><td>Range Bags & Cases</td></tr>
                             <tr><td><b>RL</b></td><td>Reloading</td></tr>
+                            <tr><td><b>SF</b></td><td>Safes</td></tr>
                             <tr><td><b>SO</b></td><td>SOT</td></tr>
                         </table>
                         <a style="cursor:pointer;" onclick="document.getElementById('white_label_settings_name').style.display='';document.getElementById('white_label_settings_url').style.display='';">&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;</a>
