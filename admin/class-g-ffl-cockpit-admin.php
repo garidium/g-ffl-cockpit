@@ -391,13 +391,24 @@ class g_ffl_Cockpit_Admin
                                                         "exclude": {
                                                             "type": "array",
                                                             "items": {
-                                                                "type": "string"
+                                                                "anyOf": [
+                                                                    { "type": "string" },
+                                                                    { "type": "number" },
+                                                                    
+                                                                ]
                                                             }
                                                         },
                                                         "include": {
                                                             "type": "array",
                                                             "items": {
-                                                                "type": "string"
+                                                                "anyOf": [
+                                                                    { "type": "string" },
+                                                                    { "type": "number" },
+                                                                    {
+                                                                        "type": "string",
+                                                                        "pattern": "^0[0-9]*$"  // Matches strings with leading zeroes
+                                                                    },
+                                                                ]
                                                             }
                                                         }
                                                     },"anyOf": [
@@ -635,7 +646,10 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "include_credit_card_fees_in_price": {
                                                             "type": "boolean"
-                                                        }
+                                                        },
+                                                        "ignore_map_brands": {
+                                                            "$ref": "#/definitions/brands"
+                                                        },
                                                     },
                                                     "required": [
                                                         "credit_card_fee_percent",
@@ -983,7 +997,6 @@ class g_ffl_Cockpit_Admin
                                                         "load_batch_count",
                                                         "manage_product_categories",
                                                         "manage_product_attributes",
-                                                        "pricing",
                                                         "url"
                                                     ]
                                                 },
@@ -1225,7 +1238,6 @@ class g_ffl_Cockpit_Admin
                                                         "listing_duration",
                                                         "password",
                                                         "payment_methods",
-                                                        "pricing",
                                                         "standard_description_html",
                                                         "standard_text_id",
                                                         "environment",

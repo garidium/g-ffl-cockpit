@@ -5,7 +5,7 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.3
 Requires PHP: 7.0
-Stable tag: 1.2.11
+Stable tag: 1.2.12
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -65,6 +65,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+22. v1.2.12 Added MAP brand exclusion feature
 21. v1.2.11 Added additional product classes
 20. v1.2.10 Changed menu icon, modified wording on Zanders Add FFL to hold order process
 19. v1.2.9 Added Sports South and update Manufacturers List
