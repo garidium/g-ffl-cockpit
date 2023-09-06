@@ -330,7 +330,7 @@ class g_ffl_Cockpit_Admin
                                                     "anyOf": [
                                                         {
                                                             "required": [
-                                                                "Chatanooga Shooting Supplies"
+                                                                "Chattanooga Shooting Supplies"
                                                             ]
                                                         },                 
                                                         {
@@ -352,6 +352,10 @@ class g_ffl_Cockpit_Admin
                                                         },                {
                                                             "required": [
                                                                 "Lipseys"
+                                                            ]
+                                                        },                {
+                                                            "required": [
+                                                                "Sports South"
                                                             ]
                                                         }
                                                     ]
@@ -1655,9 +1659,9 @@ class g_ffl_Cockpit_Admin
                         });
                     </script>
                                     <!-- The Modal -->
-                    <div id="myModal" class="modal">
+                    <div id="myModal" class="cockpit-modal">
                         <!-- Modal content -->
-                        <div class="modal-content">
+                        <div class="cockpit-modal-content">
                             <span class="close">&times;</span>
                             <div align="center" id="product_detail_div"></div>
                         </div>

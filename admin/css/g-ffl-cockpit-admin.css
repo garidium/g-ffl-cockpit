@@ -39,7 +39,7 @@
 }
 
   /* The Modal (background) */
-.modal {
+.cockpit-modal {
   display: none; /* Hidden by default */
   position: absolute; /* Stay in place */
   z-index: 1; /* Sit on top */
@@ -54,7 +54,7 @@
 }
 
 /* Modal Content */
-.modal-content {
+.cockpit-modal-content {
   background-color: #fefefe;
   margin: auto;
   padding: 20px;
