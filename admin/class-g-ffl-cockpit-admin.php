@@ -257,11 +257,10 @@ class g_ffl_Cockpit_Admin
                                             "title": "g-FFL Cockpit Configuration",
                                             "description": "Configuration file for the g-FFL Cockpit WooCommerce Plugin",
                                             "type": "object",
-                                            "required": ["distributors", "max_distributor_cost",
-                                                         "max_listing_count", "min_distributor_cost",
+                                            "required": ["distributors", "max_listing_count", 
                                                          "min_quantity_to_list", "notification_email",
                                                          "pricing", "product_restrictions"],
-                                            "properties": {
+                                            "properties": { 
                                                 "max_listing_count": {
                                                     "description": "Maximum Listing Count",
                                                     "type": "integer",
@@ -293,6 +292,11 @@ class g_ffl_Cockpit_Admin
                                                     "title": "Pricing",
                                                     "description": "Pricing and Margin Configuration",
                                                     "$ref": "#/definitions/pricing"
+                                                },
+                                                "fulfillment": {
+                                                    "title": "Fulfillment",
+                                                    "description": "Fulfillment Configuration",
+                                                    "$ref": "#/definitions/fulfillment"
                                                 },
                                                 "distributors": {
                                                     "description": "Firearms and Accessories Distributors",
@@ -387,6 +391,139 @@ class g_ffl_Cockpit_Admin
                                             },
                                             "definitions":
                                             {
+                                                "fulfillment": {
+                                                    "title": "Fulfillment Configuration",
+                                                    "description": "Fulfillment Configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "max_auto_fulfillment_dollar_value":{
+                                                            "description": "Maximum Distributor Cost for automated fulfillment",
+                                                            "type": "number"
+                                                        },
+                                                        "ffl_ezcheck_validation":{
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "active": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "premise_mailing_mismatch_alert": {
+                                                                    "type": "boolean"
+                                                                },    
+                                                            },
+                                                            "required": ["active", "premise_mailing_mismatch_alert"]
+                                                         },
+                                                        "emailer": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "from_email": {
+                                                                    "type": "string",
+                                                                    "format": "email" 
+                                                                },
+                                                                "templates": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "ffl_request": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "message": { "type": "string" },
+                                                                                "subject": { "type": "string" }
+                                                                            },
+                                                                            "required": ["message", "subject"]
+                                                                        },
+                                                                        "order_shipped": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "subject": { "type": "string" },
+                                                                                "message_ffl_order": { "type": "string" },
+                                                                                "message_non_ffl_order": { "type": "string" }
+                                                                            },
+                                                                             "required": ["subject", "message_ffl_order", "message_non_ffl_order"]
+                                                                        },
+                                                                        "order_delivered": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "subject": { "type": "string" },
+                                                                                "message_ffl_order": { "type": "string" },
+                                                                                "message_non_ffl_order": { "type": "string" }
+                                                                            },
+                                                                            "required": ["subject", "message_ffl_order", "message_non_ffl_order"]
+                                                                        },
+                                                                        "order_processed": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "subject": { "type": "string" },
+                                                                                "message_ffl_order": { "type": "string" },
+                                                                                "message_non_ffl_order": { "type": "string" }
+                                                                            },
+                                                                            "required": ["subject", "message_ffl_order", "message_non_ffl_order"]
+                                                                        }
+                                                                    },
+                                                                    "required": ["ffl_request", "order_shipped", "order_delivered", "order_processed"]
+                                                                },
+                                                            },
+                                                            "required": ["templates", "from_email"]
+                                                        },
+                                                        "local_inventory": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "product_tag": {
+                                                                    "type": "string"
+                                                                },
+                                                                "sell_local_first": {
+                                                                    "type": "boolean"
+                                                                }
+                                                            },
+                                                            "required": ["product_tag", "sell_local_first"]
+                                                        }
+                                                    },
+                                                    "required": ["emailer"]
+                                                },
+                                                "cost_restrictions":{
+                                                    "title": "Cost-based Product Restrictions",
+                                                    "description": "Cost-based Product Restrictions",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "global_restrictions": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "max_distributor_cost": {
+                                                                    "description": "Maximum Distributor Cost for a Listed Item",
+                                                                    "type": "number"
+                                                                },
+                                                                "min_distributor_cost": {
+                                                                    "description": "Minimum Distributor Cost for a Listed Item",
+                                                                    "type": "number"
+                                                                },
+                                                            },
+                                                            "required": ["max_distributor_cost", "min_distributor_cost"]
+                                                        },
+                                                        "product_class_restrictions": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "product_class": {
+                                                                        "$ref": "#/definitions/product_classes" 
+                                                                    },
+                                                                    "max_distributor_cost": { "type": "number" },
+                                                                    "min_distributor_cost": { "type": "number" }
+                                                                },
+                                                                "required": ["product_class", "max_distributor_cost", "min_distributor_cost"]
+                                                            }
+                                                        }
+                                                    }, "anyOf": [
+                                                        {
+                                                            "required": [
+                                                                "product_class_restrictions"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "global_restrictions"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
                                                 "include_exclude": {
                                                     "title": "Include Exclude Options",
                                                     "description": "Include Exclude Options",
@@ -551,6 +688,9 @@ class g_ffl_Cockpit_Admin
                                                         "sku": {
                                                             "$ref": "#/definitions/include_exclude"
                                                         },
+                                                        "cost": {
+                                                            "$ref": "#/definitions/cost_restrictions"
+                                                        },
                                                         "upc": {
                                                             "$ref": "#/definitions/include_exclude"
                                                         },
@@ -589,7 +729,12 @@ class g_ffl_Cockpit_Admin
                                                             "required": [
                                                                 "upc"
                                                             ]
-                                                        } 
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "cost"
+                                                            ]
+                                                        }  
                                                     ]
                                                 },
                                                 "pricing": {
