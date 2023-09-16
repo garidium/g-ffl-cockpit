@@ -2,28 +2,30 @@
 // no outside access
 if (!defined('WPINC')) die('No access outside of wordpress.');
 
-add_action('add_meta_boxes_shop_order', 'g_ffl_checkout_fulfillment_options_box');
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+add_action('add_meta_boxes', 'g_ffl_checkout_fulfillment_options_box');
 function g_ffl_checkout_fulfillment_options_box()
 {
+    $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
+    ? wc_get_page_screen_id( 'shop-order' )
+    : 'shop_order';
+
     add_meta_box(
         'g_ffl_checkout_fulfillment_options_box',
         __('FFL Cockpit'),
         'g_ffl_checkout_fulfillment_options_html',
-        'shop_order',
+        $screen,
         'normal',
         'high'
     );
 }
 
-function g_ffl_checkout_fulfillment_options_html()
+function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
 {
-    global $post_id;
-    $order = new WC_Order( $post_id );
+    $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
     $aKey = get_option('g_ffl_cockpit_key');
     $orderId = $order->get_id();
-    //$aKey = "";
-    //$orderId = "";
-
+  
     echo '
         <table style="width:100%;">
             <tr>

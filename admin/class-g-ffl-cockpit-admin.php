@@ -257,32 +257,19 @@ class g_ffl_Cockpit_Admin
                                             "title": "g-FFL Cockpit Configuration",
                                             "description": "Configuration file for the g-FFL Cockpit WooCommerce Plugin",
                                             "type": "object",
-                                            "required": ["distributors", "max_listing_count", 
-                                                         "min_quantity_to_list", "notification_email",
+                                            "required": ["distributors", "targets", "notification_email",
                                                          "pricing", "product_restrictions"],
                                             "properties": { 
-                                                "max_listing_count": {
-                                                    "description": "Maximum Listing Count",
-                                                    "type": "integer",
-                                                    "exclusiveMinimum": true,
-                                                    "minimum":0
+                                                "bound_book": {
+                                                    "type": "object"
+                                                },
+                                                "POS": {
+                                                    "type": "object"
                                                 },
                                                 "notification_email": {
                                                     "description": "Email for System Notifications and Alerts",
                                                     "type": "string",
                                                     "format": "email"
-                                                },
-                                                "max_distributor_cost": {
-                                                    "description": "Maximum Distributor Cost for a Listed Item",
-                                                    "type": "number"
-                                                },
-                                                "min_distributor_cost": {
-                                                    "description": "Minimum Distributor Cost for a Listed Item",
-                                                    "type": "number"
-                                                },
-                                                "min_quantity_to_list": {
-                                                    "description": "Minimum In-Stock Quantity to List an Item",
-                                                    "type": "integer"
                                                 },
                                                 "product_restrictions": {
                                                     "description": "Product Restrictions",
@@ -297,6 +284,21 @@ class g_ffl_Cockpit_Admin
                                                     "title": "Fulfillment",
                                                     "description": "Fulfillment Configuration",
                                                     "$ref": "#/definitions/fulfillment"
+                                                },
+                                                "payment_processor": {
+                                                    "description": "Payment processor configuration",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "bluedog": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "api_key": {"type": "string"},
+                                                                "api_base_url": {"type": "string"},
+                                                                "validate_transactions": {"type": "boolean"}
+                                                            }
+                                                        }
+                                                    },
+                                                    "additionalProperties": false
                                                 },
                                                 "distributors": {
                                                     "description": "Firearms and Accessories Distributors",
@@ -331,6 +333,7 @@ class g_ffl_Cockpit_Admin
                                                             "$ref": "#/definitions/distributor_tsw"
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "anyOf": [
                                                         {
                                                             "required": [
@@ -389,16 +392,98 @@ class g_ffl_Cockpit_Admin
                                                     }
                                                 },
                                             },
+                                            "additionalProperties": false,
                                             "definitions":
                                             {
+                                                "local_inventory": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "product_tag": {
+                                                            "type": "string"
+                                                        },
+                                                        "sell_local_first": {
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "additionalProperties": false,
+                                                    "required": ["product_tag", "sell_local_first"]
+                                                },
+                                                "insurance": {
+                                                    "title": "Distributor Shipping Insurance Fees",
+                                                    "description": "Distributor Shipping Insurance Fees",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "cost_per_hundred":{
+                                                            "description": "Cost in dollars per hundred in unit cost",
+                                                            "type": "number"
+                                                        },
+                                                        "include": {
+                                                            "type": "boolean"
+                                                        },
+                                                    },
+                                                    "required": ["cost_per_hundred", "include"]
+                                                },
+                                                "handling": {
+                                                    "title": "Distributor Handling Fees",
+                                                    "description": "Distributor Handling Fees",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "amount":{
+                                                            "description": "Amount in Dollars for Handling Fee",
+                                                            "type": "number"
+                                                        },
+                                                        "order_threshold":{
+                                                            "description": "Any Order below this threshold will incur a handling charge",
+                                                            "type": "number"
+                                                        },
+                                                        "add_handling_to_unit_cost": {
+                                                            "type": "boolean"
+                                                        },
+                                                    },
+                                                    "required": ["amount", "order_threshold", "add_handling_to_unit_cost"]
+                                                },
                                                 "fulfillment": {
                                                     "title": "Fulfillment Configuration",
                                                     "description": "Fulfillment Configuration",
                                                     "type": "object",
                                                     "properties": {
-                                                        "max_auto_fulfillment_dollar_value":{
-                                                            "description": "Maximum Distributor Cost for automated fulfillment",
-                                                            "type": "number"
+                                                        "automation_exceptions":{
+                                                            "type": "object",
+                                                            "description": "Exception rules for bypassing Fulfillment Automation",
+                                                            "properties": {
+                                                                "max_auto_fulfillment_dollar_value":{
+                                                                    "description": "Maximum Distributor Cost for automated fulfillment",
+                                                                    "type": "number"
+                                                                },
+                                                                "local_inventory": {
+                                                                    "$ref": "#/definitions/local_inventory"
+                                                                },
+                                                                "address_verification": {
+                                                                    "type": "object",
+                                                                    "description": "Restrictions by product class to bypass automation",
+                                                                    "properties": {
+                                                                        "billing_shipping_match": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "active": {"type": "boolean"},
+                                                                                "price_range": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "minimum": {"type": "number"},
+                                                                                        "maximum": {"type": "number"},
+                                                                                    }
+                                                                                },
+                                                                                "product_class": {
+                                                                                    "$ref": "#/definitions/product_classes"
+                                                                                }
+                                                                            },
+                                                                            "additionalProperties": false,
+                                                                        }
+                                                                    },
+                                                                    "additionalProperties": false,
+                                                                }
+                                                            },
+                                                            "additionalProperties": false,
                                                         },
                                                         "ffl_ezcheck_validation":{
                                                             "type": "object",
@@ -458,24 +543,15 @@ class g_ffl_Cockpit_Admin
                                                                             "required": ["subject", "message_ffl_order", "message_non_ffl_order"]
                                                                         }
                                                                     },
+                                                                    "additionalProperties": false,
                                                                     "required": ["ffl_request", "order_shipped", "order_delivered", "order_processed"]
                                                                 },
                                                             },
+                                                            "additionalProperties": false,
                                                             "required": ["templates", "from_email"]
-                                                        },
-                                                        "local_inventory": {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "product_tag": {
-                                                                    "type": "string"
-                                                                },
-                                                                "sell_local_first": {
-                                                                    "type": "boolean"
-                                                                }
-                                                            },
-                                                            "required": ["product_tag", "sell_local_first"]
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": ["emailer"]
                                                 },
                                                 "cost_restrictions":{
@@ -511,7 +587,9 @@ class g_ffl_Cockpit_Admin
                                                                 "required": ["product_class", "max_distributor_cost", "min_distributor_cost"]
                                                             }
                                                         }
-                                                    }, "anyOf": [
+                                                    }, 
+                                                    "additionalProperties": false,
+                                                    "anyOf": [
                                                         {
                                                             "required": [
                                                                 "product_class_restrictions"
@@ -534,8 +612,7 @@ class g_ffl_Cockpit_Admin
                                                             "items": {
                                                                 "anyOf": [
                                                                     { "type": "string" },
-                                                                    { "type": "number" },
-                                                                    
+                                                                    { "type": "number" }
                                                                 ]
                                                             }
                                                         },
@@ -544,15 +621,13 @@ class g_ffl_Cockpit_Admin
                                                             "items": {
                                                                 "anyOf": [
                                                                     { "type": "string" },
-                                                                    { "type": "number" },
-                                                                    {
-                                                                        "type": "string",
-                                                                        "pattern": "^0[0-9]*$"  // Matches strings with leading zeroes
-                                                                    },
+                                                                    { "type": "number" }
                                                                 ]
                                                             }
                                                         }
-                                                    },"anyOf": [
+                                                    },
+                                                    "additionalProperties": false,
+                                                    "anyOf": [
                                                         {
                                                             "required": [
                                                                 "exclude"
@@ -576,7 +651,9 @@ class g_ffl_Cockpit_Admin
                                                         "include": {
                                                             "$ref": "#/definitions/product_classes"
                                                         }
-                                                    },"anyOf": [
+                                                    },
+                                                    "additionalProperties": false,
+                                                    "anyOf": [
                                                         {
                                                             "required": [
                                                                 "exclude"
@@ -650,6 +727,7 @@ class g_ffl_Cockpit_Admin
                                                             "$ref": "#/definitions/product_restrictions"
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                      "required": [
                                                         "profile_id"
                                                     ]
@@ -670,6 +748,7 @@ class g_ffl_Cockpit_Admin
                                                             "maximum":0.99
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "anyOf": [
                                                         {
                                                             "required": [
@@ -685,6 +764,10 @@ class g_ffl_Cockpit_Admin
                                                 },
                                                 "product_restrictions":{
                                                     "properties": {
+                                                        "min_quantity_to_list": {
+                                                            "description": "Minimum In-Stock Quantity to List an Item",
+                                                            "type": "integer"
+                                                        },
                                                         "sku": {
                                                             "$ref": "#/definitions/include_exclude"
                                                         },
@@ -702,9 +785,18 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "product_class": {
                                                             "$ref": "#/definitions/include_exclude_product_class"
+                                                        },
+                                                        "purchase_limit": {
+                                                            "type": "integer"
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "anyOf": [
+                                                        {
+                                                            "required": [
+                                                                "min_quantity_to_list"
+                                                            ]
+                                                        },
                                                         {
                                                             "required": [
                                                                 "product_class"
@@ -744,31 +836,13 @@ class g_ffl_Cockpit_Admin
                                                                 "default": {
                                                                     "$ref": "#/definitions/margin"
                                                                 },
-                                                                "firearms": {
-                                                                    "$ref": "#/definitions/margin"
-                                                                },
-                                                                "ammunition": {
-                                                                    "$ref": "#/definitions/margin"
-                                                                },
-                                                                "accessories": {
-                                                                    "$ref": "#/definitions/margin"
-                                                                },
-                                                                "custom1": {
-                                                                    "$ref": "#/definitions/margin"
-                                                                },
-                                                                "custom2": {
-                                                                    "$ref": "#/definitions/margin"
-                                                                },
-                                                                "custom3": {
-                                                                    "$ref": "#/definitions/margin"
-                                                                },
-                                                                "custom4": {
-                                                                    "$ref": "#/definitions/margin"
-                                                                },
-                                                                "custom5": {
+                                                            },
+                                                            "patternProperties": {
+                                                                "^[a-zA-Z]+$": {
                                                                     "$ref": "#/definitions/margin"
                                                                 }
-                                                            }
+                                                            },
+                                                            "required": ["default"]
                                                         },
                                                         "sales_tax_assumption": {
                                                             "type": "number",
@@ -800,6 +874,7 @@ class g_ffl_Cockpit_Admin
                                                             "$ref": "#/definitions/brands"
                                                         },
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": [
                                                         "credit_card_fee_percent",
                                                         "credit_card_fee_transaction",
@@ -850,6 +925,7 @@ class g_ffl_Cockpit_Admin
                                                             "maximum": 0.99
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "anyOf": [
                                                         {
                                                             "required": [
@@ -906,7 +982,8 @@ class g_ffl_Cockpit_Admin
                                                             "type": "number"
                                                         }
                                                     },
-                                                    "oneOf": [
+                                                    "additionalProperties": false,
+                                                    "anyOf": [
                                                         {
                                                             "required": [
                                                                 "minimum_unit_cost",
@@ -919,6 +996,14 @@ class g_ffl_Cockpit_Admin
                                                                 "minimum_unit_cost",
                                                                 "maximum_unit_cost",
                                                                 "margin_dollar"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "margin_dollar",
+                                                                "minimum_unit_cost",
+                                                                "maximum_unit_cost",
+                                                                "margin_percentage"
                                                             ]
                                                         }
                                                     ]
@@ -953,6 +1038,12 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "flat_rate": {
                                                             "$ref": "#/definitions/flat_rate_shipping"
+                                                        },
+                                                        "insurance": {
+                                                            "$ref": "#/definitions/insurance"
+                                                        },
+                                                        "handling": {
+                                                            "$ref": "#/definitions/handling"
                                                         }
                                                     },
                                                     "oneOf": [
@@ -1137,8 +1228,23 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "manage_product_attributes": {
                                                             "type": "boolean"
+                                                        },
+                                                        "product_tags": {
+                                                            "patternProperties": {
+                                                                "[a-zA-Z0-9_ ]*": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "anyOf": [
+                                                                            { "type": "string" },
+                                                                            { "type": "number" }
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            }
                                                         }
+                                                        
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": [
                                                         "active",
                                                         "consumer-key",
@@ -1157,6 +1263,9 @@ class g_ffl_Cockpit_Admin
                                                         "key": {
                                                             "type": "string",
                                                             "format": "uuid"
+                                                        },
+                                                        "automated_fulfillment": {
+                                                            "type": "boolean"
                                                         },
                                                         "environment": {
                                                             "type": "string",
@@ -1379,6 +1488,7 @@ class g_ffl_Cockpit_Admin
                                                             "title": "DriveCustomersToWebsite"
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": [
                                                         "active",
                                                         "fees",
@@ -1413,8 +1523,26 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "product_restrictions": {
                                                             "$ref": "#/definitions/product_restrictions"
+                                                        },
+                                                        "fulfillment": {
+                                                            "properties": {
+                                                                "api_user": {"type": "number"},
+                                                                "api_password": {"type": "number"},
+                                                                "api_customer_number": {"type": "number"},
+                                                                "ffl_recipient_emails": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string",
+                                                                        "format": "email"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "additionalProperties": false,
+                                                            "required": ["api_user", "api_password",
+                                                                        "api_customer_number", "ffl_recipient_emails"]
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": [
                                                         "active",
                                                         "distid",
@@ -1443,8 +1571,17 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "product_restrictions": {
                                                             "$ref": "#/definitions/product_restrictions"
+                                                        },
+                                                        "fulfillment": {
+                                                            "properties": {
+                                                                "API_SID": {"type": "string"},
+                                                                "API_TOKEN": {"type": "string"}
+                                                            },
+                                                            "additionalProperties": false,
+                                                            "required": ["API_SID", "API_TOKEN"]
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": [
                                                         "active",
                                                         "distid",
@@ -1475,6 +1612,7 @@ class g_ffl_Cockpit_Admin
                                                             "$ref": "#/definitions/product_restrictions"
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": [
                                                         "active",
                                                         "distid",
@@ -1495,6 +1633,23 @@ class g_ffl_Cockpit_Admin
                                                             "type": "string",
                                                             "const": "LIP"
                                                         },
+                                                        "fulfillment": {
+                                                            "properties": {
+                                                                "API_HOST": {"type": "string"},
+                                                                "API_USER": {"type": "string", "format": "email"},
+                                                                "API_PASSWORD": {"type": "string"},
+                                                                "ffl_recipient_emails": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string",
+                                                                        "format": "email"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "additionalProperties": false,
+                                                            "required": ["API_HOST", "API_USER",
+                                                                        "API_PASSWORD", "ffl_recipient_emails"]
+                                                        },
                                                         "shipping": {
                                                             "$ref": "#/definitions/shipping"
                                                         },
@@ -1505,6 +1660,7 @@ class g_ffl_Cockpit_Admin
                                                             "$ref": "#/definitions/product_restrictions"
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": [
                                                         "active",
                                                         "distid",
@@ -1533,8 +1689,26 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "product_restrictions": {
                                                             "$ref": "#/definitions/product_restrictions"
+                                                        },
+                                                        "fulfillment": {
+                                                            "properties": {
+                                                                "API_HOST": {"type": "string"},
+                                                                "API_USER": {"type": "number"},
+                                                                "API_PASSWORD": {"type": "string"},
+                                                                "ffl_recipient_emails": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string",
+                                                                        "format": "email"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "additionalProperties": false,
+                                                            "required": ["API_HOST", "API_USER",
+                                                                        "API_PASSWORD", "ffl_recipient_emails"]
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": [
                                                         "active",
                                                         "distid",
@@ -1563,8 +1737,23 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "product_restrictions": {
                                                             "$ref": "#/definitions/product_restrictions"
+                                                        },
+                                                        "fulfillment": {
+                                                            "properties": {
+                                                                "API_TOKEN": {"type": "string"},
+                                                                "ffl_recipient_emails": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string",
+                                                                        "format": "email"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "additionalProperties": false,
+                                                            "required": ["API_TOKEN", "ffl_recipient_emails"]
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": [
                                                         "active",
                                                         "distid",
@@ -1593,8 +1782,40 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "product_restrictions": {
                                                             "$ref": "#/definitions/product_restrictions"
+                                                        },
+                                                        "fulfillment": {
+                                                            "properties": {
+                                                                "firearms":{
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "api_user": {"type": "string", "format": "email"},
+                                                                        "api_password": {"type": "string"},
+                                                                    },
+                                                                    "additionalProperties": false,
+                                                                    "required": ["api_user", "api_password"]
+                                                                },
+                                                                "accessories":{
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "api_user": {"type": "string", "format": "email"},
+                                                                        "api_password": {"type": "string"},
+                                                                    },
+                                                                    "additionalProperties": false,
+                                                                    "required": ["api_user", "api_password"]
+                                                                },
+                                                                "ffl_recipient_emails": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string",
+                                                                        "format": "email"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "additionalProperties": false,
+                                                            "required": ["accessories", "firearms", "ffl_recipient_emails"]
                                                         }
                                                     },
+                                                    "additionalProperties": false,
                                                     "required": [
                                                         "active",
                                                         "distid",

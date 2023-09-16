@@ -470,7 +470,6 @@
       }
     }
   },
-  "max_listing_count": 100000,
   "notification_email": "YourName@yourstore.com",
   "max_distributor_cost": 99999,
   "min_distributor_cost": 0,

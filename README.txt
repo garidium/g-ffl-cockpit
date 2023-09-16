@@ -5,7 +5,7 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.3
 Requires PHP: 7.0
-Stable tag: 1.2.14
+Stable tag: 1.2.15
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -65,6 +65,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+25. v1.2.15 HPOS Compatibility and Schema validation changes
 24. v1.2.14 Updated validation schema for fulfillment and product restrictions
 23. v1.2.13 Style Sheet tweaks, JSON Schema updates
 22. v1.2.12 Added MAP brand exclusion feature

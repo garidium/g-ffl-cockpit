@@ -16,7 +16,7 @@
  * Plugin Name:       g-FFL Cockpit
  * Plugin URI:        garidium.com/g-ffl-cockput
  * Description:       g-FFL Cockpit
- * Version:           1.2.14
+ * Version:           1.2.15
  * WC requires at least: 3.0.0
  * WC tested up to:   4.0
  * Author:            Garidium LLC
@@ -47,7 +47,7 @@ if (! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('G_FFL_COCKPIT_VERSION', '1.2.14');
+define('G_FFL_COCKPIT_VERSION', '1.2.15');
 
 /**
  * The code that runs during plugin activation.
@@ -78,6 +78,12 @@ register_deactivation_hook(__FILE__, 'deactivate_g_ffl_cockpit');
  */
 require plugin_dir_path(__FILE__) . 'includes/class-g-ffl-cockpit.php';
 require plugin_dir_path(__FILE__) . 'includes/fulfillment_options.php';
+
+add_action( 'before_woocommerce_init', function() {
+	if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+	}
+} );
 
 /**
  * Begins execution of the plugin.
