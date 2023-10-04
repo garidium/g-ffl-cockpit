@@ -1527,7 +1527,7 @@ class g_ffl_Cockpit_Admin
                                                         "fulfillment": {
                                                             "properties": {
                                                                 "api_user": {"type": "number"},
-                                                                "api_password": {"type": "number"},
+                                                                "api_password": {"type": ["string", "number"]},
                                                                 "api_customer_number": {"type": "number"},
                                                                 "ffl_recipient_emails": {
                                                                     "type": "array",
