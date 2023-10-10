@@ -2226,7 +2226,7 @@ class g_ffl_Cockpit_Admin
                             });
                         });
 
-                        if (window.location.host == 'garidium.com' || window.location.host == 'localhost:8000'){
+                        if (window.location.host == 'riflenetics.com' || window.location.host == 'urbanrifleworks.com' || window.location.host == 'garidium.com' || window.location.host == 'localhost:8000'){
                             document.getElementById("gunbroker_processor_section").style.display="";
                             document.getElementById("process_gunbroker_order_button").addEventListener("click", function(){
                                 document.getElementById("process_gunbroker_order_button").disabled = true;
