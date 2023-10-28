@@ -59,12 +59,16 @@ function setConfig(g_ffl_cockpit_key){
 		.then((response) => response.json())
 		.then((data) => {
 			console.log("g-FFL Cockpit Configuration Changes:", data.success);
+			if (data.success){
+				alert("FFL Cockpit Changes Applied");
+			}else{
+				alert("No Changes were Detected in your configuration.")
+			}		
 		})
 		return true;
 	}else{
 		alert("Configuration Errors need to be resolved before saving.")
 	}
-
 	return false;
 }
 

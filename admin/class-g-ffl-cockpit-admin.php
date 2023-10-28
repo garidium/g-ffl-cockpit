@@ -132,7 +132,6 @@ class g_ffl_Cockpit_Admin
         echo '<script type="text/javascript">
                 let gFFLCockpitKey = "' . esc_attr($gFFLCockpitKey) . '"
               </script>';
-
         ?>
 
         <div class="wrap">
@@ -150,7 +149,6 @@ class g_ffl_Cockpit_Admin
             <div id="configuration" class="tabcontent">
             <!--<h3>Configuration</h3>-->
                 <div class="postbox" style="padding: 10px;margin-top: 10px">
-                    <form method="post" action="options.php" onSubmit="return setConfig('<?php echo esc_attr($gFFLCockpitKey);?>');">
                         <?php settings_fields('g-ffl-cockpit-settings'); ?>
                         <table class="form-table">
                         <tr>
@@ -169,7 +167,7 @@ class g_ffl_Cockpit_Admin
                                 <td>
                                     <div id="g-ffl-admin-buttons" align="right" style="margin:5px;display:none;">
                                         <b>Admin Functions:&nbsp;</b>
-                                        <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, true);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('submit_button_div').style.display='none';">Load Config</a>
+                                        <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, true);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('save_cockpit_configuration_button').style.display='none';">Load Config</a>
                                         <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value);">Save</a>
                                         <br><br><span style="padding:10px;color:red;display:none;" id="admin_current_editing_key"></span>
                                     </div>
@@ -1865,8 +1863,8 @@ class g_ffl_Cockpit_Admin
                             </tr>
 
                         </table>
-                        <div id="submit_button_div">
-                            <?php submit_button(); ?>
+                        <div>
+                            <button class="button alt" id="save_cockpit_configuration_button">Save Changes</button>
                         </div>
                         <br>
                         <table style="border: solid black 1px;">
@@ -1896,9 +1894,15 @@ class g_ffl_Cockpit_Admin
                             <tr><td><b>SO</b></td><td>SOT</td></tr>
                         </table>
                         <a style="cursor:pointer;" onclick="document.getElementById('white_label_settings_name').style.display='';document.getElementById('white_label_settings_url').style.display='';">&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;</a>
-                    </form>
                 </div>
             </div>
+            <script type="text/javascript">
+                let saveCockpitButton = document.getElementById("save_cockpit_configuration_button");
+                saveCockpitButton.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    return setConfig(gFFLCockpitKey);
+                });
+            </script>
             <div id="product_feed" class="tabcontent">
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
                     <!-- <p>The Product Feed is based on your Configuration. The synchronization process will run every 15-minutes, at which point any changes you make to your configuration will be applied. This list will show items from all distributors configured, and with quantities less than your minimum listing quantity. We list one product per UPC, based on availability and price.</p> -->
