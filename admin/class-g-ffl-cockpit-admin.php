@@ -1191,6 +1191,9 @@ class g_ffl_Cockpit_Admin
                                                         "active": {
                                                             "type": "boolean"
                                                         },
+                                                        "automated_fulfillment": {
+                                                            "type": "boolean"
+                                                        },
                                                         "pricing": {
                                                             "type": "object",
                                                             "additionalProperties": false,
@@ -1213,7 +1216,15 @@ class g_ffl_Cockpit_Admin
                                                         },
                                                         "load_batch_count": {
                                                             "description": "Number of products to load in each thread, suggested at 10.",
-                                                            "type": "integer"
+                                                            "type": "integer",
+                                                            "minimum": 1,
+                                                            "maximum": 100
+                                                        },
+                                                        "update_batch_count": {
+                                                            "description": "Number of products to update in each thread, suggested at 100.",
+                                                            "type": "integer",
+                                                            "minimum": 1,
+                                                            "maximum": 100
                                                         },
                                                         "product_restrictions": {
                                                             "description": "Product Restrictions",

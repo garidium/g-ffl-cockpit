@@ -5,7 +5,7 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.3
 Requires PHP: 7.0
-Stable tag: 1.2.17
+Stable tag: 1.2.18
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -65,6 +65,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+28. v1.2.18 New configuration items for update_batch_count and automated_fulfillment in Woo Target
 27. v1.2.17 Minor Maintenance Updates
 26. v1.2.16 Fixed JSON schema issue for Sports South credential configuration
 25. v1.2.15 HPOS Compatibility and Schema validation changes
