@@ -121,7 +121,7 @@ class g_ffl_Cockpit_Admin
     {
         //register our settings
         register_setting('g-ffl-cockpit-settings', 'g_ffl_cockpit_key');
-        register_setting('g-ffl-cockpit-settings', 'g_ffl_cockpit_configuration');
+        //register_setting('g-ffl-cockpit-settings', 'g_ffl_cockpit_configuration');
         register_setting('g-ffl-cockpit-settings', 'g_ffl_cockpit_plugin_name');
         register_setting('g-ffl-cockpit-settings', 'g_ffl_cockpit_plugin_logo_url');
     }
@@ -156,11 +156,16 @@ class g_ffl_Cockpit_Admin
                                 <td style="padding:5px;vertical-align:top;">
                                     <div class="user-pass-wrap">
                                         <div class="wp-pwd">
-                                            <input type="password" style="width: 350px;" name="g_ffl_cockpit_key" id="g_ffl_cockpit_key" 
-                                                aria-describedby="login_error" class="input password-input" size="20"
-                                                value="<?php echo esc_attr($gFFLCockpitKey); ?>"/>
-                                                <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, false);">Load Config</a>
-                                        </div>
+                                            <form method="post" action="options.php">
+                                                <?php settings_fields('g-ffl-cockpit-settings'); ?>
+                                                <input oninput="document.getElementById('set_key_form').style.display='';" type="password" style="width: 350px;" name="g_ffl_cockpit_key" id="g_ffl_cockpit_key" 
+                                                    aria-describedby="login_error" class="input password-input" size="20"
+                                                    value="<?php echo esc_attr($gFFLCockpitKey); ?>"/>
+                                                    <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, false);">Load Config</a>
+                                                    <span id="set_key_form" style="display:none;"><?php submit_button('Set Key', 'primary', 'submit-button'); ?></span>
+                                            </form>
+                                            
+                                            </div>
                                         <p>Email sales@garidium.com to get a key, or if your key has expired.</p>
                                     </div>
                                 </td>
@@ -180,31 +185,36 @@ class g_ffl_Cockpit_Admin
                                 <input type="hidden" name="g_ffl_cockpit_configuration" id="g_ffl_cockpit_configuration">
                                 <script>
                                     function get_and_set_cockpit_configuration(api_key, isAdminRequest){
-                                        if (api_key != null && api_key.length > 0){
-                                            var admin_key = api_key;
-                                            if (isAdminRequest){
-                                                admin_key = "<?php echo esc_attr($gFFLCockpitKey);?>";
-                                            }
-                                            fetch("https://ffl-api.garidium.com", {
-                                                method: "POST",
-                                                headers: {
-                                                "Accept": "application/json",
-                                                "Content-Type": "application/json",
-                                                "x-api-key": admin_key,
-                                                },
-                                                body: JSON.stringify({"action": "get_subscription", "data": {"api_key": api_key}})
-                                            })
-                                            .then(response=>response.json())
-                                            .then(data=>{
-                                                try{
-                                                    cockpit_configuration = JSON.parse(data[0].cockpit_configuration);
-                                                    editor.set(cockpit_configuration);
-                                                } catch (error) {
-                                                    alert("No configuration found for this key, setting to default.");
+                                        try {
+                                            if (api_key != null && api_key.length > 0){
+                                                var admin_key = api_key;
+                                                if (isAdminRequest){
+                                                    admin_key = "<?php echo esc_attr($gFFLCockpitKey);?>";
                                                 }
-                                            });
-                                        }else{
-                                            alert("No API Key Configured");
+                                                fetch("https://ffl-api.garidium.com", {
+                                                    method: "POST",
+                                                    headers: {
+                                                    "Accept": "application/json",
+                                                    "Content-Type": "application/json",
+                                                    "x-api-key": admin_key,
+                                                    },
+                                                    body: JSON.stringify({"action": "get_subscription", "data": {"api_key": api_key}})
+                                                })
+                                                .then(response=>response.json())
+                                                .then(data=>{
+                                                    try{
+                                                        cockpit_configuration = JSON.parse(data[0].cockpit_configuration);
+                                                        editor.set(cockpit_configuration);
+                                                    } catch (error) {
+                                                        alert("No configuration found for this key, setting to default.");
+                                                    }
+                                                });
+                                            }else{
+                                                alert("No API Key Configured");
+                                            }
+                                        }catch(error){
+                                            alert("Please validate key, no configuration was found");
+                                            console.log(error);
                                         }
                                     }
                                 </script>
