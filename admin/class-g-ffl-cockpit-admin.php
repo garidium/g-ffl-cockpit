@@ -1871,11 +1871,51 @@ class g_ffl_Cockpit_Admin
                                             value="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png');?>"/>
                                 </td>
                             </tr>
-
                         </table>
-                        <div>
-                            <button class="button alt" id="save_cockpit_configuration_button">Save Changes</button>
-                        </div>
+                        <table style="width:100%;">
+                            <tr>
+                                <td>
+                                    <div>
+                                        <button class="button alt" id="save_cockpit_configuration_button">Save Changes</button>
+                                        <script type="text/javascript">
+                                            document.getElementById("save_cockpit_configuration_button").addEventListener("click", function(){
+                                                document.getElementById("save_cockpit_configuration_button").disabled = true;
+                                                document.getElementById('save_cockpit_configuration_button').innerText = 'Please Wait...';
+                                                event.preventDefault();
+                                                setConfig(gFFLCockpitKey);
+                                                document.getElementById("save_cockpit_configuration_button").disabled = false;
+                                                document.getElementById('save_cockpit_configuration_button').innerText = 'Save Changes';
+                                            });
+                                        </script>
+                                    </div>
+                                </td>
+                                <td align="right">
+                                    <div>
+                                        <button class="button alt" id="send_test_fulfillment_emails_button">Send Test Fulfillment Emails</button>
+                                        <script>
+                                            document.getElementById("send_test_fulfillment_emails_button").addEventListener("click", function(){
+                                                document.getElementById("send_test_fulfillment_emails_button").disabled = true;
+                                                document.getElementById('send_test_fulfillment_emails_button').innerText = 'Please Wait...';
+                                                    fetch("https://ffl-api.garidium.com", {
+                                                            method: "POST",
+                                                            headers: {
+                                                            "Accept": "application/json",
+                                                            "Content-Type": "application/json",
+                                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                                            },
+                                                            body: JSON.stringify({"action": "send_test_emails", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"}})
+                                                        })
+                                                        .then(response=>response.json())
+                                                        .then(data=>{ 
+                                                            document.getElementById("send_test_fulfillment_emails_button").disabled = false; 
+                                                            document.getElementById('send_test_fulfillment_emails_button').innerText = 'Send Test Fulfillment Emails';     
+                                                        });
+                                                });
+                                        </script>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
                         <br>
                         <table style="border: solid black 1px;">
                             <tr style="background-color:#EEEEEE;weight:bold;font-style:italic;"><td colspan=2>Product Class Code Reference</td></tr>
@@ -1906,13 +1946,6 @@ class g_ffl_Cockpit_Admin
                         <a style="cursor:pointer;" onclick="document.getElementById('white_label_settings_name').style.display='';document.getElementById('white_label_settings_url').style.display='';">&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;</a>
                 </div>
             </div>
-            <script type="text/javascript">
-                let saveCockpitButton = document.getElementById("save_cockpit_configuration_button");
-                saveCockpitButton.addEventListener("click", function(event) {
-                    event.preventDefault();
-                    return setConfig(gFFLCockpitKey);
-                });
-            </script>
             <div id="product_feed" class="tabcontent">
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
                     <!-- <p>The Product Feed is based on your Configuration. The synchronization process will run every 15-minutes, at which point any changes you make to your configuration will be applied. This list will show items from all distributors configured, and with quantities less than your minimum listing quantity. We list one product per UPC, based on availability and price.</p> -->
