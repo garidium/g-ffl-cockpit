@@ -774,7 +774,8 @@ class g_ffl_Cockpit_Admin
                                                     "properties": {
                                                         "min_quantity_to_list": {
                                                             "description": "Minimum In-Stock Quantity to List an Item",
-                                                            "type": "integer"
+                                                            "type": "integer",
+                                                            "minimum": 1
                                                         },
                                                         "sku": {
                                                             "$ref": "#/definitions/include_exclude"
@@ -1211,7 +1212,7 @@ class g_ffl_Cockpit_Admin
                                                                 },
                                                                 "margin_adjustment_percent": {
                                                                     "type": "number",
-                                                                    "minimum": 0,
+                                                                    "minimum": -0.99,
                                                                     "maximum": 0.99
                                                                 }
                                                             }
@@ -1342,7 +1343,7 @@ class g_ffl_Cockpit_Admin
                                                                 },
                                                                 "margin_adjustment_percent": {
                                                                     "type": "number",
-                                                                    "minimum": 0,
+                                                                    "minimum": -0.99,
                                                                     "maximum": 0.99
                                                                 }
                                                             }
