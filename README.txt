@@ -5,7 +5,7 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.3
 Requires PHP: 7.0
-Stable tag: 1.2.22
+Stable tag: 1.2.23
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -65,6 +65,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+33. v1.2.23 Schema validation updates
 32. v1.2.22 Schema validation updates, to allow for negative percentage price adjustments
 31. v1.2.21 Added a button to send test emails, for refining customer notifications
 30. v1.2.20 Bug fixes for the last change, so user can set key properly

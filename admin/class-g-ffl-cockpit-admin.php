@@ -1214,7 +1214,10 @@ class g_ffl_Cockpit_Admin
                                                                     "type": "number",
                                                                     "minimum": -0.99,
                                                                     "maximum": 0.99
-                                                                }
+                                                                },
+                                                               "populate_sale_price_if_less_than_msrp": {
+                                                                    "type": "boolean"
+                                                               }
                                                             }
                                                         },
                                                         "consumer-key": {
