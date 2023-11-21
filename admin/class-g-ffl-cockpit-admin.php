@@ -1264,8 +1264,13 @@ class g_ffl_Cockpit_Admin
                                                                     }
                                                                 }
                                                             }
+                                                        },
+                                                        "product_attributes": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
                                                         }
-                                                        
                                                     },
                                                     "additionalProperties": false,
                                                     "required": [
