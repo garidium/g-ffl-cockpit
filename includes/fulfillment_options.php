@@ -27,42 +27,51 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
     $orderId = $order->get_id();
   
     echo '
-        <table style="width:100%;">
-            <tr>
-                <td align="right">
-                    <div style="width:99%;padding:5px;" id="fulfillment_status"></div>
-                </td>
-            </tr>
-            <tr>
-                <td style="font-weight:bold;">
-                    Fulfillment Options
-                </td>
-            </tr>
-            <tr>
-                <td align="center">
-                    <div class="fulfillment_grid" id="product_fulfillment_table"></div>  
-                </td>
-            </tr>
-            <tr>
-                <td align="right">             
-                    <div style="display:none;float: right;" id="create_order_button" class="button alt" onclick="createOrder();">Create Order</div>  
-                </td>
-            </tr>
-            <tr><td>&nbsp;</td></tr>
-            <tr>
-                <td style="font-weight:bold;">
-                    Distributor Orders
-                </td>
-            </tr>
-            <tr>
-                <td align="center">
-                    <div class="order_grid" id="distributor_order_table"></div>  
-                </td>
-            </tr>
-        </table>';
+        <div class="table-container" style="position: relative;">
+            <div class="overlay" id="fulfillment_options_overlay" style="display:flex;position: absolute;top: 0;left: 0;width: 100%;height: 100%;background-color: rgba(255, 255, 255, 0.7);justify-content: center;align-items: center;">
+                <div class="loader" style="border: 8px solid #f3f3f3;border-top: 8px solid #3498db;border-radius: 50%;width: 50px;height: 50px;animation: spin 1s linear infinite;"></div>
+            </div>
+            <table style="width:100%;">
+                <tr>
+                    <td align="right">
+                        <div style="width:99%;padding:5px;" id="fulfillment_status"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">
+                        Fulfillment Options
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <div class="fulfillment_grid" id="product_fulfillment_table"></div>  
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">    
+                        <table>  
+                            <tr>
+                                <td><button style="background-color:gray;color:white;display:none;float: right;" id="ship_to_store_order_button" class="button alt" onclick="createOrder(true);">Create Order (Ship-to-Store)</button></td>
+                                <td><button style="display:none;float:right;" id="create_order_button" class="button alt" onclick="createOrder(false);">Create Order (Drop-Ship)</button></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr><td>&nbsp;</td></tr>
+                <tr>
+                    <td style="font-weight:bold;">
+                        Distributor Orders
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <div class="order_grid" id="distributor_order_table"></div>  
+                    </td>
+                </tr>
+            </table>
+        </div>';
     echo '
         <script>
-
             function addFFlToHoldOrder(distid, distributor_order_id){
                 if (window.confirm("Have you uploaded a copy of the FFL within the FFL Information section of this page? If so, hit Ok. Otherwise upload the FFL first, then try again.")){
                     try{
@@ -88,10 +97,9 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                 }
             }
 
-            function createOrder(){
-                document.getElementById("create_order_button").innerHTML = "Sending Order, Please wait...";
+            function createOrder(ship_to_store){
                 document.getElementById("create_order_button").disabled = true;
-                
+                document.getElementById("ship_to_store_order_button").disabled = true;
                 var checkedCbs = document.querySelectorAll(\'#product_fulfillment_table input[type="checkbox"]:checked\');
                 var order_json = "[";
                 var has_items = false;
@@ -106,26 +114,46 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                 order_json = JSON.parse(order_json);
 
                 if (has_items){
-                    try{
-                        fetch("https://ffl-api.garidium.com", {
-                            method: "POST",
-                            headers: {
-                            "Accept": "application/json",
-                            "Content-Type": "application/json",
-                            "x-api-key": "',esc_attr($aKey),'",
-                            },
-                            body: JSON.stringify({"action": "place_distributor_order", "data": {"api_key": "',esc_attr($aKey),'" , "order_source": "woocommerce", "order_id": ',esc_attr($orderId),', "items": order_json}})
-                        })
-                        .then(response=>response.json())
-                        .then(data=>{  
-                            load_order_grid(data.fulfillment_orders); 
-                            document.getElementById("create_order_button").innerHTML = "Create Order";
-                            document.getElementById("create_order_button").disabled = false;
-                        });
-                    } catch (error) {
-                        console.error(error);
+                    if (window.confirm((ship_to_store?"Ship-To-Store":"Drop Ship") + " Order Assembled: Please Review the Order details and Click Ok to send it to the Distributor:\n\n" + JSON.stringify(order_json))){
+                        if (ship_to_store){
+                            document.getElementById("ship_to_store_order_button").innerHTML = "Sending Order, Please wait...";
+                        }else{
+                            document.getElementById("create_order_button").innerHTML = "Sending Order, Please wait...";
+                        }
+                        try{
+                            fetch("https://ffl-api.garidium.com", {
+                                method: "POST",
+                                headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/json",
+                                "x-api-key": "',esc_attr($aKey),'",
+                                },
+                                body: JSON.stringify({"action": "place_distributor_order", "data": {"api_key": "',esc_attr($aKey),'" , "order_source": "woocommerce", "order_id": ',esc_attr($orderId),', "items": order_json, "ship_to_store": ship_to_store}})
+                            })
+                            .then(response=>response.json())
+                            .then(data=>{  
+                                load_order_grid(data.fulfillment_orders); 
+                                if (!data.status){
+                                    var message = "Order Creation Failed";
+                                    message += "\nError: " + data.error;
+                                    alert(message);
+                                }
+                                document.getElementById("create_order_button").disabled = false;
+                                document.getElementById("ship_to_store_order_button").disabled = false;
+                                if (ship_to_store){
+                                    document.getElementById("ship_to_store_order_button").innerHTML = "Create Order (Ship-To-Store)";
+                                }else{
+                                    document.getElementById("create_order_button").innerHTML = "Create Order (Drop-Ship)";
+                                }
+                            });
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }else{
+                        document.getElementById("create_order_button").disabled = false;
+                        document.getElementById("ship_to_store_order_button").disabled = false;
+                        return;
                     }
-                    
                 }
             }
 
@@ -143,7 +171,7 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                         })
                         .then(response=>response.json())
                         .then(data=>{  
-                            if (!data.success["status"]){
+                            if (!data.success){
                                 alert("Failed to Cancel the Order, please try again, and if it continues to fail email the cancellation request to your distributor sales rep and contact support@garidium.com so we can address the problem ASAP.");
                             }  
                             load_order_grid(data.fulfillment_orders); 
@@ -162,8 +190,10 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                     hasChecks = true;
                 if (hasChecks){
                     document.getElementById("create_order_button").style.display="";
+                    document.getElementById("ship_to_store_order_button").style.display="";
                 }else{
                     document.getElementById("create_order_button").style.display="none";
+                    document.getElementById("ship_to_store_order_button").style.display="none";
                 }
             }
 
@@ -197,7 +227,7 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
 
                 // Adding the entire table to the body tag
                 document.getElementById("product_fulfillment_table").appendChild(table);
-                let columns = ["Dist", "Name", "SKU", "UPC", "Avail", "Cost", "Ship", "Total", "Qty", "Order"];
+                let columns = ["Dist", "Name", "SKU", "UPC", "Qty Avail", "Cost", "Ship", "Total", "Qty", "Order"];
                 let fields = ["distid", "name", "distsku", "upc", "qty_on_hand", "unit_price", "shipping_cost", "total_cost"];
                 let header_row = document.createElement("tr");     
                 for (var i = 0; i < columns.length; i++) {
@@ -233,6 +263,9 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                             }else if (fields[c] == "unit_price" || fields[c] == "shipping_cost" || fields[c] == "total_cost"){
                                 col.innerHTML = "$" + fulfillment_options[i][fields[c]].toFixed(2);
                                 col.style.cssText = "width:70px;text-align:left;border: 1px solid #e5e7eb;";
+                            }else if (fields[c] == "qty_on_hand"){
+                                col.innerHTML = fulfillment_options[i][fields[c]];
+                                col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
                             }else{
                                 col.innerHTML = fulfillment_options[i][fields[c]];
                                 col.style.cssText = "text-align:left;border: 1px solid #e5e7eb;";
@@ -317,7 +350,10 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                         row.id = row_key
                         for (var c = 0; c < fields.length; c++) {
                             let col = document.createElement("td");
-                            if (fields[c] == "distid"){
+                            if (fields[c] == "distributor_order_id"){
+                                col.innerHTML = orders[i].distributor_order_id + (orders[i].ship_to_store?"&nbsp;<img title=\"Shipped to Store\" width=\"20\" src=\"https://garidium.s3.amazonaws.com/images/store.png\"/>":"");
+                                col.style.cssText = "text-align:left;vertical-align:middle;border: 1px solid #e5e7eb;";
+                            }else if (fields[c] == "distid"){
                                 col.innerHTML = "<img width=\"40\" src=\"" + get_distributor_logo(orders[i][fields[c]]) + "\"/>";
                                 col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
                             }else if (fields[c] == "order_status"){
@@ -383,6 +419,7 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                 }
                 load_fulfillment_options_grid(data.fulfillment_options);
                 load_order_grid(data.fulfillment_orders); 
+                document.getElementById("fulfillment_options_overlay").style.display="none";
             });
 
         </script>'; 

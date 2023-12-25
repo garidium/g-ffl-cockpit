@@ -124,6 +124,11 @@ class G_Ffl_Cockpit
         require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-g-ffl-cockpit-admin.php';
 
         /**
+         * The class responsible for defining all actions that occur in the admin area.
+         */
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/custom-product-section.php';
+
+        /**
          * The class responsible for defining all actions that occur in the public-facing
          * side of the site.
          */

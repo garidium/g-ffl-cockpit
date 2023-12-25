@@ -3,9 +3,9 @@ Contributors: garidium
 Tags: FFL, fulfillment, distributor feed, zanders, davidsons, lipseys, 2nd amendment, chatanooga, cssi, rsr, WooCommerce, FFL gun dealers, gun dealer
 Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
-Tested up to: 6.3
+Tested up to: 6.4
 Requires PHP: 7.0
-Stable tag: 1.2.24
+Stable tag: 1.3.0
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -15,8 +15,8 @@ It was built to support our businesses, and we know it will help yours. Please c
 
 ==Feature Highlights:==
 1. Configure 1-to-many supported distributors and feed products into your WooCommerce website.
-2. Currently supported distributors for Inventory Feeds: Zanders, Lipseys, Chattanooga, Davidsons, 2nd Amendment, RSR 
-3. Fulfillment (via Order Page) and Automated-Fulfillment processes are now available for Lipseys, Zanders, RSR, and Chattanooga.
+2. Currently supported distributors for Inventory Feeds: Zanders, Sports South, Lipseys, Chattanooga, Davidsons, 2nd Amendment, RSR 
+3. Fulfillment (via Order Page) and Automated-Fulfillment processes are now available for Lipseys, Zanders, RSR, Sports South, and Chattanooga.
 4. Fulfillment automation includes monitoring distributors for shipping updates, and notifying both you and your customer.
 5. This plugin also supports feeding product to Gunbroker, Gun.Deals, WikiArms, and AmmoSeek
 6. Inventory and Listings are then updated every 20-minutes to ensure quantity and pricing are updated continuously.
@@ -24,7 +24,7 @@ It was built to support our businesses, and we know it will help yours. Please c
 8. Keep your customers updated on the order status with configurable email templates
 9. View a report of all items being listed, including pricing from each distributor, there is also an Excel export.
 10. Works tightly with the g-FFL Checkout plugin to automatically mark firearms as requiring FFL selection during checkout.
-11. Integrated Help Videos (under development)
+11. Integrated Help Videos and Help Center
 12. Integrated Log files, so you can monitor the status of your inventory synchronization
 13. Fulfillment Reports
 
@@ -32,7 +32,7 @@ It was built to support our businesses, and we know it will help yours. Please c
 While the plugin is free to download and install, it does require you to purchase a license for a personalized API key. We also have a one-time setup fee. The plugin will not be useful without this key. The API key allows the plugin to connect to the required data services, providing the following features:
 
 1. Access to a data services we manage that synchronizes distributor product data
-2. Ability to synchronize product to different sites, and automated fulfillment
+2. Ability to create fulfillment orders
 
 == To purchase a key, visit the g-FFL Cockpit product page: ==
 [g-FFL Cockpit Product Page](https://garidium.com/product/g-ffl-cockpit/) 
@@ -57,14 +57,14 @@ While the plugin is free to download and install, it does require you to purchas
 =Why is this plugin better than the alternatives?=
 * It was built by a FFL, actively used by that FFL. I know what the industry needs, especially those first starting out with smaller budgets.
 * The data services are built on state-of-the-art cloud-based technologies hosted on Amazon Web Services. This basically means that downtime will be minimal, and performance will be consistent.
-* The plugin has the basic features needed, and nothing more, and its geared directly for FFL's 
-
+* The plugin has features specifically needed for an FFL business.
 
 == Screenshots ==
 1. The configuration tab show an editor (JSON Editor for those in the know), where distributor and pricing settings can be configured.
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+35. v1.3.0 Ship-to-Store Beta, Recategorization of Products on Admin Tab in product view, Gunbroker Order reprocessing capability, Dynamic Schema Loading
 34. v1.2.24 Update to support product attribute restrictions
 33. v1.2.23 Schema validation updates
 32. v1.2.22 Schema validation updates, to allow for negative percentage price adjustments
