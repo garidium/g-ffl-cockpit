@@ -614,15 +614,10 @@
         "brand": {
           "exclude": [
             "Bushnell",
-            "DeSantis Gunhide",
             "DeSantis",
-            "Desantis Leather Goods Co.",
             "XS Sights",
-            "Xs Sight Systems Inc.",
-            "XS Sight Systems",
             "Primos",
             "Champion",
-            "Champion Traps & Targets",
             "Champion Targets"
           ],
           "include": []
@@ -643,6 +638,16 @@
     }
   },
   "fulfillment": {
+    "ship_to_store": {
+      "ffl": "1-23-456-07-9A-01234",
+      "address": {
+        "city": "Your City",
+        "state": "XX",
+        "postal_code": 34753,
+        "ship_to_name": "Your Company Name",
+        "address_street": "667 NE Your Address St"
+      }
+    },
     "emailer": {
       "templates": {
         "ffl_request": {
@@ -708,6 +713,10 @@
         "API_HOST": "yourwebsite.com",
         "API_USER": "lipseys-ds@yourwebsite.com",
         "API_PASSWORD": "XXXXXXX",
+        "ship_to_store": {
+          "API_USER": "XXXX@YYYY.com",
+          "API_PASSWORD": "XXXXXXXXX"
+        },
         "ffl_recipient_emails": [
           "sales@yourwebsite.com",
           "validateffl@lipseys.com"
@@ -771,6 +780,10 @@
         "accessories": {
           "api_user": "12345@gzanders.org",
           "api_password": "XXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX"
+        },
+        "ship_to_store": {
+          "api_user": "XXXXX@YYYYYYY.com",
+          "api_password": "XXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXXXX"
         },
         "ffl_recipient_emails": [
           "ffltransfer@gzanders.com",
@@ -843,6 +856,10 @@
         "API_HOST": "https://www.rsrgroup.com/api/rsrbridge/1.0/pos/",
         "API_USER": 12345,
         "API_PASSWORD": "password",
+        "ship_to_store": {
+          "password": "password",
+          "store_account": 12346
+        },
         "ffl_recipient_emails": [
           "sales@yourwebsite.com",
           "dropship@rsrgroup.com"
@@ -865,7 +882,6 @@
             "FLIR",
             "Glock",
             "Holosun",
-            "Holosun Technologies",
             "Kestrel",
             "Pelican",
             "Vertx"
@@ -993,7 +1009,6 @@
             "Polymer 80 Inc",
             "CZ-USA",
             "Colt",
-            "Colt Mfg",
             "Colt Rimfire"
           ],
           "include": []
@@ -1047,8 +1062,6 @@
         "Athlon",
         "Barrett Firearms",
         "Beretta",
-        "Beretta USA",
-        "Cobra Archery",
         "Colt",
         "Comp-Tac",
         "Crimson Trace",
@@ -1057,7 +1070,6 @@
         "Flying Arrow Archery",
         "Franklin Armory",
         "Frogg Toggs",
-        "G5 OUTDOORS",
         "Glock",
         "HHA Sports",
         "Havalon",
@@ -1071,7 +1083,6 @@
         "Leupold",
         "Mantis",
         "Nine Line Apparel",
-        "Peet Dryer",
         "Pelican",
         "Q LLC",
         "Ravin Crossbows",
@@ -1091,7 +1102,6 @@
         "Tactacam",
         "Thorn Broadheads",
         "Trijicon",
-        "Trijicon Electro Optics",
         "Umarex",
         "Viridian",
         "Walther Arms",

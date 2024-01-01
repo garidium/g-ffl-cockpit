@@ -374,6 +374,8 @@ class g_ffl_Cockpit_Admin
                                 return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_rsr.png";
                             }else if (code == "TSW"){
                                 return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_sports_south.png";
+                            }else{
+                                return "https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_" + code + ".png";
                             }
                             return "";
                         }

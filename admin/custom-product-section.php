@@ -48,7 +48,7 @@ function custom_product_section_content() {
     $gFFLCockpitKey = get_option('g_ffl_cockpit_key');
 
     // Add a dropdown
-    echo '<b>Product Category Change:</b> This will update the product category on your site AND the product category this product is associated to for <u>All Cockpit Fed Sites</u>. So please make sure you are making changes that help everyone. <u>Thank you</u> for your contribution, Gary<br><br>';
+    echo '<span style="color:red;font-style:italic;">The "Admin" section will only appear to logged in admin users of your site. Your customer will not see the "Admin" section.</span><br><b>Product Category Change:</b> This will update the product category on your site AND the product category this product is associated to for <u>All Cockpit Fed Sites</u>. So please make sure you are making changes that help everyone. <u>Thank you</u> for your contribution, Gary<br><br>';
     echo '<select style="width:250px !important;"id="ffl-cockpit-categories"></select>';
     echo '<button id="ffl-cockpit-recategorize-button">Apply Category Update</button>';
     echo '
