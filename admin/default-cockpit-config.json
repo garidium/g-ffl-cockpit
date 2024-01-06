@@ -30,7 +30,7 @@
       },
       "pricing": {
         "margin_adjustment_dollar": 0,
-        "margin_adjustment_percent": 0.035,
+        "margin_adjustment_percent": 0,
         "populate_sale_price_if_less_than_msrp": false
       },
       "remove_out_of_stock": true,

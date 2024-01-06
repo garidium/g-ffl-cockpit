@@ -323,8 +323,8 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                 document.getElementById("distributor_order_table").innerHTML = "";
                 document.getElementById("distributor_order_table").appendChild(table);
 
-                let columns = ["Dist", "Order ID", "Ordered", "Status", "Shipped", "Ship Status", "Actions"];
-                let fields = ["distid", "distributor_order_id", "order_date", "order_status", "ship_date", "ship_status"];
+                let columns = ["Dist", "Order ID", "Order Details", "Ordered", "Status", "Shipped", "Ship Status", "Actions"];
+                let fields = ["distid", "distributor_order_id", "dist_order_items", "order_date", "order_status", "ship_date", "ship_status"];
                 let header_row = document.createElement("tr");     
                 for (var i = 0; i < columns.length; i++) {
                     heading = document.createElement("th");
@@ -358,6 +358,18 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                             }else if (fields[c] == "distid"){
                                 col.innerHTML = "<img width=\"40\" src=\"" + get_distributor_logo(orders[i][fields[c]]) + "\"/>";
                                 col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
+                            }else if (fields[c] == "dist_order_items"){
+                                let oi_innerHTML = "<span style=\'font-size:8pt;\'>PO: " + orders[i].po_number + "</span>";
+                                if (orders[i].dist_order_items != null){
+                                    oi_innerHTML += "<table style=\'align:center;font-size:8pt;width:95%;margin:5px;border: 1px solid #e5e7eb;\'>";
+                                    let order_items = JSON.parse(orders[i].dist_order_items);
+                                    for (var oi = 0; oi < order_items.length; oi++) {
+                                        oi_innerHTML += "<tr style=\'background:#dddddd;\'><td>SKU</td><td>UPC</td><td>QTY</td></tr><tr><td>" + order_items[oi].distsku + "</td><td>" + order_items[oi].upc + "</td><td>" + order_items[oi].qty +  "</td></tr>";
+                                    }
+                                    oi_innerHTML += "</table>";
+                                }
+                                col.innerHTML = oi_innerHTML;
+                                col.style.cssText = "border: 1px solid #e5e7eb;";
                             }else if (fields[c] == "order_status"){
                                 col.innerHTML = orders[i].order_status;
                                 if (orders[i].distid == "ZND" && orders[i].order_status != null && orders[i].order_status == "FFL Hold"){
@@ -377,21 +389,28 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                                         col.innerHTML = "<a target=_blank href=\"" + orders[i].ship_tracking_url + "\"><span style=\"color:green;\">Delivered</span></a>";
                                     }else if (orders[i].ship_status == "return_to_sender"){
                                         col.innerHTML = "<a target=_blank href=\"" + orders[i].ship_tracking_url + "\"><span style=\"color:red;\">Return to Sender</span></a>";
-                                     }else{
+                                    }else{
                                         if (orders[i].ship_tracking_url!=null){
                                             col.innerHTML = "<a target=_blank href=\"" + orders[i].ship_tracking_url + "\">In-Transit</a>";
                                         }else{
                                             col.innerHTML = "In-Transit";
                                         }
                                     }
+                                }else{
+                                    if (orders[i].ship_tracking_url!=null){
+                                        col.innerHTML = "<a target=_blank href=\"" + orders[i].ship_tracking_url + "\">In-Transit</a>";
+                                    }else{
+                                        col.innerHTML = "In-Transit";
+                                    }
                                 }
-                                col.style.cssText = "text-align:left;border: 1px solid #e5e7eb;";
+                                col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
                             }else{
                                 col.innerHTML = orders[i][fields[c]];
                                 col.style.cssText = "text-align:left;border: 1px solid #e5e7eb;";
                             }
                             row.appendChild(col);
                         }
+
                         // add actions column
                         let col = document.createElement("td");
                         col.innerHTML = "<a target=_blank href=\"" + orders[i].order_url + "\">View</a>";
