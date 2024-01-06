@@ -361,10 +361,10 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                             }else if (fields[c] == "dist_order_items"){
                                 let oi_innerHTML = "<span style=\'font-size:8pt;\'>PO: " + orders[i].po_number + "</span>";
                                 if (orders[i].dist_order_items != null){
-                                    oi_innerHTML += "<table style=\'align:center;font-size:8pt;width:95%;margin:5px;border: 1px solid #e5e7eb;\'>";
+                                    oi_innerHTML += "<table style=\'align:center;font-size:8pt;width:95%;margin:5px;border: 1px solid #e5e7eb;\'><tr style=\'background:#dddddd;\'><td>SKU</td><td>UPC</td><td>QTY</td></tr>";
                                     let order_items = JSON.parse(orders[i].dist_order_items);
                                     for (var oi = 0; oi < order_items.length; oi++) {
-                                        oi_innerHTML += "<tr style=\'background:#dddddd;\'><td>SKU</td><td>UPC</td><td>QTY</td></tr><tr><td>" + order_items[oi].distsku + "</td><td>" + order_items[oi].upc + "</td><td>" + order_items[oi].qty +  "</td></tr>";
+                                        oi_innerHTML += "<tr><td>" + order_items[oi].distsku + "</td><td>" + order_items[oi].upc + "</td><td>" + order_items[oi].qty +  "</td></tr>";
                                     }
                                     oi_innerHTML += "</table>";
                                 }

@@ -5,7 +5,7 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.0
-Stable tag: 1.3.6
+Stable tag: 1.3.7
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+38. v1.3.7 Fixed minor formatting issue (repeating table header) on Distributor order details view
 37. v1.3.6 Distributor Orders Listed on the WooCommerce Order Details view, now show SKU's/UPC's and the PO associated to the order
 36. v1.3.4 Minor updates to support adding additional distributors, plus changed message on product admin panel
 35. v1.3.3 Ship-to-Store Beta, Recategorization of Products on Admin Tab in product view, Gunbroker Order reprocessing capability, Dynamic Schema Loading
