@@ -400,7 +400,7 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                                     if (orders[i].ship_tracking_url!=null){
                                         col.innerHTML = "<a target=_blank href=\"" + orders[i].ship_tracking_url + "\">In-Transit</a>";
                                     }else{
-                                        col.innerHTML = "In-Transit";
+                                        col.innerHTML = "";
                                     }
                                 }
                                 col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
