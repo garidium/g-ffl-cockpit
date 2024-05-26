@@ -133,7 +133,7 @@ class g_ffl_Cockpit_Admin
                 let gFFLCockpitKey = "' . esc_attr($gFFLCockpitKey) . '"
               </script>';
         ?>
-
+        
         <div class="wrap">
             <img src="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png');?>">
             <br><br>
@@ -353,6 +353,42 @@ class g_ffl_Cockpit_Admin
                 </div>
             </div>
             <div id="product_feed" class="tabcontent">
+                <!-- The Modal -->
+                <div id="myModal" class="cockpit-modal">
+                    <!-- Modal content -->
+                    <div class="cockpit-modal-content">
+                        <span class="close">&times;</span>
+                        <div align="center" id="product_detail_div"></div>
+                    </div>
+                    <script>
+                        // Get the modal
+                        var modal = document.getElementById("myModal");
+
+                        // Get the button that opens the modal
+                        var btn = document.getElementById("myBtn");
+
+                        // Get the <span> element that closes the modal
+                        var span = document.getElementsByClassName("close")[0];
+
+                        function load_product_data(title, distributor, sku, img_url){
+                            //alert(data);
+                            modal.style.display = "block";
+                            document.getElementById("product_detail_div").innerHTML = "<h3>" + title + "</h3><br><img style='height:275px;' src='" + img_url + "'/><br><img style='height:75px;' src='" + get_distributor_logo(distributor) + "'/><br>" + sku;
+                        }
+
+                        // When the user clicks on <span> (x), close the modal
+                        span.onclick = function() {
+                            modal.style.display = "none";
+                        }
+
+                        // When the user clicks anywhere outside of the modal, close it
+                        window.onclick = function(event) {
+                            if (event.target == modal) {
+                                modal.style.display = "none";
+                            }
+                        }
+                    </script>
+                </div>
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
                     <!-- <p>The Product Feed is based on your Configuration. The synchronization process will run every 15-minutes, at which point any changes you make to your configuration will be applied. This list will show items from all distributors configured, and with quantities less than your minimum listing quantity. We list one product per UPC, based on availability and price.</p> -->
                     <div id="product_feed_table"></div>
@@ -389,7 +425,7 @@ class g_ffl_Cockpit_Admin
                                 },
                                 {name: 'SKU'}, 
                                 {sort: false, name: 'Product Image',
-                                    formatter: (_, row) => gridjs.html(`<a style="cursor:pointer;" onclick="load_product_data('${row.cells[3].data.replace("\"","&quot;") + "','" + row.cells[0].data + "','" + row.cells[1].data + "','" + row.cells[2].data[0]['src']}')"><img style="max-height:40px;max-width:100px;height:auto;width:auto;" src="${row.cells[2].data[0]['src']}"></a>`)
+                                    formatter: (_, row) => gridjs.html(`<a style="cursor:pointer;" onclick="load_product_data('${row.cells[3].data.replace("\"","&quot;") + "','" + row.cells[0].data + "','" + row.cells[1].data + "','" + (row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}')"><img style="max-height:40px;max-width:100px;height:auto;width:auto;" src="${(row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}"></a>`)
                                 },
                                 {name: 'Name', width: '200px'}, 
                                 {name: "UPC"},
@@ -400,6 +436,7 @@ class g_ffl_Cockpit_Admin
                                 //{name: 'MAP', width: '80px', formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, 
                                 {name: 'Ship', width: '60px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
                                 {name: 'Total', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
+                                {name: 'MAP', width: '80px', formatter: (cell) => `${cell!=null?"$" + cell.toFixed(2):""}`}, 
                                 //{name: "MPN", width: '150px'},
                                 //{name: "Category", width: '120px'},
                                 //{name: 'Price', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`},   
@@ -412,7 +449,7 @@ class g_ffl_Cockpit_Admin
                                         if (!columns.length) return prev;
                                         const col = columns[0];
                                         const dir = col.direction === 1 ? 'asc' : 'desc';
-                                        let colName = ['distid', 'distsku', 'distsku', 'name', 'upc', 'mfg_name', 'mpn', 'qty_on_hand', 'unit_price', 'shipping_cost', 'total_cost'][col.index];
+                                        let colName = ['distid', 'distsku', 'distsku', 'name', 'upc', 'mfg_name', 'mpn', 'qty_on_hand', 'unit_price', 'shipping_cost', 'total_cost', 'map_price'][col.index];
                                         let sortUrl = `${prev}&order_column=${colName}&order_direction=${dir}`;
                                         return sortUrl;
                                     }
@@ -460,7 +497,8 @@ class g_ffl_Cockpit_Admin
                                                                    product.qty_on_hand, 
                                                                    product.unit_price,  
                                                                    product.shipping_cost,
-                                                                   product.total_cost]),  
+                                                                   product.total_cost,
+                                                                   product.map_price]),  
                                                                    //product.drop_ship_flg,
                                                                    //product.map_price, 
                                                                    //product.item_cat,                                          
@@ -490,42 +528,7 @@ class g_ffl_Cockpit_Admin
                             });
                         });
                     </script>
-                                    <!-- The Modal -->
-                    <div id="myModal" class="cockpit-modal">
-                        <!-- Modal content -->
-                        <div class="cockpit-modal-content">
-                            <span class="close">&times;</span>
-                            <div align="center" id="product_detail_div"></div>
-                        </div>
-                        <script>
-                            // Get the modal
-                            var modal = document.getElementById("myModal");
-
-                            // Get the button that opens the modal
-                            var btn = document.getElementById("myBtn");
-
-                            // Get the <span> element that closes the modal
-                            var span = document.getElementsByClassName("close")[0];
-
-                            function load_product_data(title, distributor, sku, img_url){
-                                //alert(data);
-                                modal.style.display = "block";
-                                document.getElementById("product_detail_div").innerHTML = "<h3>" + title + "</h3><br><img width='75%' src='" + img_url + "'/><br><img width=75 src='" + get_distributor_logo(distributor) + "'/><br>" + sku;
-                            }
-
-                            // When the user clicks on <span> (x), close the modal
-                            span.onclick = function() {
-                                modal.style.display = "none";
-                            }
-
-                            // When the user clicks anywhere outside of the modal, close it
-                            window.onclick = function(event) {
-                                if (event.target == modal) {
-                                    modal.style.display = "none";
-                                }
-                            }
-                        </script>
-                    </div>
+                 
 
                 </div>
             </div>
