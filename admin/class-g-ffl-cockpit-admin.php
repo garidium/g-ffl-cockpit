@@ -431,7 +431,7 @@ class g_ffl_Cockpit_Admin
                                 }
                             },
                             fixedHeader: true,
-                            height: window_height,
+                            //height: window_height,
                             //width: '1500px',
                             style: {
                                 td: {

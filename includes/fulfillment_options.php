@@ -284,9 +284,6 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                         let col = document.createElement("td");
                         if (fulfillment_options[i].qty_on_hand > 0 && fulfillment_options[i].cockpit_fulfillable){
                             col.innerHTML = "<input id=\"check_" + row_key + "\" type=\"checkbox\" value=\"" + row_key + "\">";
-                            if (fulfillment_options[i].ffl_req){
-                                col.innerHTML += "<br><span style=\"font-size:9pt;font-style:italic;color:gray;\">FFL Req</span>";
-                            }
                             col.addEventListener("click", function(e) {
                                 let row = document.getElementById(row_key);
                                 let checkbox = document.getElementById("check_" + row_key);

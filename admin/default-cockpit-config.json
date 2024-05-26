@@ -10,7 +10,7 @@
         "product_class": [
           "FA"
         ],
-        "margin_percentage": 0.2
+        "margin_percentage": 0.15
       }
     },
     "rounding": "round_to_nearest_dollar",
@@ -22,6 +22,265 @@
     "include_credit_card_fees_in_price": true
   },
   "targets": {
+    "ammoseek": {
+      "active": false,
+      "shipping_text": "",
+      "listed_products": {
+        "guns": {
+          "sku": {
+            "include": []
+          },
+          "category": {
+            "include": [
+              "Pump Action Shotguns",
+              "Single Shot Shotguns",
+              "Bolt Action Rifles",
+              "Semi Auto Rifles",
+              "AR Rifles",
+              "AK Rifles",
+              "Other Shotguns",
+              "Over Under Shotguns",
+              "Bolt Action Shotguns",
+              "Semi Auto Shotguns",
+              "Other Handguns",
+              "Semi Auto Handguns",
+              "Revolvers",
+              "Other Rifles",
+              "Single Shot Rifles"
+            ]
+          }
+        },
+        "brass": {
+          "sku": {
+            "include": []
+          },
+          "category": {
+            "include": [
+              "Reloading Brass"
+            ]
+          }
+        },
+        "powder": {
+          "sku": {
+            "include": []
+          },
+          "category": {
+            "include": []
+          }
+        },
+        "bullets": {
+          "sku": {
+            "include": []
+          },
+          "category": {
+            "include": [
+              "Reloading Bullets"
+            ]
+          }
+        },
+        "primers": {
+          "sku": {
+            "include": []
+          },
+          "category": {
+            "include": []
+          }
+        },
+        "magazines": {
+          "sku": {
+            "include": []
+          },
+          "category": {
+            "include": [
+              "Rifle Magazines",
+              "Handgun Magazines",
+              "Shotgun Magazines",
+              "AR Magazines",
+              "AK Magazines"
+            ]
+          }
+        },
+        "ammunition": {
+          "sku": {
+            "include": []
+          },
+          "category": {
+            "include": [
+              "Rimfire Ammunition",
+              "Shotgun Shells",
+              "Other Ammunition",
+              "Rifle Ammunition",
+              "Handgun Ammunition"
+            ]
+          },
+          "purchase_limit": 1000
+        }
+      }
+    },
+    "gun.deals": {
+      "active": false,
+      "shipping_text": "No CC Fees, No Sales Tax Outside of Florida",
+      "listed_products": {
+        "guns": {
+          "sku": {
+            "include": [
+              "DFSWITCHGUNCOMBO"
+            ]
+          },
+          "category": {
+            "include": [
+              "Semi Auto Handguns",
+              "Revolvers",
+              "Single Shot Handguns",
+              "Other Handguns",
+              "Semi Auto Rifles",
+              "Lever Action Rifles",
+              "Bolt Action Rifles",
+              "Pump Action Rifles",
+              "Single Shot Rifles",
+              "Other Rifles",
+              "Semi Auto Shotguns",
+              "Side By Side Shotguns",
+              "Lever Action Shotguns",
+              "Over Under Shotguns",
+              "Bolt Action Shotguns",
+              "Single Shot Shotguns",
+              "Pump Action Shotguns",
+              "Other Shotguns",
+              "Combination Guns",
+              "Silencers & Suppressed Firearms",
+              "Short Barrel Rifles (SBR)"
+            ]
+          }
+        },
+        "brass": {
+          "sku": {
+            "exclude": [],
+            "include": []
+          },
+          "upc": {
+            "exclude": [],
+            "include": []
+          },
+          "brand": {
+            "exclude": [],
+            "include": []
+          },
+          "category": {
+            "exclude": [],
+            "include": []
+          }
+        },
+        "other": {
+          "sku": {
+            "exclude": [],
+            "include": []
+          },
+          "upc": {
+            "exclude": [],
+            "include": []
+          },
+          "brand": {
+            "exclude": [],
+            "include": []
+          },
+          "category": {
+            "exclude": [],
+            "include": []
+          }
+        },
+        "parts": {
+          "sku": {
+            "exclude": [],
+            "include": []
+          },
+          "upc": {
+            "exclude": [],
+            "include": []
+          },
+          "brand": {
+            "exclude": [],
+            "include": []
+          },
+          "category": {
+            "exclude": [],
+            "include": []
+          }
+        },
+        "bullets": {
+          "sku": {
+            "exclude": [],
+            "include": []
+          },
+          "upc": {
+            "exclude": [],
+            "include": []
+          },
+          "brand": {
+            "exclude": [],
+            "include": []
+          },
+          "category": {
+            "exclude": [],
+            "include": []
+          }
+        },
+        "primers": {
+          "sku": {
+            "exclude": [],
+            "include": []
+          },
+          "upc": {
+            "exclude": [],
+            "include": []
+          },
+          "brand": {
+            "exclude": [],
+            "include": []
+          },
+          "category": {
+            "exclude": [],
+            "include": []
+          }
+        },
+        "reloading": {
+          "sku": {
+            "exclude": [],
+            "include": []
+          },
+          "upc": {
+            "exclude": [],
+            "include": []
+          },
+          "brand": {
+            "exclude": [],
+            "include": []
+          },
+          "category": {
+            "exclude": [],
+            "include": []
+          }
+        },
+        "ammunition": {
+          "sku": {
+            "exclude": [],
+            "include": []
+          },
+          "upc": {
+            "exclude": [],
+            "include": []
+          },
+          "brand": {
+            "exclude": [],
+            "include": []
+          },
+          "category": {
+            "exclude": [],
+            "include": []
+          }
+        }
+      }
+    },
     "woo": {
       "url": "https://yourwebsite.com",
       "active": false,
@@ -30,12 +289,9 @@
       },
       "pricing": {
         "margin_adjustment_dollar": 0,
-        "margin_adjustment_percent": 0,
-        "populate_sale_price_if_less_than_msrp": false
+        "margin_adjustment_percent": 0
       },
       "remove_out_of_stock": true,
-      "consumer-key": "ck_XXXXXXX",
-      "consumer-secret": "cs_XXXXXXXX",
       "load_batch_count": 10,
       "product_tags": {
       },
@@ -562,13 +818,13 @@
       "manage_product_categories": true
     },
     "gunbroker": {
+      "active": false,
       "fees": {
         "compliance": 0.01,
-        "tier_1_dollar": 250,
-        "tier_1_percent": 0.055,
-        "tier_2_percent": 0.035
+        "tier_1_dollar": 325,
+        "tier_1_percent": 0.06,
+        "tier_2_percent": 0.04
       },
-      "active": false,
       "pricing": {
         "margin_adjustment_dollar": 0,
         "margin_adjustment_percent": 0
@@ -593,10 +849,10 @@
       "from_postal_code": "12345",
       "listing_duration": 90,
       "picture_flairing": {
-        "active": true,
+        "active": false,
         "border": {
           "color": "#80a30e",
-          "active": true,
+          "active": false,
           "pixel_width": 5
         }
       },
@@ -677,18 +933,21 @@
         "product_tag": "Local Inventory",
         "sell_local_first": false
       },
+      "state_restrictions": [
+        "FM",
+        "MP",
+        "MH",
+        "PW",
+        "AS",
+        "GU",
+        "PR",
+        "VI",
+        "HI",
+        "AK"
+      ],
       "address_verification": {
         "billing_shipping_match": {
-          "active": true,
-          "price_range": {
-            "max": 9999,
-            "min": 300
-          },
-          "product_class": [
-            "LL",
-            "OP",
-            "AC"
-          ]
+          "active": true
         }
       },
       "max_auto_fulfillment_dollar_value": 3000
@@ -710,15 +969,13 @@
         }
       },
       "fulfillment": {
-        "API_HOST": "yourwebsite.com",
-        "API_USER": "lipseys-ds@yourwebsite.com",
-        "API_PASSWORD": "XXXXXXX",
+        "API_USER": "asdf@yyy.com",
+        "API_PASSWORD": "XX",
         "ship_to_store": {
           "API_USER": "XXXX@YYYY.com",
-          "API_PASSWORD": "XXXXXXXXX"
+          "API_PASSWORD": "xx"
         },
         "ffl_recipient_emails": [
-          "sales@yourwebsite.com",
           "validateffl@lipseys.com"
         ]
       },
@@ -775,19 +1032,18 @@
       "fulfillment": {
         "firearms": {
           "api_user": "12345@gzanders.org",
-          "api_password": "XXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX"
+          "api_password": "Xx"
         },
         "accessories": {
           "api_user": "12345@gzanders.org",
-          "api_password": "XXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX"
+          "api_password": "xx"
         },
         "ship_to_store": {
           "api_user": "XXXXX@YYYYYYY.com",
-          "api_password": "XXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXXXX"
+          "api_password": "xx"
         },
         "ffl_recipient_emails": [
-          "ffltransfer@gzanders.com",
-          "sales@yourwebsite.com"
+          "ffltransfer@gzanders.com"
         ]
       },
       "drop_ship_only_items": true,
@@ -842,6 +1098,43 @@
         }
       }
     },
+    "AmChar": {
+      "active": false,
+      "distid": "AMC",
+      "shipping": {
+        "flat_rate": {
+          "cost": 9.95,
+          "shipping_class": "flat_rate_amchar",
+          "shipping_class_firearms": "flat_rate_amchar_firearms"
+        }
+      },
+      "fulfillment": {
+        "api_key": "XX"
+      },
+      "drop_ship_only_items": true,
+      "product_restrictions": {
+        "sku": {
+          "exclude": [],
+          "include": []
+        },
+        "upc": {
+          "exclude": [],
+          "include": []
+        },
+        "brand": {
+          "exclude": [],
+          "include": []
+        },
+        "category": {
+          "exclude": [],
+          "include": []
+        },
+        "product_class": {
+          "exclude": [],
+          "include": []
+        }
+      }
+    },
     "RSR Group": {
       "active": true,
       "distid": "RSR",
@@ -853,7 +1146,6 @@
         }
       },
       "fulfillment": {
-        "API_HOST": "https://www.rsrgroup.com/api/rsrbridge/1.0/pos/",
         "API_USER": 12345,
         "API_PASSWORD": "password",
         "ship_to_store": {
@@ -861,7 +1153,6 @@
           "store_account": 12346
         },
         "ffl_recipient_emails": [
-          "sales@yourwebsite.com",
           "dropship@rsrgroup.com"
         ]
       },
@@ -889,7 +1180,7 @@
           "include": []
         },
         "product_class": {
-          "exclude": ["FA"],
+          "exclude": ["FA","SO"],
           "include": []
         }
       }
@@ -909,8 +1200,7 @@
         "api_password": 12345,
         "api_customer_number": 12345,
         "ffl_recipient_emails": [
-          "fulfillment@sportssouth.biz",
-          "sales@yourwebsite.com"
+          "fulfillment@sportssouth.biz"
         ]
       },
       "drop_ship_only_items": true,
@@ -949,10 +1239,21 @@
         }
       },
       "fulfillment": {
-        "API_TOKEN": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "API_TOKEN": "XX",
         "ffl_recipient_emails": [
           "dropship@2ndamendmentwholesale.com"
-        ]
+        ],
+        "billing_address": {
+          "city": "",
+          "email": "your@email.com",
+          "phone": 5555555555,
+          "state": "FL",
+          "company": "",
+          "last_name": "",
+          "first_name": "",
+          "postal_code": 12345,
+          "address_street": ""
+        }
       },
       "drop_ship_only_items": true,
       "product_restrictions": {
@@ -990,8 +1291,8 @@
         "require_adult_signature": false
       },
       "fulfillment": {
-        "API_SID": "XXXXXXXXXXXXXXXXXXX",
-        "API_TOKEN": "YYYYYYYYYYYYYYYYYYY"
+        "API_SID": "XX",
+        "API_TOKEN": "XX"
       },
       "drop_ship_only_items": true,
       "product_restrictions": {
@@ -1033,7 +1334,7 @@
     "cost": {
       "global_restrictions": {
         "max_distributor_cost": 99999,
-        "min_distributor_cost": 0
+        "min_distributor_cost": 8
       },
       "product_class_restrictions": [
         {
@@ -1084,6 +1385,7 @@
         "Mantis",
         "Nine Line Apparel",
         "Pelican",
+        "PS Products",
         "Q LLC",
         "Ravin Crossbows",
         "Ruger / Sturm, Ruger & Co.",
@@ -1116,7 +1418,14 @@
     },
     "product_class": {
       "exclude": [],
-      "include": []
+      "include": [
+        "FA",
+        "MG",
+        "AO",
+        "SO",
+        "OP",
+        "LL"
+      ]
     },
     "min_quantity_to_list": 2
   }
