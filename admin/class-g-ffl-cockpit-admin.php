@@ -425,7 +425,7 @@ class g_ffl_Cockpit_Admin
                                 },
                                 {name: 'SKU'}, 
                                 {sort: false, name: 'Product Image',
-                                    formatter: (_, row) => gridjs.html(`<a style="cursor:pointer;" onclick="load_product_data('${row.cells[3].data.replace("\"","&quot;") + "','" + row.cells[0].data + "','" + row.cells[1].data + "','" + (row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}')"><img style="max-height:40px;max-width:100px;height:auto;width:auto;" src="${(row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}"></a>`)
+                                    formatter: (_, row) => gridjs.html(`<a style="cursor:pointer;" onclick="load_product_data('${row.cells[3].data.replaceAll("\"","&quot;") + "','" + row.cells[0].data + "','" + row.cells[1].data + "','" + (row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}')"><img style="max-height:40px;max-width:100px;height:auto;width:auto;" src="${(row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}"></a>`)
                                 },
                                 {name: 'Name', width: '200px'}, 
                                 {name: "UPC"},
