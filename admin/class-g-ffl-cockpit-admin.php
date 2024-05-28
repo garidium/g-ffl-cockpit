@@ -686,25 +686,23 @@ class g_ffl_Cockpit_Admin
                         });
                   
                         document.getElementById("download_fulfillment_history_button").addEventListener("click", function(){
-                            if (window.confirm("This action will attempt fulfillment of gunbroker order#" + document.getElementById("gunbroker_order_id").value + ", do you want to proceed?")){                 
-                                document.getElementById("download_fulfillment_history_button").disabled = true;
-                                document.getElementById('download_fulfillment_history_button').innerText = 'Please Wait...';
-                                fetch("https://ffl-api.garidium.com/download", {
-                                    method: "POST",
-                                    headers: {
-                                    "Accept": "application/json",
-                                    "Content-Type": "application/json",
-                                    "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
-                                    },
-                                    body: JSON.stringify({"action": "download_fulfillment_history"})
-                                })
-                                .then(response=>response.json())
-                                .then(data=>{ 
-                                    window.open(data);  
-                                    document.getElementById("download_fulfillment_history_button").disabled = false; 
-                                    document.getElementById('download_fulfillment_history_button').innerText = 'Download Fulfillment History';     
-                                });
-                            }
+                            document.getElementById("download_fulfillment_history_button").disabled = true;
+                            document.getElementById('download_fulfillment_history_button').innerText = 'Please Wait...';
+                            fetch("https://ffl-api.garidium.com/download", {
+                                method: "POST",
+                                headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/json",
+                                "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                },
+                                body: JSON.stringify({"action": "download_fulfillment_history"})
+                            })
+                            .then(response=>response.json())
+                            .then(data=>{ 
+                                window.open(data);  
+                                document.getElementById("download_fulfillment_history_button").disabled = false; 
+                                document.getElementById('download_fulfillment_history_button').innerText = 'Download Fulfillment History';     
+                            });
                         });
                         
                         fetch("https://ffl-api.garidium.com", {
