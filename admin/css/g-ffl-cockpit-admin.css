@@ -57,7 +57,14 @@
   background-color: #ffffff;
   border: 7px solid #3a3838;
 }
-
+.responsive-image {
+  max-width: 95%;
+  max-height: 300px;
+  width: auto;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
 /* The Close Button */
 .close {
   color: #fc0909;

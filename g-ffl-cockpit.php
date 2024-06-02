@@ -16,7 +16,7 @@
  * Plugin Name:       g-FFL Cockpit
  * Plugin URI:        garidium.com/g-ffl-cockpit
  * Description:       g-FFL Cockpit
- * Version:           1.3.10
+ * Version:           1.3.11
  * WC requires at least: 3.0.0
  * WC tested up to:   4.0
  * Author:            Garidium LLC
@@ -47,7 +47,7 @@ if (! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('G_FFL_COCKPIT_VERSION', '1.3.10');
+define('G_FFL_COCKPIT_VERSION', '1.3.11');
 
 /**
  * The code that runs during plugin activation.
@@ -84,6 +84,31 @@ add_action( 'before_woocommerce_init', function() {
 		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 	}
 } );
+/*
+function garidium_custom_seo_meta_tags() {
+    if (is_product()) {
+        echo '<!-- Garidium FFL Cockpit SEO -->';
+        global $post;
+        $meta_description = get_post_meta($post->ID, '_garidium_wpseo_metadesc', true);
+        if ($meta_description) {
+            echo '<meta name="description" content="' . esc_attr($meta_description) . '">';
+        }
+        $meta_description = get_post_meta($post->ID, '_garidium_wpseo_json_ld', true);
+        if (is_string($meta_description) && !empty($meta_description)) {
+            echo '<script type="application/ld+json" class="garidium-seo-schema">' . html_entity_decode(esc_attr($meta_description)) . '</script>';
+        } elseif (is_array($meta_description)) {
+            // Handle the case where the meta value is an array
+            // Assuming you want to join the array values into a single string
+            $meta_description_string = implode('', $meta_description);
+            if (!empty($meta_description_string)) {
+                echo '<script type="application/ld+json" class="garidium-seo-schema">' . html_entity_decode(esc_attr($meta_description_string)) . '</script>';
+            }
+        }
+        echo '<!-- Garidium FFL Cockpit SEO -->';
+    }
+}
+add_action('wp_head', 'garidium_custom_seo_meta_tags');
+*/
 
 /**
  * Begins execution of the plugin.

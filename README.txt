@@ -5,7 +5,7 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.5
 Requires PHP: 7.0
-Stable tag: 1.3.10
+Stable tag: 1.3.11
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -15,8 +15,8 @@ It was built to support our businesses, and we know it will help yours. Please c
 
 ==Feature Highlights:==
 1. Configure 1-to-many supported distributors and feed products into your WooCommerce website.
-2. Currently supported distributors for Inventory Feeds: Zanders, Sports South, Lipseys, Chattanooga, Davidsons, 2nd Amendment, RSR 
-3. Fulfillment (via Order Page) and Automated-Fulfillment processes are now available for Lipseys, Zanders, RSR, Sports South, and Chattanooga.
+2. We currently support over a dozen distributors and counting..
+3. Fulfillment automation, to automate Drop-shipping Workflow 
 4. Fulfillment automation includes monitoring distributors for shipping updates, and notifying both you and your customer.
 5. This plugin also supports feeding product to Gunbroker, Gun.Deals, WikiArms, and AmmoSeek
 6. Inventory and Listings are then updated every 20-minutes to ensure quantity and pricing are updated continuously.
@@ -35,7 +35,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. Ability to create fulfillment orders
 
 == To purchase a key, visit the g-FFL Cockpit product page: ==
-[g-FFL Cockpit Product Page](https://garidium.com/product/g-ffl-cockpit/) 
+[g-FFL Cockpit Product Page](https://garidium.com/g-ffl-cockpit/) 
 
 ==Please review our Terms and Conditions: ==
 [Terms and Conditions](https://garidium.com/terms_of_sale/)
@@ -60,10 +60,11 @@ While the plugin is free to download and install, it does require you to purchas
 * The plugin has features specifically needed for an FFL business.
 
 == Screenshots ==
-1. The configuration tab show an editor (JSON Editor for those in the know), where distributor and pricing settings can be configured.
+1. The configuration tab shows an editor, where distributors and pricing settings can be configured.
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+42. v1.3.11 Added configuration validator to Configuration Tab
 41. v1.3.10 Bug Fix for Fulfillment History Download button
 40. v1.3.9 More Minor Cosmetic changes on Product Feed, added MAP in table
 39. v1.3.8 Minor Cosmetic changes on Product Feed

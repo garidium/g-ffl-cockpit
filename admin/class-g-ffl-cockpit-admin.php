@@ -297,26 +297,49 @@ class g_ffl_Cockpit_Admin
                                 </td>
                                 <td align="right">
                                     <div>
+                                    <button class="button alt" id="validate_configuration_button">Validate Configuration</button>
+                                        <script>
+                                            document.getElementById("validate_configuration_button").addEventListener("click", function(){
+                                            document.getElementById("validate_configuration_button").disabled = true;
+                                            document.getElementById('validate_configuration_button').innerText = 'Request Sent';
+                                            fetch("https://ffl-api.garidium.com", {
+                                                    method: "POST",
+                                                    headers: {
+                                                    "Accept": "application/json",
+                                                    "Content-Type": "application/json",
+                                                    "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                                    },
+                                                    body: JSON.stringify({"action": "validate_cockpit_configuration", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"}})
+                                                })
+                                                .then(response=>response.json())
+                                                .then(data=>{ 
+                                                    alert("Your request for validation was submitted. You should receive an email within 5-minutes summarizing any critical configurations issues (if you have any).");
+                                                    document.getElementById("validate_configuration_button").disabled = false; 
+                                                    document.getElementById('validate_configuration_button').innerText = 'Validate Configuration';     
+                                                });
+                                            });
+                                        </script>
+
                                         <button class="button alt" id="send_test_fulfillment_emails_button">Send Test Fulfillment Emails</button>
                                         <script>
                                             document.getElementById("send_test_fulfillment_emails_button").addEventListener("click", function(){
                                                 document.getElementById("send_test_fulfillment_emails_button").disabled = true;
                                                 document.getElementById('send_test_fulfillment_emails_button').innerText = 'Please Wait...';
-                                                    fetch("https://ffl-api.garidium.com", {
-                                                            method: "POST",
-                                                            headers: {
-                                                            "Accept": "application/json",
-                                                            "Content-Type": "application/json",
-                                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
-                                                            },
-                                                            body: JSON.stringify({"action": "send_test_emails", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"}})
-                                                        })
-                                                        .then(response=>response.json())
-                                                        .then(data=>{ 
-                                                            document.getElementById("send_test_fulfillment_emails_button").disabled = false; 
-                                                            document.getElementById('send_test_fulfillment_emails_button').innerText = 'Send Test Fulfillment Emails';     
-                                                        });
-                                                });
+                                                fetch("https://ffl-api.garidium.com", {
+                                                        method: "POST",
+                                                        headers: {
+                                                        "Accept": "application/json",
+                                                        "Content-Type": "application/json",
+                                                        "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                                        },
+                                                        body: JSON.stringify({"action": "send_test_emails", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"}})
+                                                    })
+                                                    .then(response=>response.json())
+                                                    .then(data=>{ 
+                                                        document.getElementById("send_test_fulfillment_emails_button").disabled = false; 
+                                                        document.getElementById('send_test_fulfillment_emails_button').innerText = 'Send Test Fulfillment Emails';     
+                                                    });
+                                            });
                                         </script>
                                     </div>
                                 </td>
@@ -373,7 +396,7 @@ class g_ffl_Cockpit_Admin
                         function load_product_data(title, distributor, sku, img_url){
                             //alert(data);
                             modal.style.display = "block";
-                            document.getElementById("product_detail_div").innerHTML = "<h3>" + title + "</h3><br><img style='height:275px;' src='" + img_url + "'/><br><img style='height:75px;' src='" + get_distributor_logo(distributor) + "'/><br>" + sku;
+                            document.getElementById("product_detail_div").innerHTML = "<h3>" + title + "</h3><br><img class='responsive-image' src='" + img_url + "'/><br><img style='height:75px;' src='" + get_distributor_logo(distributor) + "'/><br>" + sku;
                         }
 
                         // When the user clicks on <span> (x), close the modal
