@@ -133,7 +133,16 @@ class g_ffl_Cockpit_Admin
                 let gFFLCockpitKey = "' . esc_attr($gFFLCockpitKey) . '"
               </script>';
         ?>
+        <!-- Add this in your plugin's main file or enqueue it in your theme's functions.php -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         
+        <style>
+            .tab-pane {
+                min-height: 500px;
+            }
+        </style>
         <div class="wrap">
             <img src="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png');?>">
             <br><br>
@@ -148,119 +157,2607 @@ class g_ffl_Cockpit_Admin
             <!-- Tab content -->
             <div id="configuration" class="tabcontent">
             <!--<h3>Configuration</h3>-->
-                <div class="postbox" style="padding: 10px;margin-top: 10px">
+                <div class="postbox" style="margin-top: 10px">
                         <?php settings_fields('g-ffl-cockpit-settings'); ?>
-                        <table class="form-table">
-                        <tr>
-                                <td style="vertical-align:top;width:150px;font-weight:bold;" scope="row">g-FFL Cockpit Key:</td>
-                                <td style="padding:5px;vertical-align:top;">
-                                    <div class="user-pass-wrap">
-                                        <div class="wp-pwd">
-                                            <form method="post" action="options.php">
-                                                <?php settings_fields('g-ffl-cockpit-settings'); ?>
-                                                <input oninput="document.getElementById('set_key_form').style.display='';" type="password" style="width: 350px;" name="g_ffl_cockpit_key" id="g_ffl_cockpit_key" 
-                                                    aria-describedby="login_error" class="input password-input" size="20"
-                                                    value="<?php echo esc_attr($gFFLCockpitKey); ?>"/>
-                                                    <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, false);">Load Config</a>
-                                                    <span id="set_key_form" style="display:none;"><?php submit_button('Set Key', 'primary', 'submit-button'); ?></span>
-                                            </form>
-                                            
-                                            </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div id="g-ffl-admin-buttons" align="right" style="margin:5px;display:none;">
-                                        <b>Admin Functions:&nbsp;</b>
-                                        <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, true);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('save_cockpit_configuration_button').style.display='none';">Load Config</a>
-                                        <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value);">Save</a>
-                                        <br><br><span style="padding:10px;color:red;display:none;" id="admin_current_editing_key"></span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan=3>If you have any questions about FFL Cockpit configuration, send an email to support@garidium.com detailing your questions. We'll get back as soon as we can. Include your name and your website URL so we can look up your configuration. Also, make to review our <a target=_blank href="https://garidium.com/category/help-center/">Help Center</a> for tips on using Cockpit.</td>
-                            </tr>
+                        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+                        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+                        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                        <script src="https://garidium.s3.amazonaws.com/ffl-api/plugin/cockpit/tinymce/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+                                               
+                        <script>
+                            let typingTimer;
+                            const doneTypingInterval = 2000;
+                            function setupAutoSave() {
+                                const autoSaveFields = document.querySelectorAll('[data-autosave="true"]');
+                                autoSaveFields.forEach(field => {
+                                    if (!tinymce.get(field.id) && !field.dataset.listenerAdded) {
+                                        field.addEventListener('input', () => {
+                                            clearTimeout(typingTimer);
+                                            typingTimer = setTimeout(() => autoSave(field), doneTypingInterval);
+                                        });
 
+                                        field.addEventListener('keydown', () => {
+                                            clearTimeout(typingTimer);
+                                        });
+
+                                        field.addEventListener('blur', () => autoSave(field));
+
+                                        // Mark this field as having listeners added
+                                        field.dataset.listenerAdded = 'true';
+                                    }
+                                });
+                            }
+
+
+                            function autoSave(field) {
+                                let value;
+                                if (tinymce.get(field.id)) {
+                                    // Handle TinyMCE editor
+                                    value = tinymce.get(field.id).getContent();
+                                } else {
+                                    if (field.type === 'checkbox') {
+                                        value = field.checked;
+                                    }else{
+                                        // Handle regular input/textarea
+                                        value = field.value;
+                                    }
+                                    if (field.type == "number"){
+                                        if (!isNaN(value) && value.trim() !== "") {
+                                            value = parseFloat(value);
+                                        }
+                                    }
+                                }
+                                console.log('Auto-saving form data for field:', field.id, value);
+                                const cc = editor.get();
+                                setConfigValue(cc, field.id, value);
+                                editor.set(cc);
+                            }
+
+                          
+                            function filterOptions(inputElementId, modalListId) {
+                                const input = document.getElementById(inputElementId);
+                                if (input.value.length < 2) {
+                                    return;
+                                }
+                                const filter = input.value.toLowerCase();
+                                const modalList = document.getElementById(modalListId);
+                                const containers = Array.from(modalList.getElementsByClassName('checkbox-option'));
+
+                                const matches = [];
+                                const nonMatches = [];
+
+                                // Separate matches and non-matches
+                                containers.forEach(container => {
+                                    const label = container.getElementsByTagName('label')[0];
+                                    const txtValue = label.textContent || label.innerText;
+                                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                                        matches.push(container);
+                                    } else {
+                                        nonMatches.push(container);
+                                    }
+                                });
+
+                                // Clear the modal list
+                                while (modalList.firstChild) {
+                                    modalList.removeChild(modalList.firstChild);
+                                }
+
+                                // Append matches first
+                                matches.forEach(container => {
+                                    modalList.appendChild(container);
+                                    container.style.display = ""; // Ensure matches are displayed
+                                });
+
+                                // Add a separator line if there are matches and non-matches
+                                if (matches.length > 0 && nonMatches.length > 0) {
+                                    const separator = document.createElement('hr');
+                                    separator.style.borderTop = "2px solid black"; // Set the thickness of the separator
+                                    modalList.appendChild(separator);
+                                }
+
+                                // Append non-matches
+                                nonMatches.forEach(container => {
+                                    modalList.appendChild(container);
+                                    container.style.display = ""; // Ensure non-matches are displayed
+                                });
+                            }
+
+                            async function load_modal_check_option(modal, action, selectedItemsContainerId) {
+                                var element_name = "categories";
+                                var element_id = "name";
+                                var element_description = "name";
+                                if (action == "get_product_classes") {
+                                    element_name = "product_classes";
+                                    element_id = "product_class";
+                                    element_description = "description";
+                                }else if (action == "get_manufacturer_list") {
+                                    element_name = "manufacturers";
+                                    element_id = "name";
+                                    element_description = "name";
+                                } else if (action == "get_category_list") {
+                                    element_name = "categories";
+                                    element_id = "name";
+                                    element_description = "name";
+                                }
+                                const response = await fetch("https://ffl-api.garidium.com", {
+                                    method: "POST",
+                                    headers: {
+                                        "Accept": "application/json",
+                                        "Content-Type": "application/json",
+                                        "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
+                                    },
+                                    body: JSON.stringify({ "action": action })
+                                });
+
+                                const selectedItemsContainer = document.getElementById(selectedItemsContainerId);
+                                const selectedItems = Array.from(selectedItemsContainer.getElementsByClassName('selected-item')).map(item => item.querySelector('span').textContent);
+                                
+
+                                const data = await response.json();
+                                try {
+                                    if (data != null && data[element_name].length > 0) {
+                                        for (let i = 0; i < data[element_name].length; i++) {
+                                            const item = data[element_name][i];
+                                            const checkbox = document.createElement("input");
+                                            checkbox.type = "checkbox";
+                                            checkbox.value = item[element_id];
+                                            checkbox.id = `checkbox_${element_id}_${item[element_id]}`;
+
+                                            if (selectedItems.includes(checkbox.value)){
+                                                checkbox.checked =true;
+                                            }
+
+                                            const label = document.createElement("label");
+                                            label.htmlFor = `checkbox_${element_id}_${item[element_id]}`;
+                                            if (action == "get_product_classes"){
+                                                label.textContent = item[element_description] + " (" + item[element_id] + ")";
+                                            } else {
+                                                label.textContent = item[element_description];
+                                            }
+                            
+                                            const container = document.createElement("div");
+                                            container.classList.add("checkbox-option");
+                                            container.appendChild(checkbox);
+                                            container.appendChild(label);
+
+                                            modal.appendChild(container);
+                                        }
+                                    }
+                                } catch (error) {
+                                    alert("Problem retrieving options.");
+                                }
+                            }
+
+                            function openModal(modalId, selectedItemsId, zIndex=1000) {
+                                const modal = document.getElementById(modalId);
+                                const modal_options = document.getElementById(modalId + "List");
+                                if (modalId != "priceBasedMarginModal"){
+                                    modal_options.replaceChildren();
+                                    var api_function = "get_product_classes";
+                                    if (modalId == "brandModal" || modalId == "ignoreMapBrandModal"){
+                                        api_function = "get_manufacturer_list";
+                                    }else if (modalId == "categoryModal"){
+                                        api_function = "get_category_list";
+                                    }
+                                    load_modal_check_option(modal_options, api_function, selectedItemsId)
+                                }
+
+                                modal.style.display = "block";
+                                modal.style.zIndex = zIndex;
+                                modal.setAttribute('data-selected-items-id', selectedItemsId);
+                            }
+
+                            function closeModal(modalId) {
+                                const modal = document.getElementById(modalId);
+                                modal.style.display = "none";
+                            }
+
+                            function saveSelections(modalId, itemType) {
+                                const modal = document.getElementById(modalId);
+                                const selectedItemsId = modal.getAttribute('data-selected-items-id');
+                                const selectedItemsContainer = document.getElementById(selectedItemsId);
+                                selectedItemsContainer.innerHTML = '';
+
+                                const checkboxes = modal.querySelectorAll('input[type="checkbox"]:checked');
+                                checkboxes.forEach(checkbox => {
+
+                                    // add item to configuration
+                                    addConfigArrayItem(selectedItemsContainer, checkbox.value);
+
+                                    const div = document.createElement('div');
+                                    div.className = 'selected-item';
+                                    const span = document.createElement('span');
+                                    span.textContent = checkbox.value;
+                                    const link = document.createElement('i');
+                                    link.className = 'fas fa-trash-alt remove-link';
+                                    link.title = 'Remove item'; 
+                                    link.onclick = () => removeConfigArrayItem(selectedItemsContainer, div);
+                                    div.appendChild(span);
+                                    div.appendChild(link);
+                                    selectedItemsContainer.appendChild(div);
+                                });
+
+                                closeModal(modalId);
+                            }
+
+                            // Close the modal when the user clicks anywhere outside of it
+                            window.onclick = function(event) {
+                                const modals = document.querySelectorAll('.modal');
+                                modals.forEach(modal => {
+                                    if (event.target === modal) {
+                                        modal.style.display = "none";
+                                    }
+                                });
+                            };
+
+                            function addSelectedItemsToContainer(selectedItemsContainer, items){
+                                for (const item of items) {
+                                    const div = document.createElement('div');
+                                    div.className = 'selected-item';
+                                    const span = document.createElement('span');
+                                    span.textContent = item;
+                                    const link = document.createElement('i');
+                                    link.className = 'fas fa-trash-alt remove-link';
+                                    link.title = 'Remove item'; 
+                                    link.onclick = () => removeConfigArrayItem(selectedItemsContainer, div);
+                                    div.appendChild(span);
+                                    div.appendChild(link);
+                                    selectedItemsContainer.appendChild(div);
+                                }
+                            }
+
+                            function removeConfigArrayItem(container, item) {
+                                let config = editor.get();
+                                var configItemsArray = getConfigValue(config, container.id);
+                                const itemText = item.querySelector('span').textContent;
+                                if (configItemsArray != undefined){
+                                    const index = configItemsArray.indexOf(itemText);
+                                    if (index !== -1) {
+                                        configItemsArray.splice(index, 1);
+                                    }
+                                    editor.set(config);
+                                }else{
+                                    alert("This item was not defined in the configuration");
+                                }
+                                container.removeChild(item);
+                            }
+                            
+               
+                            function removeAllConfigArrayItems(container) {
+                                if (confirm("Are you sure that you want to remove all items from this selection?")){
+                                    let config = editor.get();
+                                    var configItemsArray = getConfigValue(config, container.id);
+
+                                    if (configItemsArray != undefined) {
+                                        // Clear the configItemsArray
+                                        configItemsArray.length = 0;
+
+                                        // Remove all child elements from the container
+                                        while (container.firstChild) {
+                                            container.removeChild(container.firstChild);
+                                        }
+
+                                        // Update the config
+                                        editor.set(config);
+                                    } else {
+                                        alert("This item was not defined in the configuration");
+                                    }
+                                }
+                            }
+
+                            function addConfigArrayItem(container, item) {
+                                let configItemsArray = null
+                                let config = editor.get();
+                                configItemsArray = getConfigValue(config, container.id);
+                                if (configItemsArray == undefined){
+                                    setConfigValue(config, container.id, []);
+                                    configItemsArray = getConfigValue(config, container.id);
+                                }
+                                
+                                var itemText = null;
+                                if (item.querySelector) {
+                                    // item is an element, use querySelector to get the text content of the span
+                                    itemText = item.querySelector('span') ? item.querySelector('span').textContent : '';
+                                } else {
+                                    // item is already text
+                                    itemText = item;
+                                }
+
+                                if (configItemsArray == null){
+                                    configItemsArray = [itemText];
+                                }else{
+                                    if (!configItemsArray.includes(itemText)) {
+                                        configItemsArray.push(itemText);
+                                    }
+                                }
+
+                                editor.set(config);
+                            }
+
+                            function addMarginGroup(margin_name=null, margin_config=null, is_new=false) {
+                                if (is_new && margin_name == null){
+                                    margin_name = prompt(`Enter your custom margin group name (ex: Firearms, Ammunition):`);
+                                    var config = editor.get();
+                                    config.pricing.margin[margin_name] = {
+                                        "margin_dollar": config.pricing.margin.default.margin_dollar,
+                                        "margin_percentage": config.pricing.margin.default.margin_percentage,
+                                        "product_class": [],
+                                        "sku": [],
+                                        "category": [],
+                                        "upc": [],
+                                        "brand": []
+                                    }
+                                    editor.set(config);
+                                    config = editor.get();
+                                    margin_config = config.pricing.margin[margin_name];
+                                }
+                                const container = document.getElementById('margin-group-container');
+                                const div = document.createElement('div');
+                                div.className = 'group-container';
+                                var groupId = `group-${margin_name ? margin_name : Date.now()}`;
+        
+                                div.innerHTML = `
+                                    <div class="group-header">
+                                        <div style="cursor:pointer;" class="accordion-header" onclick="toggleAccordion('${groupId}', this)">
+                                            <i class="fas fa-plus accordion-toggle-icon"></i>${margin_name}
+                                        </div>
+                                        <i class="fas fa-trash-alt remove-link" title="Remove Item" onclick="removeMarginGroup(this, '${margin_name}')"></i>
+                                    </div>
+                                    <div class="accordion-content" id="${groupId}">
+                                        <div class="helperDialog">Use the available filters below to specify which products to apply your custom margin</div>
+                                        <div class="form-row">
+                                            <label for="product_class">Product Class:</label>
+                                            <div class="field-container">
+                                                <div class="selected-items" id="pricing-margin-${margin_name}-product_class"></div>
+                                                <div class="add-item-container">
+                                                    <span class="add-item" onclick="openModal('productClassModal', 'pricing-margin-${margin_name}-product_class')">Select</span>&nbsp;|&nbsp;
+                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('pricing-margin-${margin_name}-product_class'))">Remove All</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <label>Category:</label>
+                                            <div class="field-container">
+                                                <div class="selected-items" id="pricing-margin-${margin_name}-category"></div>
+                                                <div class="add-item-container">
+                                                    <span class="add-item" onclick="openModal('categoryModal', 'pricing-margin-${margin_name}-category')">Select</span>&nbsp;|&nbsp;
+                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('pricing-margin-${margin_name}-category'))">Remove All</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <label for="brand">Brand:</label>
+                                            <div class="field-container">
+                                                <div class="selected-items" id="pricing-margin-${margin_name}-brand"></div>
+                                                <div class="add-item-container">
+                                                    <span class="add-item" onclick="openModal('brandModal', 'pricing-margin-${margin_name}-brand')">Select</span>&nbsp;|&nbsp;
+                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('pricing-margin-${margin_name}-brand'))">Remove All</span>
+                                                </div>  
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <label for="sku">SKU:</label>
+                                            <div class="field-container">
+                                                <div class="selected-items" id="pricing-margin-${margin_name}-sku"></div>
+                                                <div class="add-item-container">
+                                                    <span class="add-item" onclick="promptAndAddItems(this, 'sku', 'pricing-margin-${margin_name}-sku')">Select</span>&nbsp;|&nbsp;
+                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('pricing-margin-${margin_name}-sku'))">Remove All</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <label for="upc">UPC:</label>
+                                            <div class="field-container">
+                                                <div class="selected-items" id="pricing-margin-${margin_name}-upc"></div>
+                                                <div class="add-item-container">
+                                                    <span class="add-item" onclick="promptAndAddItems(this, 'upc', 'pricing-margin-${margin_name}-upc')">Select</span>&nbsp;|&nbsp;
+                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('pricing-margin-${margin_name}-upc'))">Remove All</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <label for="margin_percentage">Margin (%):</label>
+                                            <input class="field-number" type="number" name="margin_percentage" id="pricing-margin-${margin_name}-margin_percentage" min="0" max="0.99" step="0.01" value="${margin_config ? margin_config.margin_percentage : ''}"  data-autosave="true">
+                                        </div>
+                                        <div class="form-row">
+                                            <label for="margin_dollar">Margin ($):</label>
+                                            <input class="field-number" type="number" name="margin_dollar" id="pricing-margin-${margin_name}-margin_dollar" value="${margin_config ? margin_config.margin_dollar : ''}" data-autosave="true">
+                                        </div>
+                                        <div class="form-row">
+                                            <label for="price_based_margin">Price Based Margin:</label>
+                                            <div class="field-container">
+                                                <table class="price-based-margin-table" id="price-based-margin-table-${groupId}">
+                                                    <thead>
+                                                        <tr style="white-space: nowrap;">
+                                                            <th>Min ($)</th>
+                                                            <th>Max ($)</th>
+                                                            <th>Margin ($)</th>
+                                                            <th>Margin (%)</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                                <div class="add-item-container">
+                                                    <span class="add-item" onclick="openModal('priceBasedMarginModal', 'price-based-margin-table-${groupId}')">Add Price Based Margin</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                container.appendChild(div);
+
+                                if (margin_config!=null){
+                                    filterElements = [
+                                        {"name": "product_class", "selectedItemsContainer": "pricing-margin-" + margin_name + "-product_class"},
+                                        {"name": "brand", "selectedItemsContainer": "pricing-margin-" + margin_name + "-brand"},
+                                        {"name": "category", "selectedItemsContainer": "pricing-margin-" + margin_name + "-category"},
+                                        {"name": "sku", "selectedItemsContainer": "pricing-margin-" + margin_name + "-sku"},
+                                        {"name": "upc", "selectedItemsContainer": "pricing-margin-" + margin_name + "-upc"}
+                                    ];
+                                    for (const filterElement of filterElements) {
+                                        if (margin_config[filterElement.name]){
+                                            selectedItemsContainer = document.getElementById(`${filterElement.selectedItemsContainer}`);
+                                            addSelectedItemsToContainer(selectedItemsContainer, margin_config[filterElement.name]);
+                                        }
+                                    }
+
+                                    // load price-based margin table
+                                    if (margin_config.price_based_margin){
+                                        price_based_margin_table = document.getElementById(`price-based-margin-table-${groupId}`);
+                                        for (const pbm of margin_config.price_based_margin){
+                                            loadPriceBasedMargin(groupId, price_based_margin_table, pbm.minimum_unit_cost, pbm.maximum_unit_cost, pbm.margin_dollar, pbm.margin_percentage);
+                                        }
+                                    }
+
+                                }
+                                if (is_new){
+                                    expandGroup(groupId, div);
+                                    setupAutoSave();
+                                }
+                            }
+
+                            function promptAndAddItems(element, itemType, containerId) {
+                                const items = prompt(`Enter ${itemType}s separated by commas:`);
+                                
+                                if (items) {
+                                    const itemArray = items.split(',');
+                                    const container = document.getElementById(containerId);
+                                    container.classList.remove('hidden');
+                                    itemArray.forEach(item => {
+                                        // add the item to the configuration
+                                        addConfigArrayItem(container, item);
+
+                                        // add theitem to theUI
+                                        const div = document.createElement('div');
+                                        div.className = 'selected-item';
+                                        const span = document.createElement('span');
+                                        span.textContent = item.trim();
+                                        const link = document.createElement('i');
+                                        link.className = 'fas fa-trash-alt remove-link';
+                                        link.title = 'Remove item'; 
+                                        link.onclick = () => removeConfigArrayItem(container, div);
+                                        div.appendChild(span);
+                                        div.appendChild(link);
+                                        container.appendChild(div);
+                                        
+                                    });
+                                }
+                            }
+
+                            function removeMarginGroup(link, group_name) {
+                                
+                                const config = editor.get();
+                                delete config.pricing.margin[group_name];
+                                editor.set(config);
+
+                                const group = link.closest('.group-container');
+                                group.parentNode.removeChild(group);
+                            }
+
+                            function toggleAccordion(groupId, element) {
+                                const content = document.getElementById(groupId);
+                                if (!content) {
+                                    console.error(`Element with id ${groupId} not found.`);
+                                    return;
+                                }
+
+                                const header = element.closest('.accordion-header');
+                                if (!header) {
+                                    console.error('Header element not found.');
+                                    return;
+                                }
+
+                                const icon = header.querySelector('.accordion-toggle-icon');
+                                if (!icon) {
+                                    console.error(`Icon element with class 'accordion-toggle-icon' not found.`);
+                                    return;
+                                }
+
+                                if (content.style.display === 'none' || content.style.display === '') {
+                                    expandGroup(groupId, header.parentNode);
+                                    icon.classList.add('fa-minus');
+                                    icon.classList.remove('fa-plus');
+                                } else {
+                                    content.style.display = 'none';
+                                    icon.classList.add('fa-plus');
+                                    icon.classList.remove('fa-minus');
+                                }
+                            }
+
+
+                            function expandGroup(groupId, groupElement) {
+                                const content = document.getElementById(groupId);
+                                const allGroups = document.querySelectorAll('.group-container .accordion-content');
+                                allGroups.forEach(group => {
+                                    if (group !== content) {
+                                        group.style.display = 'none';
+                                        group.previousElementSibling.querySelector('.accordion-toggle-icon').classList.add('fa-plus');
+                                        group.previousElementSibling.querySelector('.accordion-toggle-icon').classList.remove('fa-minus');
+                                    }
+                                });
+                                content.style.display = 'block';
+                                groupElement.querySelector('.accordion-toggle-icon').classList.remove('fa-plus');
+                                groupElement.querySelector('.accordion-toggle-icon').classList.add('fa-minus');
+                            }
+
+                            function updateGroupName(input) {
+                                const groupName = input.closest('.accordion-content').previousElementSibling.querySelector('.group-name');
+                                groupName.textContent = input.value;
+                            }
+
+                            function loadPriceBasedMargin(margin_group, tableBody, minPrice, maxPrice, marginDollar, marginPercentage){
+                                const row = document.createElement('tr');
+                                const margin = {
+                                    "minimum_unit_cost": minPrice,
+                                    "maximum_unit_cost": maxPrice,
+                                    "margin_dollar": marginDollar,
+                                    "margin_percentage": marginPercentage
+                                }
+                                row.innerHTML = `
+                                    <td>${minPrice}</td>
+                                    <td>${maxPrice}</td>
+                                    <td>${marginDollar}</td>
+                                    <td>${marginPercentage}</td>
+                                    <td><i class="fas fa-trash-alt title="Remove Item" remove-link" onclick="removePricedBasedMarginTier(this, '${margin_group}', ${minPrice}, ${maxPrice}, ${marginDollar}, ${marginPercentage})"></i></td>
+                                `;
+                                tableBody.appendChild(row);
+                            }
+
+                            function savePriceBasedMargin() {
+                                const modal = document.getElementById('priceBasedMarginModal');
+                                const selectedItemsId = modal.getAttribute('data-selected-items-id');
+                                const tableBody = document.querySelector(`#${selectedItemsId} tbody`);
+                                const minPrice = isNaN(parseFloat(document.getElementById('min_price').value)) ? 0 : parseFloat(document.getElementById('min_price').value);
+                                const maxPrice = isNaN(parseFloat(document.getElementById('max_price').value)) ? 0 : parseFloat(document.getElementById('max_price').value);
+                                const marginDollar = isNaN(parseFloat(document.getElementById('margin_dollar').value)) ? 0 : parseFloat(document.getElementById('margin_dollar').value);
+                                const marginPercentage = isNaN(parseFloat(document.getElementById('margin_percentage').value)) ? 0 : parseFloat(document.getElementById('margin_percentage').value);
+                                const config = editor.get();
+                                var groupName = selectedItemsId.split("group-")[1];
+                                const pbm = {
+                                        "minimum_unit_cost": minPrice,
+                                        "maximum_unit_cost": maxPrice,
+                                        "margin_dollar": marginDollar,
+                                        "margin_percentage": marginPercentage
+                                }
+                                
+                                if (minPrice >= 0 && maxPrice>0 && maxPrice >= minPrice){
+                                    if (!config.pricing.margin[groupName].price_based_margin){
+                                        config.pricing.margin[groupName]['price_based_margin'] = [pbm];
+                                    }else{
+                                        config.pricing.margin[groupName].price_based_margin.push(pbm);
+                                    }
+                                    editor.set(config);
+                                    loadPriceBasedMargin(groupName, tableBody, minPrice, maxPrice, marginDollar, marginPercentage);
+                                }
+                                closeModal('priceBasedMarginModal');
+                            }
+
+                            function removePricedBasedMarginTier(link, group, minCost, maxCost, marginDollar, marginPercentage) {
+                                var config = editor.get();
+                                if (group.startsWith("group-")){
+                                    group = group.split("group-")[1];
+                                }
+                                var pbm = config.pricing.margin[group].price_based_margin;
+
+                                // Filter out the elements that match the criteria
+                                pbm = pbm.filter(item => 
+                                    !(item.minimum_unit_cost === minCost &&
+                                    item.maximum_unit_cost === maxCost &&
+                                    item.margin_percentage === marginPercentage &&
+                                    item.margin_dollar === marginDollar)
+                                );
+
+                                // Sort the remaining elements by minimum_distributor_cost in ascending order
+                                pbm.sort((a, b) => a.minimum_unit_cost - b.minimum_unit_cost);
+
+                                // Update the config with the filtered and sorted array
+                                config.pricing.margin[group].price_based_margin = pbm;
+                                editor.set(config);
+
+                                // Remove the row from the DOM
+                                const row = link.closest('tr');
+                                row.parentNode.removeChild(row);
+                            }
+
+
+                            function sortTableByMinPrice(tableBody) {
+                                const rowsArray = Array.from(tableBody.rows);
+                                rowsArray.sort((a, b) => parseFloat(a.cells[0].innerText) - parseFloat(b.cells[0].innerText));
+                                rowsArray.forEach(row => tableBody.appendChild(row));
+                            }
+
+                            // Add an initial margin group on page load
+                            //window.onload = addMarginGroup;
+
+                            // Close the modal when the user clicks anywhere outside of it
+                            window.onclick = function(event) {
+                                const modals = document.querySelectorAll('.modal');
+                                modals.forEach(modal => {
+                                    if (event.target === modal) {
+                                        modal.style.display = "none";
+                                    }
+                                });
+                            }
+                        </script>
+                        <style>
+                            .card {
+                                width: 220px;
+                                margin-bottom: 10px;
+                                padding: 5px;
+                                position: relative;
+                                height: 200px;
+                            }
+
+                            .distcards {
+                                display: flex;
+                                padding-left: 15px;
+                                flex-wrap: wrap;
+                                justify-content: center; /* Center elements horizontally */
+                                align-content: center; /* Center elements vertically within the container */
+                            }
+                            
+                            .targetcards {
+                                display: flex;
+                                padding-left: 15px;
+                                flex-wrap: wrap;
+                                gap: 10px;
+                                justify-content: center; /* Center elements horizontally */
+                                align-content: center; /* Center elements vertically within the container */
+                            }
+
+                            .card-header {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                padding: 5px;
+                                background-color: #f8f9fa;
+                                border-bottom: 1px solid #e9ecef;
+                            }
+                            .card-header .card-title {
+                                margin-bottom: 5px;
+                                font-size: 10px;
+                            }
+                            .toggle-switch {
+                                position: relative;
+                                display: inline-block;
+                                width: 50px;
+                                height: 25px;
+                            }
+                            .distid_image_area {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                height: 100px;
+                            }
+                            .toggle-switch input {
+                                opacity: 0;
+                                width: 0;
+                                height: 0;
+                            }
+                            .slider {
+                                position: absolute;
+                                cursor: pointer;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                background-color: #ccc;
+                                transition: .4s;
+                                border-radius: 25px;
+                            }
+                            .slider:before {
+                                position: absolute;
+                                content: "";
+                                height: 19px;
+                                width: 19px;
+                                left: 3px;
+                                bottom: 3px;
+                                background-color: white;
+                                transition: .4s;
+                                border-radius: 50%;
+                            }
+                            input:checked + .slider {
+                                background-color: #2196F3;
+                            }
+                            input:checked + .slider:before {
+                                transform: translateX(25px);
+                            }
+                            .email_template_header {
+                                border-bottom: 2px solid #BBBBBB;
+                                margin-top: 30px;
+                                font-size: 14px;
+                                margin-bottom: 20px;
+                                font-weight: bold;
+                                width:100%;
+                                padding:5px;
+                            }
+                            .card-body {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                padding: 5px;
+                            }
+                            .action-links {
+                                margin-top: 10px;
+                                text-align: center;
+                                cursor: pointer;
+                                color: #007bff;
+                            }
+                            .action-links .remove-link {
+                                color: red;
+                                margin-left: 5px;
+                            }
+                            .action-links span {
+                                margin: 0 5px;
+                            }
+                            .card-header img {
+                                max-height: 75px;
+                                max-width: 200px;
+                                margin-bottom: 5px;
+                            }
+                            .form-group {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 10px; /* Adjust spacing between textareas as needed */
+                            }
+                            .form-groups-wrapper {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 10px; /* Adjust spacing between form groups as needed */
+                            }
+
+                            .form-group {
+                                flex: 1; /* Allow form groups to grow and fill available space */
+                                min-width: 300px; /* Optional: set a minimum width for the form groups */
+                            }
+
+                            input {
+                                width: 100%; /* Ensure inputs take up full width of their container */
+                            }
+
+                            .textarea-wrapper {
+                                display: flex;
+                                flex-direction: column;
+                                flex: 1; /* Allow textareas to grow and fill available space */
+                            }
+
+                            textarea {
+                                width: 100%; /* Ensure textareas take up full width of their container */
+                                min-width: 200px; /* Optional: set a minimum width for the textareas */
+                            }
+
+                            .nav-tabs {
+                                border: 1px solid #ddd;
+                                background-color: #eee;
+                            }
+
+                            .nav-tabs .nav-link {
+                                border: 1px solid transparent;
+                                color: black;
+                            }
+
+                            .nav-tabs .nav-link.active {
+                                color: black;
+                                border: 1px solid #ddd;
+                                background-color: #dddddd;
+                            }
+
+                            .email-template-label {
+                                font-style: italic;
+                                color: #5F6D9D;
+                                font-weight:bold;
+                            }
+                            
+                            .pricing-assumptions-form-header {
+                                font-size: 1.5em;
+                                margin-bottom: 20px;
+                                text-align: center;
+                            }
+                            .pricing-assumptions-form-row {
+                                display: flex;
+                                justify-content: space-between;
+                                margin-bottom: 10px;
+                            }
+                            .pricing-assumptions-form-row label {
+                                text-align: right;
+                                padding-right: 10px;
+                            }
+                           
+                            .pricing-assumptions-form-row input[type="checkbox"] {
+                                width: auto;
+                                margin-left: 10px;
+                            }
+                            
+                            .pricing-assumptions-form-header {
+                                font-size: 1.5em;
+                                margin-bottom: 20px;
+                                text-align: center;
+                            }
+                            .pricing-assumptions-form-row {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: top;
+                                margin-bottom: 10px;
+                            }
+                            .pricing-assumptions-form-row label {
+                                width: 45%;
+                                text-align: right;
+                                padding-right: 10px;
+                            }
+                            .pricing-assumptions-form-row input,
+                            .pricing-assumptions-form-row select {
+                                width: 45%;
+                                text-align: left;
+                            }
+               
+                            .pricing-tab-container {
+                                display: flex;
+                                padding: 10px;
+                                align-items: flex-start; /* Align items to the top */
+                            }
+
+                            .pricing-assumptions-form-container {
+                                width: 525px; /* or your preferred width */
+                                margin-right: 20px; /* Adjust space between containers */
+                                box-sizing: border-box;
+                            }
+
+                            .custom-margin-container {
+                                width: 60%; /* or your preferred width */
+                                box-sizing: border-box;
+                            }
+                                .form-container {
+                                max-width: 800px;
+                                margin: auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 5px;
+                            }
+                            .form-header {
+                                font-size: 1.5em;
+                                margin-bottom: 10px;
+                            }
+                            .form-row {
+                                display: flex;
+                                align-items: flex-start;
+                                margin-bottom: 5px;
+                            }
+                            .form-row label {
+                                flex: 0 0 150px;
+                                margin-bottom: 5px;
+                                align-self: flex-start;
+                            }
+                            .form-row .field-container {
+                                flex: 1;
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 5px;
+                            }
+
+                            .field-number {
+                                width:100px;
+                                height:20px;
+                            
+                            }
+                            .form-row input, .form-row select, .field-container {
+                                padding: 8px;
+                                box-sizing: border-box;
+                            }
+                            .array-container, .group-container {
+                                margin-bottom: 15px;
+                                border: 1px solid #ccc;
+                                padding: 10px;
+                                border-radius: 5px;
+                            }
+                            .array-container.hidden {
+                                border: none;
+                                padding: 0;
+                            }
+                            .selected-item {
+                                display: flex;
+                                align-items: center;
+                                margin-bottom: 5px;
+                                background-color: #e9e9e9;
+                                padding: 5px 10px;
+                                border-radius: 5px;
+                            }
+                            .selected-item span {
+                                margin-right: 10px;
+                            }
+                            .add-item, .add-group, .accordion-toggle {
+                                cursor: pointer;
+                                color: blue;
+                                text-decoration: underline;
+                                display: inline-block;
+                            }
+                            .remove-link {
+                                color: #f1afae;
+                                cursor: pointer;
+                                margin-left: 10px;
+                            }
+                            .accordion-content {
+                                display: none;
+                                margin-top: 10px;
+                            }
+                            .group-header {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                            }
+                            .group-header .form-row {
+                                flex: 1;
+                                margin-bottom: 0;
+                            }
+                            .accordion-toggle-icon {
+                                margin-right: 10px;
+                                cursor: pointer;
+                                border: 1px solid #000;
+                                padding: 2px;
+                                border-radius: 3px;
+                                display: inline-block;
+                                width: 20px;
+                                text-align: center;
+                            }
+                            .group-name {
+                                font-weight: bold;
+                                cursor: pointer;
+                                flex: 1;
+                            }
+                            .modal {
+                                display: none;
+                                position: fixed;
+                                left: 0;
+                                top: 0;
+                                width: 100%;
+                                height: 100%;
+                                overflow: auto;
+                                background-color: rgba(0,0,0,0.4);
+                                padding-top: 60px;
+                            }
+                            .modal-content {
+                                background-color: #fefefe;
+                                margin: 5% auto;
+                                padding: 20px;
+                                border: 1px solid #888;
+                                width: 500px;
+                                box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+                                position: relative;
+                                z-index: 10000;
+                            }
+                            .close {
+                                color: red;
+                                float: right;
+                                font-size: 28px;
+                                font-weight: bold;
+                                cursor: pointer;
+                            }
+                            .close:hover,
+                            .close:focus {
+                                color: darkred;
+                                text-decoration: none;
+                            }
+                            .selected-items {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 5px;
+                            }
+                            .price-based-margin-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-top: 10px;
+                            }
+                            .price-based-margin-table th, .price-based-margin-table td {
+                                border: 1px solid #ddd;
+                                padding: 8px;
+                            }
+                            .price-based-margin-table th {
+                                background-color: #f2f2f2;
+                                text-align: left;
+                            }
+                            
+                            .modalPopupContent {
+                                flex-grow: 1;
+                                height:300px;
+                                overflow-y: auto;
+                            }
+                            
+                            .add-item-container {
+                                display: flex;
+                                justify-content: flex-start;
+                            }
+                            
+                            .helperDialog {
+                                margin:10px;
+                                padding:10px;
+                                text-align:left;
+                                width:95%;
+                                border:solid gray 1px;
+                                background:#e1edf1;
+                                
+                                font-weight:normal;
+                            }
+                            .helperDialog {
+                                background-color: #e6f4f9;
+                                border: 1px solid #ccc;
+                                padding: 10px;
+                                font-family: Arial, sans-serif;
+                                font-size: 14px;
+                            }
+                            .helperDialog {
+                                background-color: #e6f4f9;
+                                border: 1px solid #ccc;
+                                padding: 10px;
+                                font-family: Arial, sans-serif;
+                                font-size: 14px;
+                            }
+                            .helperDialog ul {
+                                list-style-type: disc;
+                                padding-left: 30px; /* Increase padding to indent the list items */
+                                margin-top: 5px;
+                            }
+                            .helperDialog ul li {
+                                margin-bottom: 5px;
+                            }
+                            .helperDialog .important-tips {
+                                font-weight: bold;
+                                margin-left: 20px; /* Indent the "Important Tips:" text */
+                            }
+                            .optionFilterInput {
+                                margin-bottom:15px;
+                            }
+                            .main-container {
+                                display: flex;
+                                justify-content: space-between;
+                            }
+
+                            .left-container, .right-container {
+                                width: 48%;
+                                padding: 10px;
+                                border: 1px solid #ccc;
+                                border-radius: 5px;
+                                margin-top:10px;
+                            }
+
+                            .other-restrictions-header {
+                                text-align: center;
+                                margin-bottom: 10px;
+                                font-size: 1.2em;
+                                font-weight: bold;
+                            }
+
+                            .restriction-section {
+                                border: 1px solid #ccc;
+                                padding: 10px;
+                                margin-bottom: 10px;
+                                border-radius: 5px;
+                            }
+
+                            .restriction-header {
+                                text-align: center;
+                                margin-bottom: 10px;
+                                font-size: 1.2em;
+                                font-weight: bold;
+                            }
+
+                            .restriction-container {
+                                display: flex;
+                                justify-content: space-between;
+                            }
+
+                            .restriction-item {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 5px;
+                                width: 48%;
+                            }
+
+                            .field-container {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 10px;
+                            }
+
+                            .add-item-container {
+                                text-align: center;
+                            }
+
+                            .selected-items {
+                                flex-grow: 1;
+                            }
+                        </style>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="detailsModalLabel">Distributor Details</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body" id="modal-body">
+                                        <!-- Form fields will be populated here -->
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="form-table">
                             <tr valign="top">
                                 <td colspan=3>
-                                <div id="jsoneditor" style="width: 100%; height: 500px;"></div>
-                                <input type="hidden" name="g_ffl_cockpit_configuration" id="g_ffl_cockpit_configuration">
-                                <script>
-                                    function get_and_set_cockpit_configuration(api_key, isAdminRequest){
-                                 
-                                        try {
-                                            if (api_key != null && api_key.length > 0){
-                                                var admin_key = api_key;
-                                                if (isAdminRequest){
-                                                    admin_key = "<?php echo esc_attr($gFFLCockpitKey);?>";
-                                                }
-                                                fetch("https://ffl-api.garidium.com", {
-                                                    method: "POST",
-                                                    headers: {
-                                                    "Accept": "application/json",
-                                                    "Content-Type": "application/json",
-                                                    "x-api-key": admin_key,
-                                                    },
-                                                    body: JSON.stringify({"action": "get_subscription", "data": {"api_key": api_key}})
-                                                })
-                                                .then(response=>response.json())
-                                                .then(data=>{
-                                                    try{
-                                                        cockpit_configuration = JSON.parse(data[0].cockpit_configuration);
-                                                        editor.set(cockpit_configuration);
-                                                    } catch (error) {
-                                                        alert(error);
-                                                        alert("No configuration found for this key, setting to default.");
+                                        <div class="ui_form_container">
+                                        <div id="categoryModal" class="modal">
+                                            <div class="modal-content">
+                                                <span class="close" onclick="closeModal('categoryModal')">&times;</span>
+                                                <h2>Select Categories</h2>
+                                                <input type="text" class="optionFilterInput" id="categoryFilterInput" onkeyup="filterOptions('categoryFilterInput','categoryModalList')" placeholder="Search for categories...">
+                                                <div class="modalPopupContent" id="categoryModalList"></div>
+                                                <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('categoryModal', 'category')">Apply</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Modals for Brand, Category, Product Class, and Price Based Margin -->
+                                        <div id="brandModal" class="modal">
+                                            <div class="modal-content">
+                                                <span class="close" onclick="closeModal('brandModal')">&times;</span>
+                                                <h2>Select Brands</h2>
+                                                <input type="text" class="optionFilterInput" id="brandSearchInput" onkeyup="filterOptions('brandSearchInput','brandModalList')" placeholder="Search for brands...">
+                                                <div class="modalPopupContent" id="brandModalList"></div>
+                                                <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('brandModal', 'brand')">Apply</button>
+                                            </div>
+                                        </div>
+
+                                        <div id="ignoreMapBrandModal" class="modal">
+                                            <div class="modal-content">
+                                                <span class="close" onclick="closeModal('ignoreMapBrandModal')">&times;</span>
+                                                <h2>Select Brands</h2>
+                                                <input type="text" class="optionFilterInput" id="ignoreMapBrandInput" onkeyup="filterOptions('ignoreMapBrandInput','ignoreMapBrandModalList')" placeholder="Search for brands...">
+                                                <div class="modalPopupContent" id="ignoreMapBrandModalList"></div>
+                                                <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('ignoreMapBrandModal', 'brand')">Apply</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="productClassModal" class="modal">
+                                            <div class="modal-content">
+                                                <span class="close" onclick="closeModal('productClassModal')">&times;</span>
+                                                <h2>Select Product Classes</h2>
+                                                <div class="modalPopupContent" id="productClassModalList"></div>
+                                                <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('productClassModal', 'product_class')">Apply</button>
+                                            </div>
+                                        </div>
+
+                                        <ul class="nav nav-tabs" id="configTabs" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" id="distributors-tab" data-toggle="tab" href="#distributors" role="tab" aria-controls="distributors" aria-selected="false">Distributors</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="product-restrictions-tab" data-toggle="tab" href="#product-restrictions" role="tab" aria-controls="product-restrictions" aria-selected="false">Product Restrictions</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="targets-tab" data-toggle="tab" href="#targets" role="tab" aria-controls="targets" aria-selected="false">Targets</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="pricing-tab" data-toggle="tab" href="#pricing" role="tab" aria-controls="pricing" aria-selected="true">Pricing</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="notifications-config-tab" data-toggle="tab" href="#notifications-config" role="tab" aria-controls="notifications-config" aria-selected="false">Notifications</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="store-config-tab" data-toggle="tab" href="#store-config" role="tab" aria-controls="store-config" aria-selected="false">Store/Location</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="classic-configurator-tab" data-toggle="tab" href="#classic-configurator" role="tab" aria-controls="classic-configurator" aria-selected="false">Advanced</a>
+                                            </li>
+                                        </ul>
+                  
+                                        <div class="tab-content" id="configTabContent">
+                                            <div class="tab-pane fade" id="pricing" role="tabpanel" aria-labelledby="pricing-tab">
+                                            <div class="helperDialog"><strong>Pricing/Margin settings</strong> allow you to fine-tune list prices of your product on your site. There are core pricing assumptions, and custom margin groups you can setup to price specific types of products accordingly. <strong>Important:</strong> Margin settings in percentage should be entered in their decimal format. (Examples: 25% = 0.25, 2.49% = 0.0249...etc)</div>
+                                            <div class="pricing-tab-container">
+                                                    <!-- Pricing Form Content -->
+                                                    <div class="pricing-assumptions-form-container core-pricing-container">
+                                                        <div class="pricing-assumptions-form-header">Core Pricing Assumptions</div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-margin-default-margin_percentage">Default Margin (%):</label>
+                                                            <input type="number" id="pricing-margin-default-margin_percentage" name="pricing-margin-default-margin_percentage" min="0" max="0.99" step="0.01"  data-autosave="true">
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-margin-default-margin_dollar">Default Margin ($):</label>
+                                                            <input type="number" id="pricing-margin-default-margin_dollar" name="pricing-margin-default-margin_dollar"  data-autosave="true">
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-sales_tax_assumption">Sales Tax Assumption:</label>
+                                                            <input type="number" id="pricing-sales_tax_assumption" name="pricing-sales_tax_assumption" min="0" max="0.99" step="0.01"  data-autosave="true">
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-credit_card_fee_percent">Credit Card Fee Percent:</label>
+                                                            <input type="number" id="pricing-credit_card_fee_percent" name="pricing-credit_card_fee_percent" min="0" max="0.99" step="0.01"  data-autosave="true">
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-credit_card_fee_transaction">Credit Card Fee Transaction:</label>
+                                                            <input type="number" id="pricing-credit_card_fee_transaction" name="pricing-credit_card_fee_transaction"  data-autosave="true">
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-include_credit_card_fees_in_price">Include Credit Card Fees in Price:</label>
+                                                            <label style="align:left;width:50px;" class="toggle-switch">
+                                                                <input type="checkbox" id="pricing-include_credit_card_fees_in_price" name="pricing-include_credit_card_fees_in_price"  data-autosave="true">
+                                                                <span class="slider"></span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-rounding">Price Rounding:</label>
+                                                            <select id="pricing-rounding" name="pricing-rounding"  data-autosave="true">
+                                                                <option value="none">None</option>
+                                                                <option value="round_to_nearest_dollar">Round to Nearest Dollar</option>
+                                                                <option value="round_up_to_99_cents">Round up to 99 Cents</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="sell_at_map">Sell at MAP:</label>
+                                                            <label style="align:left;width:50px;" class="toggle-switch">
+                                                                <input type="checkbox" id="pricing-sell_at_map" name="pricing-sell_at_map" data-autosave="true">
+                                                                <span class="slider"></span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label nowrap for="ignore_map_brands">Ignore&nbsp;MAP&nbsp;Brands:</label>
+                                                            <div class="field-container">
+                                                                <div class="selected-items" id="pricing-ignore_map_brands"></div>
+                                                                <div class="add-item-container">
+                                                                    <span class="add-item" onclick="openModal('ignoreMapBrandModal', 'pricing-ignore_map_brands')">Select</span>&nbsp;|&nbsp;
+                                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('pricing-ignore_map_brands'))">Remove All</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="pricing-assumptions-form-container custom-margin-container">
+                                                        <div class="pricing-assumptions-form-header">Custom Margin Settings</div>
+                                                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+                                                        <div class="form-container">
+                                                            <div id="margin-group-container"></div>
+                                                            <span class="add-group" onclick="addMarginGroup(null,null,true)">Add Margin Group</span>
+                                                        </div>
+                                                        <div id="priceBasedMarginModal" class="modal">
+                                                            <div class="modal-content">
+                                                                <span class="close" onclick="closeModal('priceBasedMarginModal')">&times;</span>
+                                                                <h2>Add Price Based Margin</h2>
+                                                                <div>
+                                                                    <label for="min_price">Min Price ($):</label>
+                                                                    <input type="number" id="min_price" value="0">
+                                                                </div>
+                                                                <div>
+                                                                    <label for="max_price">Max Price ($):</label>
+                                                                    <input type="number" id="max_price" value="0">
+                                                                </div>
+                                                                <div>
+                                                                    <label for="margin_percentage">Margin (%):</label>
+                                                                    <input type="number" id="margin_percentage"  value="0">
+                                                                </div>
+                                                                <div>
+                                                                    <label for="margin_dollar">Margin ($):</label>
+                                                                    <input type="number" id="margin_dollar" value="0">
+                                                                </div>
+                                                                <button style="margin-top:50px;" class="btn btn-primary" onclick="savePriceBasedMargin()">Add</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane fade" id="targets" role="tabpanel" aria-labelledby="targets-tab">
+                                                <!-- Targets Form Content -->
+                                                <div class="helperDialog"><strong>Targets</strong> are representing where you want your product to be listed. We support listing product on your site (WooCommerce), we support feeding aggregators like WikiArms, AmmoSeek, and Gun.Deals. These aggregators require you subscribe with them and pay a monthly fee to list products. We also support feeding product (distributor-based only, no local inventory) to Gunbroker. Add the Targets you wish to use, and only add those you are subscribed to. The toggle in each card below represents whether or not the feed is activated.</div>
+                                                <div>
+                                                    <div class="row" id="targets-container">
+                                                        <!-- Existing targets will be loaded here -->
+                                                    </div>
+                                                    <div class="d-flex align-items-center mt-2" id="targets-select-container">
+                                                        <select class="form-control mr-2" id="available-targets">
+                                                            <!-- Options will be populated by JavaScript -->
+                                                        </select>
+                                                        <button class="button alt" id="add-target">Add Target</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="notifications-config" role="tabpanel" aria-labelledby="notifications-tab">
+                                            <div class="helperDialog"><strong>A note about notifications: </strong>Set up your notification settings using the forms below to customize your email templates. The notification email is where you will receive FFL Cockpit system alerts, including distributor order information. Use the templates below to modify the messages sent to your customers at various stages of the order fulfillment process. </div>
+                                                <!-- Fulfillment Form Content -->
+                                                <script>
+                                                    const email_templates = [
+                                                        {"type": "subject", "group_label":"Email Template: Order Processed", "label":"Order Processed (FFL Order) Subject", "id": "order_processed_subject", "config_key":"fulfillment-emailer-templates-order_processed-subject"},
+                                                        {"type": "body", "label":"FFL Order", "id": "order_processed_ffl", "config_key":"fulfillment-emailer-templates-order_processed-message_ffl_order"},
+                                                        {"type": "body", "label":"Non-FFL Order", "id": "order_processed_nonffl", "config_key":"fulfillment-emailer-templates-order_processed-message_non_ffl_order"},
+                                                        {"type": "subject","group_label":"Email Template: Order Shipped", "label":"Order Shipped (FFL Order) Subject", "id": "order_shipped_subject", "config_key":"fulfillment-emailer-templates-order_shipped-subject"},
+                                                        {"type": "body", "label":"FFL Order", "id": "order_shipped_ffl", "config_key":"fulfillment-emailer-templates-order_shipped-message_ffl_order"},
+                                                        {"type": "body", "label":"Non-FFL Order", "id": "order_shipped_nonffl", "config_key":"fulfillment-emailer-templates-order_shipped-message_non_ffl_order"},
+                                                        {"type": "subject","group_label":"Email Template: Order Delivered", "label":"Order Delivered (FFL Order) Subject", "id": "order_delivered_subject", "config_key":"fulfillment-emailer-templates-order_delivered-subject"},
+                                                        {"type": "body", "label":"FFL Order", "id": "order_delivered_ffl", "config_key":"fulfillment-emailer-templates-order_delivered-message_ffl_order"},
+                                                        {"type": "body", "label":"Non-FFL Order", "id": "order_delivered_nonffl", "config_key":"fulfillment-emailer-templates-order_delivered-message_non_ffl_order"},
+                                                        {"type": "subject", "group_label": "Email Template: FFL Document Request", "label":"FFL Document Request Subject", "id": "ffl_request_subject", "config_key":"fulfillment-emailer-templates-ffl_request-subject"},
+                                                        {"type": "body", "label":"FFL Document Request", "id": "ffl_request", "config_key":"fulfillment-emailer-templates-ffl_request-message"}
+                                                    ];
+
+                                                    const container = document.getElementById('notifications-config');
+                                                    container.innerHTML += `
+                                                        <div class="form-groups-wrapper">
+                                                            <div class="form-group">
+                                                                <label class="email_template_header" for="notification_email">Email to receive FFL Cockpit System Notifications</label>
+                                                                <input placeholder="Notification Email" type="text" class="form-control" style="width:300px;" id="notification_email" data-autosave="true">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="email_template_header" for="from_email">Email for sending order updates to your customers</label>
+                                                                <input placeholder="From Email" type="text" class="form-control" style="width:300px;" id="fulfillment-emailer-from_email" data-autosave="true">
+                                                            </div>
+                                                        </div>
+                                                    `;
+
+                                                    let currentDiv = null;
+                                                    for (const email_template of email_templates) {
+                                                        if (email_template.type === "subject") {
+                                                            if (currentDiv) {
+                                                                container.appendChild(currentDiv);
+                                                            }
+                                                            currentDiv = document.createElement('div');
+                                                            currentDiv.className = 'form-group';
+                                                            currentDiv.innerHTML = `
+                                                                <label class="email_template_header" for="${email_template.config_key}">${email_template.group_label}</label>
+                                                                <label class="email-template-label">Subject</i></label>
+                                                                <input style="margin-bottom:20px;" placeholder="Email Subject" type="text" class="form-control" id="${email_template.config_key}" data-autosave="true">
+                                                            `;
+                                                        } else {
+                                                            const wrapperDiv = document.createElement('div');
+                                                            wrapperDiv.className = 'textarea-wrapper';
+
+                                                            const label = document.createElement('label');
+                                                            label.className = 'email-template-label';
+                                                            label.setAttribute('for', email_template.config_key);
+                                                            label.textContent = email_template.label;
+                                                            wrapperDiv.appendChild(label);
+
+                                                            const textarea = document.createElement('textarea');
+                                                            textarea.id = email_template.config_key;
+                                                            textarea.name = email_template.config_key;
+                                                            textarea.setAttribute('data-autosave', 'true');
+                                                            wrapperDiv.appendChild(textarea);
+
+                                                            currentDiv.appendChild(wrapperDiv);
+                                                        }
                                                     }
-                                                });
-                                            }else{
-                                                alert("No API Key Configured");
+                                                    if (currentDiv) {
+                                                        container.appendChild(currentDiv);
+                                                    }
+
+                                                    // Initialize TinyMCE for each textarea
+                                                    email_templates.forEach(template => {
+                                                        if (template.type === 'body') {
+                                                            tinymce.init({
+                                                                selector: `#${template.config_key}`,
+                                                                plugins: 'code',
+                                                                toolbar: 'undo redo | formatselect | bold italic backcolor forecolor | bullist numlist outdent indent | removeformat | code',
+                                                                license_key: 'gpl',
+                                                                menubar: false,
+                                                                branding: false,
+                                                                statusbar: false,
+                                                                setup: function (mceeditor) {
+                                                                    mceeditor.on('input', function () {
+                                                                        clearTimeout(typingTimer);
+                                                                        typingTimer = setTimeout(() => autoSave(mceeditor.getElement()), doneTypingInterval);
+                                                                    });
+
+                                                                    mceeditor.on('keydown', function () {
+                                                                        clearTimeout(typingTimer);
+                                                                    });
+
+                                                                    mceeditor.on('blur', function () {
+                                                                        autoSave(mceeditor.getElement());
+                                                                    });
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                </script>
+
+                                            </div>
+                                            <div class="tab-pane fade" id="store-config" role="tabpanel" aria-labelledby="store-tab">
+                                                <!-- Store Config Form Content -->
+                                                <!-- Pricing Form Content -->
+                                                <div class="helperDialog"><strong>Store/Location Information</strong>Your FFL number and store information is needed for certain distributors to place a "ship-to-store" order. Ship-to-Store orders are usually required when there may be a drop-ship restriction on a brand, and you have to have the item shipped locatlly before reshipping the product out to your customer. </div>
+                                                <div style="margin:10px;" class="pricing-assumptions-form-container">
+                                                    <div class="pricing-assumptions-form-header">Store/Location Information</div>
+                                                    <div class="pricing-assumptions-form-row">
+                                                        <label for="fulfillment-ship_to_store-ffl">FFL License Number:</label>
+                                                        <input type="text" id="fulfillment-ship_to_store-ffl" name="fulfillment-ship_to_store-ffl" data-autosave="true">
+                                                    </div>
+                                                    <div class="pricing-assumptions-form-row">
+                                                        <label for="fulfillment-ship_to_store-address-ship_to_name">Business/Name:</label>
+                                                        <input type="text" id="fulfillment-ship_to_store-address-ship_to_name" name="fulfillment-ship_to_store-address-ship_to_name"  data-autosave="true">
+                                                    </div>
+                                                    <div class="pricing-assumptions-form-row">
+                                                        <label for="fulfillment-ship_to_store-address-address_street">Street Address:</label>
+                                                        <input type="text" id="fulfillment-ship_to_store-address-address_street" name="fulfillment-ship_to_store-address-address_street"  data-autosave="true">
+                                                    </div>
+                                                    <div class="pricing-assumptions-form-row">
+                                                        <label for="fulfillment-ship_to_store-address-city">City:</label>
+                                                        <input type="text" id="fulfillment-ship_to_store-address-city" name="fulfillment-ship_to_store-address-city"  data-autosave="true">
+                                                    </div>
+                                                    <div class="pricing-assumptions-form-row">
+                                                        <label for="fulfillment-ship_to_store-address-state">State:</label>
+                                                        <select id="fulfillment-ship_to_store-address-state" name="fulfillment-ship_to_store-address-state"  data-autosave="true">
+                                                            <option value="">Select State/Territory</option>
+                                                            <option value="AL">Alabama</option>
+                                                            <option value="AK">Alaska</option>
+                                                            <option value="AS">American Samoa</option>
+                                                            <option value="AZ">Arizona</option>
+                                                            <option value="AR">Arkansas</option>
+                                                            <option value="CA">California</option>
+                                                            <option value="CO">Colorado</option>
+                                                            <option value="CT">Connecticut</option>
+                                                            <option value="DE">Delaware</option>
+                                                            <option value="DC">District of Columbia</option>
+                                                            <option value="FL">Florida</option>
+                                                            <option value="GA">Georgia</option>
+                                                            <option value="GU">Guam</option>
+                                                            <option value="HI">Hawaii</option>
+                                                            <option value="ID">Idaho</option>
+                                                            <option value="IL">Illinois</option>
+                                                            <option value="IN">Indiana</option>
+                                                            <option value="IA">Iowa</option>
+                                                            <option value="KS">Kansas</option>
+                                                            <option value="KY">Kentucky</option>
+                                                            <option value="LA">Louisiana</option>
+                                                            <option value="ME">Maine</option>
+                                                            <option value="MD">Maryland</option>
+                                                            <option value="MA">Massachusetts</option>
+                                                            <option value="MI">Michigan</option>
+                                                            <option value="MN">Minnesota</option>
+                                                            <option value="MS">Mississippi</option>
+                                                            <option value="MO">Missouri</option>
+                                                            <option value="MT">Montana</option>
+                                                            <option value="NE">Nebraska</option>
+                                                            <option value="NV">Nevada</option>
+                                                            <option value="NH">New Hampshire</option>
+                                                            <option value="NJ">New Jersey</option>
+                                                            <option value="NM">New Mexico</option>
+                                                            <option value="NY">New York</option>
+                                                            <option value="NC">North Carolina</option>
+                                                            <option value="ND">North Dakota</option>
+                                                            <option value="MP">Northern Mariana Islands</option>
+                                                            <option value="OH">Ohio</option>
+                                                            <option value="OK">Oklahoma</option>
+                                                            <option value="OR">Oregon</option>
+                                                            <option value="PA">Pennsylvania</option>
+                                                            <option value="PR">Puerto Rico</option>
+                                                            <option value="RI">Rhode Island</option>
+                                                            <option value="SC">South Carolina</option>
+                                                            <option value="SD">South Dakota</option>
+                                                            <option value="TN">Tennessee</option>
+                                                            <option value="TX">Texas</option>
+                                                            <option value="UT">Utah</option>
+                                                            <option value="VT">Vermont</option>
+                                                            <option value="VI">Virgin Islands</option>
+                                                            <option value="VA">Virginia</option>
+                                                            <option value="WA">Washington</option>
+                                                            <option value="WV">West Virginia</option>
+                                                            <option value="WI">Wisconsin</option>
+                                                            <option value="WY">Wyoming</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="pricing-assumptions-form-row">
+                                                        <label for="fulfillment-ship_to_store-address-postal_code">Zip Code:</label>
+                                                        <input type="text" id="fulfillment-ship_to_store-address-postal_code" name="fulfillment-ship_to_store-address-postal_code"  data-autosave="true">
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade show active" id="distributors" role="tabpanel" aria-labelledby="distributors-tab">
+                                                <!-- Distributors Form Content -->
+                                                    <div class="helperDialog"><strong>Distributors (or Sources)</strong> allow you select where you want to pull the catalog data from to list products on your site. Select all of your distributors you'd like, making sure that you click on the Configure links to enter in your account credentials and other important information. The toggle in each card is showing whether or not the distributor is activated and feeding product to your site.</div>
+                                                    <div>
+                                                        <div class="row" id="distributors-container">
+                                                            <!-- Existing distributors will be loaded here -->
+                                                        </div>
+                                                        <div class="d-flex align-items-center mt-2" id="distributor-select-container">
+                                                            <select class="form-control mr-2" id="available-distributors">
+                                                                <!-- Options will be populated by JavaScript -->
+                                                            </select>
+                                                            <button class="button alt" id="add-distributor">Add Distributor</button>
+                                                        </div>
+                                                    </div>
+                                                    <script>
+                                                        function get_distributor_default_config(distid){
+                                                            fetch("https://ffl-api.garidium.com", {
+                                                                method: "POST",
+                                                                headers: {
+                                                                "Accept": "application/json",
+                                                                "Content-Type": "application/json",
+                                                                "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
+                                                                },
+                                                                body: JSON.stringify({"action": "get_distributor_default_config", "data": {"distid": distid}})
+                                                            })
+                                                            .then(response=>response.json())
+                                                            .then(data=>{
+                                                                try{
+                                                                    response = JSON.parse(data.default_config);
+                                                                    console.log(response);
+                                                                    return response;
+                                                                } catch (error) {
+                                                                    alert("No default configuration found for this distributor, please contact FFL Cockpit Support.");
+                                                                }
+                                                            });
+                                                        }
+
+                                                        const distributorsSchema = {
+                                                            "Lipseys": {"distid": "LIP", "description": "Lipseys Product Feed Configuration"},
+                                                            "Zanders": {"distid": "ZND", "description": "Zanders Product Feed Configuration"},
+                                                            "Davidsons": {"distid": "DAV", "description": "Davidsons Product Feed Configuration"},
+                                                            "RSR Group": {"distid": "RSR", "description": "RSR Group Product Feed Configuration"},
+                                                            "Bill Hicks": {"distid": "BILL", "description": "Bill Hicks Product Feed Configuration"},
+                                                            "2nd Amendment Wholesale": {"distid": "2AW", "description": "2nd Amendment Wholesale Product Feed Configuration"},
+                                                            "Chattanooga Shooting Supplies": {"distid": "CSSI", "description": "Chattanooga Shooting Supplies Product Feed Configuration"},
+                                                            "Sports South": {"distid": "TSW", "description": "Sports South Product Feed Configuration"},
+                                                            "Sportsmans Supply": {"distid": "SSI", "description": "Sportsmans Supply Product Feed Configuration"},
+                                                            "AmChar": {"distid": "AMC", "description": "AmChar Supply Product Feed Configuration"},
+                                                            "CamFour": {"distid": "CAM4", "description": "CamFour Supply Product Feed Configuration"},
+                                                            "Crow": {"distid": "CROW", "description": "Crow Shooting Supply Product Feed Configuration"},
+                                                            "Gun Accessory Supply": {"distid": "GAS", "description": "Gun Accessory Supply Product Feed Configuration"},
+                                                            "MSR": {"distid": "MSR", "description": "MSR Distribution Product Feed Configuration"}
+                                                        };
+
+                                                        const targetSchema = {
+                                                            "woo": {"id": "woo", "description": "Populate Distributor product to your Worpress/WooCommerce site."},
+                                                            "ammoseek": {"id": "ammoseek", "description": "Send product to Ammoseek.com"},
+                                                            "wikiarms": {"id": "wikiarms", "description": "Send product to WikiArms.com"},
+                                                            "gun.deals": {"id": "gun.deals", "description": "Send product to Gun.deals"},
+                                                            "gunbroker": {"id": "gunbroker", "description": "Send product to Gunbroker"}
+                                                        }
+
+                                                        const targetFields = {
+                                                            "woo": {
+                                                                "url": {"config_key": "targets-woo-url", "type": "string", "label": "Website URL"},
+                                                                "automated_fulfillment": {"config_key": "targets-woo-automated_fulfillment", "type": "boolean", "label": "Automate Fulfillment"},
+                                                                "send_fulfillment_emails": {"config_key": "targets-woo-send_fulfillment_emails", "type": "boolean", "label": "Send Fulfillment Emails"},
+                                                                "remove_out_of_stock": {"config_key": "targets-woo-remove_out_of_stock", "type": "boolean", "label": "Remove Out-of-Stock Products"},
+                                                                "manage_product_attributes": {"config_key": "targets-woo-manage_product_attributes", "type": "boolean", "label": "Manage Product Attributes"},
+                                                                "manage_product_categories": {"config_key": "targets-woo-manage_product_categories", "type": "boolean", "label": "Manage Product Categories"}
+                                                            },
+                                                            "gunbroker": {
+                                                                "username": {"config_key": "targets-gunbroker-username", "type": "string", "label": "Username", "helperText":"<strong>Gunbroker Credentials</strong> will be the same you would use to login to the Gunbroker website."},
+                                                                "password": {"config_key": "targets-gunbroker-password", "type": "string", "label": "Password"},
+                                                                "automated_fulfillment": {"config_key": "targets-gunbroker-automated_fulfillment", "type": "boolean", "label": "Automate Fulfillment"},
+                                                                "send_fulfillment_emails": {"config_key": "targets-gunbroker-send_fulfillment_emails", "type": "boolean", "label": "Send Fulfillment Emails"},
+                                                                "from_postal_code": {"config_key": "targets-gunbroker-from_postal_code", "type": "number", "label": "Your Zip Code"},
+                                                                "standard_text_id": {"config_key": "targets-gunbroker-standard_text_id", "type": "number", "label": "Gunbroker Standard Text ID", "helperText":"<steong>Standard Text ID</strong> is an id value representing Terms of Sale text you have configured in Gunbroker. You can find (or create) your Standard Text ID by going here: <a target=_blank href='https://www.gunbroker.com/a/my-gunbroker/my-account/standard-text'>Gunbroker Terms of Sale Setup</a>"},
+                                                                "standard_description_html": {"config_key": "targets-gunbroker-standard_description_html", "type": "rich_text", "label": "Common Description", "helperText":"<strong>Standard Description Text</strong> allows you to add a custom message at the bottom of all your listings. We usually recommend adding in your company logo, and leaving the Terms of Sale to what you have in the Gunbroker Standard Text setiup."}
+                                                            },
+                                                            "ammoseek": {
+                                                                "shipping_text": {"config_key": "targets-ammoseek-shipping_text", "type": "string", "label": "Shipping Text", "helperText":"<strong>Shipping Text</strong> is a common text that is added to the shipping fields in your AmmoSeek listings."},
+                                                                "purchase_limit": {"config_key": "targets-ammoseek-listed_product-ammunition-purchase_limit", "type": "number", "label": "Ammunition Purchase Limit"},
+                                                            },
+                                                            "wikiarms": {
+                                                                "shipping_text": {"config_key": "targets-wikiarms-shipping_text", "type": "string", "label": "Shipping Text", "helperText":"<strong>Shipping Text</strong> is a common text that is added to the shipping fields in your WikiArms listings."},
+                                                                "purchase_limit": {"config_key": "targets-wikiarms-listed_product-ammunition-purchase_limit", "type": "number", "label": "Ammunition Purchase Limit"},
+                                                            },
+                                                            "gun.deals": {
+                                                                "shipping_text": {"config_key": "targets-gun.deals-shipping_text", "type": "string", "label": "Shipping Text", "helperText":"<strong>Shipping Text</strong> is a common text that is added to the shipping fields in your Gun.Deals listings."},
+                                                            }
+                                                        }
+
+                                                        const distributorFields = {
+                                                            "Lipseys": {
+                                                                "drop_ship_account_email": {"config_key": "fulfillment-API_USER", "type": "string", "label": "Drop-Ship Account Email"},
+                                                                "drop_ship_account_password": {"config_key": "fulfillment-API_PASSWORD", "type": "string", "label": "Drop-Ship Account Password"},
+                                                                "main_account_email": {"config_key": "fulfillment-ship_to_store-API_USER", "type": "string", "label": "Main Account Email"},
+                                                                "main_account_password": {"config_key": "fulfillment-ship_to_store-API_PASSWORD", "type": "string", "label": "Main Account Password"},
+                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
+                                                            },
+                                                            "Sports South": {
+                                                                "api_user": {"config_key": "fulfillment-api_user", "type": "string", "label": "API Username"},
+                                                                "api_customer_number": {"config_key": "fulfillment-api_customer_number", "type": "string", "label": "Customer Number"},
+                                                                "api_password": {"config_key": "fulfillment-api_password", "type": "string", "label": "API Password"},
+                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
+                                                            },
+                                                            "MSR": {
+                                                                "username": {"config_key": "fulfillment-API_USER", "type": "string", "label": "Username"},
+                                                                "password": {"config_key": "fulfillment-API_PASSWORD", "type": "string", "label": "Password"},
+                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
+                                                            },
+                                                            "Zanders": {
+                                                                "accessories_api_user": {"config_key": "fulfillment-accessories-api_user", "type": "string", "label": "Accessories Account Email"},
+                                                                "accessories_account_password": {"config_key": "fulfillment-accessories-api_password", "type": "string", "label": "Accessories Account Password"},
+                                                                "firearms_api_user": {"config_key": "fulfillment-firearms-api_user", "type": "string", "label": "Firearms Account Email"},
+                                                                "firearms_account_password": {"config_key": "fulfillment-firearms-api_password", "type": "string", "label": "Firearms Account Password"},
+                                                                "main_api_user": {"config_key": "fulfillment-ship_to_store-api_user", "type": "string", "label": "Main Account Email"},
+                                                                "main_account_password": {"config_key": "fulfillment-ship_to_store-api_password", "type": "string", "label": "Main Account Password"},
+                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
+                                                            },
+                                                            "Davidsons": {
+                                                                "product_feed_ftp_user": {"config_key": "fulfillment-", "type": "string", "label": "Product Feed FTP Username"},
+                                                                "product_feed_ftp_password": {"config_key": "fulfillment-drop_ship_only_items", "type": "string", "label": "Product Feed FTP Password"}
+                                                            },
+                                                            "Sportsmans Supply": {
+                                                                "product_feed_ftp_user": {"config_key": "fulfillment-", "type": "string", "label": "Product Feed FTP Username"},
+                                                                "product_feed_ftp_password": {"config_key": "fulfillment-drop_ship_only_items", "type": "string", "label": "Product Feed FTP Password"}
+                                                            },
+                                                            "RSR Group": {
+                                                                "drop_ship_account_number": {"config_key": "fulfillment-API_USER", "type": "string", "label": "Drop-Ship Account Number"},
+                                                                "drop_ship_account_password": {"config_key": "fulfillment-API_PASSWORD", "type": "string", "label": "Drop-Ship Account Password"},
+                                                                "main_account_number": {"config_key": "fulfillment-ship_to_store-store_account", "type": "string", "label": "Main Account Number"},
+                                                                "main_account_password": {"config_key": "fulfillment-ship_to_store-password", "type": "string", "label": "Main Account Password"}
+                                                            },
+                                                            "Bill Hicks": {
+                                                                "customer_number": {"config_key": "fulfillment-customer_number", "type": "string", "label": "Customer Number"},
+                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
+                                                            },
+                                                            "Crow": {
+                                                                "api_security_code": {"config_key": "fulfillment-security_code", "type": "string", "label": "API Security Code"},
+                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
+                                                            },
+                                                            "Gun Accessory Supply": {
+                                                                "api_security_code": {"config_key": "fulfillment-security_code", "type": "string", "label": "API Security Code"}
+                                                            },
+                                                            "AmChar": {
+                                                                "api_key": {"config_key": "fulfillment-api_key", "type": "string", "label": "API Key"}
+                                                            },
+                                                            "2nd Amendment Wholesale": {
+                                                                "api_token": {"config_key": "fulfillment-API_TOKEN", "type": "string", "label": "API Token"},
+                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
+                                                            },
+                                                            "CamFour": {
+                                                                "api_key": {"config_key": "product_feed-api_key", "type": "string", "label": "API Key"}
+                                                            },
+                                                            "Chattanooga Shooting Supplies": {
+                                                                "api_sid": {"config_key": "fulfillment-API_SID", "type": "string", "label": "API SID"},
+                                                                "api_token": {"config_key": "fulfillment-API_TOKEN", "type": "string", "label": "API Token"}
+                                                            }
+                                                        };
+
+                                                        $(document).ready(function () {
+                                                            // Populate the available distributors dropdown
+                                                            populateAvailableDistributors();
+
+                                                            $('#add-distributor').on('click', function () {
+                                                                const selectedDistributor = $('#available-distributors').val();
+                                                                if (selectedDistributor) {
+                                                                    addDistributorForm(selectedDistributor, {});
+
+                                                                    // Now add the distributor info to the configuration
+                                                                    const distid = distributorsSchema[selectedDistributor].distid;
+                                                                    fetch("https://ffl-api.garidium.com", {
+                                                                        method: "POST",
+                                                                        headers: {
+                                                                        "Accept": "application/json",
+                                                                        "Content-Type": "application/json",
+                                                                        "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
+                                                                        },
+                                                                        body: JSON.stringify({"action": "get_distributor_default_config", "data": {"distid": distid}})
+                                                                    })
+                                                                    .then(response=>response.json())
+                                                                    .then(data=>{
+                                                                        try{
+                                                                            response = JSON.parse(data.default_config);
+                                                                            config = editor.get();
+                                                                            config.distributors[selectedDistributor] = response;
+                                                                            editor.set(config);
+                                                                        } catch (error) {
+                                                                            alert("No default configuration found for this distributor, please contact FFL Cockpit Support.");
+                                                                        }
+                                                                    });
+                                                                }
+                                                            });
+
+                                                            // Populate the available distributors dropdown
+                                                            populateAvailableTargets();
+
+                                                            $('#add-target').on('click', function () {
+                                                                const selectedTarget = $('#available-targets').val();
+                                                                if (selectedTarget) {
+                                                                    addTargetForm(selectedTarget, {});
+
+                                                                    // Now add the distributor info to the configuration
+                                                                    const target_id = targetSchema[selectedTarget].id;
+                                                                    fetch("https://ffl-api.garidium.com", {
+                                                                        method: "POST",
+                                                                        headers: {
+                                                                        "Accept": "application/json",
+                                                                        "Content-Type": "application/json",
+                                                                        "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
+                                                                        },
+                                                                        body: JSON.stringify({"action": "get_target_default_config", "data": {"target": target_id}})
+                                                                    })
+                                                                    .then(response=>response.json())
+                                                                    .then(data=>{
+                                                                        try{
+                                                                            response = JSON.parse(data.default_config);
+                                                                            config = editor.get();
+                                                                            config.targets[selectedTarget] = response;
+                                                                            editor.set(config);
+                                                                        } catch (error) {
+                                                                            alert("No default configuration found for this target, please contact FFL Cockpit Support.");
+                                                                        }
+                                                                    });
+                                                                }
+                                                            });
+                                                            
+                                                        });
+
+                                                        function load_fancy_editor(config){
+                                                            $('#distributors-container').empty();
+                                                            $('#targets-container').empty();
+                                                            for (let key in config.distributors) {
+                                                                addDistributorForm(key, config.distributors[key]);
+                                                            }
+
+                                                            for (let key in config.targets) {
+                                                                addTargetForm(key, config.targets[key]);
+                                                            }
+                                                            //pricing fields
+                                                            document.getElementById("pricing-margin-default-margin_percentage").value = config.pricing.margin.default.margin_percentage;
+                                                            document.getElementById("pricing-margin-default-margin_dollar").value = config.pricing.margin.default.margin_dollar;
+                                                            document.getElementById("pricing-sales_tax_assumption").value = config.pricing.sales_tax_assumption;
+                                                            document.getElementById("pricing-credit_card_fee_percent").value = config.pricing.credit_card_fee_percent;
+                                                            document.getElementById("pricing-credit_card_fee_transaction").value = config.pricing.credit_card_fee_transaction;
+                                                            
+                                                            document.getElementById("pricing-rounding").value = config.pricing.rounding;
+                                                            //document.getElementById("pricing-include_shipping_in_price").checked = config.pricing.include_shipping_in_price;
+                                                            document.getElementById("pricing-include_credit_card_fees_in_price").checked = config.pricing.include_credit_card_fees_in_price;
+                                                            document.getElementById("pricing-sell_at_map").checked = config.pricing.sell_at_map;
+                                                            
+                                                            $('#pricing-ignore_map_brands').empty();
+                                                            addSelectedItemsToContainer(document.getElementById("pricing-ignore_map_brands"), config.pricing.ignore_map_brands);
+
+                                                            $('#margin-group-container').empty();
+                                                            for (let key in config.pricing.margin) {
+                                                                if (key!="default"){
+                                                                    addMarginGroup(key, config.pricing.margin[key]);
+                                                                }
+                                                            }
+                                                            
+                                                            // Ship-to-Store/Location Info
+                                                            document.getElementById("fulfillment-ship_to_store-address-ship_to_name").value = config.fulfillment.ship_to_store.address.ship_to_name;
+                                                            document.getElementById("fulfillment-ship_to_store-ffl").value = config.fulfillment.ship_to_store.ffl;
+                                                            document.getElementById("fulfillment-ship_to_store-address-address_street").value = config.fulfillment.ship_to_store.address.address_street;
+                                                            document.getElementById("fulfillment-ship_to_store-address-city").value = config.fulfillment.ship_to_store.address.city;
+                                                            document.getElementById("fulfillment-ship_to_store-address-postal_code").value = config.fulfillment.ship_to_store.address.postal_code;
+                                                            document.getElementById("fulfillment-ship_to_store-address-state").value = config.fulfillment.ship_to_store.address.state;
+                                                            
+                                                            
+                                                            // load email templates
+                                                            document.getElementById("notification_email").value = config.notification_email;
+                                                            document.getElementById("fulfillment-emailer-from_email").value = config.fulfillment.emailer.from_email;
+                                                            
+                                                            document.getElementById("fulfillment-emailer-templates-ffl_request-subject").value = config.fulfillment.emailer.templates.ffl_request.subject;
+                                                            tinymce.get("fulfillment-emailer-templates-ffl_request-message").setContent(config.fulfillment.emailer.templates.ffl_request.message);
+                                                            
+                                                            document.getElementById("fulfillment-emailer-templates-order_processed-subject").value = config.fulfillment.emailer.templates.order_processed.subject;
+                                                            tinymce.get("fulfillment-emailer-templates-order_processed-message_ffl_order").setContent(config.fulfillment.emailer.templates.order_processed.message_ffl_order);
+                                                            tinymce.get("fulfillment-emailer-templates-order_processed-message_non_ffl_order").setContent(config.fulfillment.emailer.templates.order_processed.message_non_ffl_order);
+
+                                                            document.getElementById("fulfillment-emailer-templates-order_shipped-subject").value = config.fulfillment.emailer.templates.order_shipped.subject;
+                                                            tinymce.get("fulfillment-emailer-templates-order_shipped-message_ffl_order").setContent(config.fulfillment.emailer.templates.order_shipped.message_ffl_order);
+                                                            tinymce.get("fulfillment-emailer-templates-order_shipped-message_non_ffl_order").setContent(config.fulfillment.emailer.templates.order_shipped.message_non_ffl_order);
+
+                                                            document.getElementById("fulfillment-emailer-templates-order_delivered-subject").value = config.fulfillment.emailer.templates.order_delivered.subject;
+                                                            tinymce.get("fulfillment-emailer-templates-order_delivered-message_ffl_order").setContent(config.fulfillment.emailer.templates.order_delivered.message_ffl_order);
+                                                            tinymce.get("fulfillment-emailer-templates-order_delivered-message_non_ffl_order").setContent(config.fulfillment.emailer.templates.order_delivered.message_non_ffl_order);
+
+                                                            // Product Restrictions
+                                                            document.getElementById("product_restrictions-min_quantity_to_list").value = config.product_restrictions.min_quantity_to_list;
+                                                            document.getElementById("product_restrictions-cost-global_restrictions-min_distributor_cost").value = config.product_restrictions.cost.global_restrictions.min_distributor_cost;
+                                                            document.getElementById("product_restrictions-cost-global_restrictions-max_distributor_cost").value = config.product_restrictions.cost.global_restrictions.max_distributor_cost;
+                                                            
+                                                            const restrictions = ["product_class","category","brand","sku","upc"];
+                                                            const include_excludes = ["include","exclude"];
+                                                            restrictions.forEach(restriction => {
+                                                                include_excludes.forEach(include_exclude => {
+                                                                    $(`#product_restrictions-${restriction}-${include_exclude}`).empty();
+                                                                    addSelectedItemsToContainer(document.getElementById(`product_restrictions-${restriction}-${include_exclude}`), config.product_restrictions[restriction][include_exclude]);
+                                                                });
+                                                            });
+                                                        
+
+                                                            populateAvailableDistributors();
+                                                            populateAvailableTargets();
+                                                        }
+
+                                                        function populateAvailableDistributors() {
+                                                            const selectElement = $('#available-distributors');
+                                                            selectElement.empty();
+                                                            for (let key in distributorsSchema) {
+                                                                if (!$(`#distributors-container .card-title:contains(${key})`).length) {
+                                                                    selectElement.append(`<option value="${key}">${key}</option>`);
+                                                                }
+                                                            }
+                                                            toggleDistributorSelectContainer();
+                                                        }
+
+                                                        function populateAvailableTargets() {
+                                                            const selectElement = $('#available-targets');
+                                                            selectElement.empty();
+                                                            for (let key in targetSchema) {
+                                                                if (!$(`#targets-container .card-title:contains(${key})`).length) {
+                                                                    selectElement.append(`<option value="${key}">${key}</option>`);
+                                                                }
+                                                            }
+                                                            toggleTargetSelectContainer();
+                                                        }
+
+                                                        function update_distributor_active(distid, distributor){
+                                                            dist_active = document.getElementById(distid + "-active").checked;
+                                                            config = editor.get();
+                                                            config.distributors[distributor].active = dist_active;
+                                                            editor.set(config);
+                                                        }
+
+                                                        function update_target_active(target){
+                                                            target_active = document.getElementById(target + "-active").checked;
+                                                            config = editor.get();
+                                                            config.targets[target].active = target_active;
+                                                            editor.set(config);
+                                                        }
+
+                                                        function addDistributorForm(distributor = "", config = {}) {
+                                                            const distid = distributorsSchema[distributor].distid;
+                                                            let formHtml = `<div class="distcards">
+                                                                                <div class="card mt-2" id="${distid}">
+                                                                                    <div class="card-header">
+                                                                                        <div class="distid_image_area">
+                                                                                            <img src="https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_${distid}.png" alt="${distributor} logo">
+                                                                                        </div>
+                                                                                        <h5 class="card-title">${distributor}</h5>
+                                                                                        <label class="toggle-switch">
+                                                                                            <input onchange="update_distributor_active('${distid}', '${distributor}');" type="checkbox" id="${distid}-active" name="${distid}-active" ${config.active ? 'checked' : ''}>
+                                                                                            <span class="slider"></span>
+                                                                                        </label>
+                                                                                    </div>
+                                                                                    <div class="card-body">
+                                                                                        <div class="action-links">
+                                                                                            <span class="configure-link" onclick="viewDistributorDetails('${distributor}', '${distid}')">Configure</span>
+                                                                                            <span>|</span>
+                                                                                            <span class="remove-link" onclick="confirmRemoveDistributor('${distid}')">Remove</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>`;
+
+                                                            $('#distributors-container').append(formHtml);
+
+                                                            // Remove the selected distributor from the available list
+                                                            $(`#available-distributors option[value="${distributor}"]`).remove();
+
+                                                            // Check if all distributors are added
+                                                            toggleDistributorSelectContainer();
+                                                        }
+
+                                                        function addTargetForm(target = "", config = {}) {
+                                                            const target_id = targetSchema[target].id;
+
+                                                            let formHtml = `<div class="targetcards">
+                                                                                <div class="card mt-2" id="${target_id}">
+                                                                                    <div class="card-header">
+                                                                                        <div class="distid_image_area">
+                                                                                            <img src="https://garidium.s3.amazonaws.com/ffl-api/plugin/images/target_logo_${target_id}.png" alt="${target} logo">
+                                                                                        </div>
+                                                                                        <h5 class="card-title">${target}</h5>
+                                                                                        <label class="toggle-switch">
+                                                                                            <input onchange="update_target_active('${target_id}');" type="checkbox" id="${target_id}-active" name="${target_id}-active" ${config.active ? 'checked' : ''}>
+                                                                                            <span class="slider"></span>
+                                                                                        </label>
+                                                                                    </div>
+                                                                                    <div class="card-body">
+                                                                                        <div class="action-links">
+                                                                                            <span class="configure-link" onclick="viewTargetDetails('${target}', '${target_id}')">Configure</span>
+                                                                                            <span>|</span>
+                                                                                            <span class="remove-link" onclick="confirmRemoveTarget('${target_id}')">Remove</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>`;
+
+                                                            $('#targets-container').append(formHtml);
+
+                                                            // Remove the selected distributor from the available list
+                                                            $(`#available-targets option[value="${target}"]`).remove();
+
+                                                            // Check if all distributors are added
+                                                            toggleTargetSelectContainer();
+                                                        }
+
+                                                        function confirmRemoveDistributor(distributorId) {
+                                                            if (confirm("Are you sure you want to delete this distributor?")) {
+                                                                removeDistributor(distributorId);
+                                                            }
+                                                        }
+
+                                                        function confirmRemoveTarget(targetId) {
+                                                            if (confirm("Are you sure you want to delete this target, all existing configuration for this target will be reset.?")) {
+                                                                removeTarget(targetId);
+                                                            }
+                                                        }
+
+                                                        function removeDistributor(distributorId) {
+                                                            const distributorName = $(`#${distributorId} .card-title`).text();
+                                                            $(`#${distributorId}`).closest('.distcards').remove();
+
+                                                            // Add the removed distributor back to the available list
+                                                            $('#available-distributors').append(`<option value="${distributorName}">${distributorName}</option>`);
+
+                                                            // Check if distributor dropdown and button should be shown
+                                                            toggleDistributorSelectContainer();
+
+                                                            // Now lets remove it from the actual configuration
+                                                            config = editor.get();
+                                                            delete config.distributors[distributorName];
+                                                            editor.set(config);
+                                                        
+                                                        }
+
+                                                        function removeTarget(targetId) {
+                                                            $(`#${targetId.replace(/\./g, '\\.')}`).closest('.targetcards').remove();
+
+
+                                                            // Add the removed distributor back to the available list
+                                                            $('#available-targets').append(`<option value="${targetId}">${targetId}</option>`);
+
+                                                            // Check if distributor dropdown and button should be shown
+                                                            toggleTargetSelectContainer();
+
+                                                            // Now lets remove it from the actual configuration
+                                                            config = editor.get();
+                                                            delete config.targets[targetId];
+                                                            editor.set(config);
+                                                        
+                                                        }
+                                                        
+                                                        function getConfigValue(obj, path) {
+                                                            const keys = path.split('-');
+                                                            let current = obj;
+
+                                                            for (let key of keys) {
+                                                                if (current[key] === undefined) {
+                                                                    return undefined;
+                                                                }
+                                                                current = current[key];
+                                                            }
+
+                                                            return current;
+                                                        }
+
+                                                        function setConfigValue(obj, path, value) {
+                                                            const keys = path.split('-');
+                                                            let current = obj;
+
+                                                            for (let i = 0; i < keys.length; i++) {
+                                                                const key = keys[i];
+                                                                
+                                                                // If it's the last key, set the value
+                                                                if (i === keys.length - 1) {
+                                                                    current[key] = value;
+                                                                } else {
+                                                                    // If the key doesn't exist, create an empty object
+                                                                    if (current[key] === undefined) {
+                                                                        current[key] = {};
+                                                                    }
+                                                                    current = current[key];
+                                                                }
+                                                            }
+                                                        }
+                                               
+                                                        function viewTargetDetails(target, targetId) {
+                                                            const targetDetails = targetFields[target];
+                                                            $('#detailsModalLabel').text(`${target} Details`);
+                                                            const modalBody = $('#modal-body');
+                                                            modalBody.empty();
+                                                            cc = editor.get();
+                                                            
+                                                            for (let key in targetDetails) {
+                                                                const field = targetDetails[key];
+                                                                if (field.helperText){
+                                                                    modalBody.append(`
+                                                                    <div class="helperDialog">
+                                                                        ${field.helperText}
+                                                                    </div>
+                                                                    `);
+                                                                }
+                                                                if (field.type == "array") {
+                                                                    modalBody.append(`
+                                                                        <label for="${field.config_key}">${field.label}:</label>
+                                                                        <div class="field-container">
+                                                                            <div class="selected-items" id="${field.config_key}"></div>
+                                                                            <div class="add-item-container">
+                                                                                <span class="add-item" onclick="promptAndAddItems(this, 'email', '${field.config_key}')">Add</span>
+                                                                            </div>
+                                                                        </div>`);
+                                                                    addSelectedItemsToContainer(document.getElementById(field.config_key), getConfigValue(cc, field.config_key));
+                                                                } else if (field.type == "rich_text") {
+                                                                    modalBody.append(`
+                                                                        <div class="textarea-wrapper">
+                                                                        <label for="${field.config_key}">${field.label}:</label>
+                                                                            <textarea id="${field.config_key}" name="${field.config_key}" class="modal-tinymce" data-autosave="true"></textarea>
+                                                                        </div>
+                                                                    `);
+
+                                                                    tinymce.remove(`#${field.config_key}`);
+                                                                    tinymce.init({
+                                                                        selector: `#${field.config_key}`,
+                                                                        plugins: 'code',
+                                                                        toolbar: 'undo redo | formatselect | bold italic backcolor forecolor | bullist numlist outdent indent | removeformat | code',
+                                                                        license_key: 'gpl',
+                                                                        menubar: false,
+                                                                        branding: false,
+                                                                        statusbar: false,
+                                                                        setup: function (mceeditor) {
+                                                                            mceeditor.on('input', function () {
+                                                                                clearTimeout(typingTimer);
+                                                                                typingTimer = setTimeout(() => autoSave(mceeditor.getElement()), doneTypingInterval);
+                                                                            });
+
+                                                                            mceeditor.on('keydown', function () {
+                                                                                clearTimeout(typingTimer);
+                                                                            });
+
+                                                                            mceeditor.on('blur', function () {
+                                                                                autoSave(mceeditor.getElement());
+                                                                            });
+
+                                                                            mceeditor.on('init', function () {
+                                                                                // Set the content of TinyMCE after initialization
+                                                                                mceeditor.setContent(getConfigValue(cc, field.config_key));
+                                                                            });
+                                                                        }
+                                                                    });
+
+
+                                                                } else if (field.type == "boolean") {
+                                                                    modalBody.append(`<div class="form-group">
+                                                                                        <label for="${field.config_key}">${field.label}</label>
+                                                                                        <label class="toggle-switch">
+                                                                                            <input type="checkbox" id="${field.config_key}" name="${field.config_key}" ${getConfigValue(cc, field.config_key) ? 'checked' : ''} data-autosave="true">
+                                                                                            <span class="slider"></span>
+                                                                                        </label>
+                                                                                    </div>`);
+                                                                } else {
+                                                                    modalBody.append(`<div class="form-group">
+                                                                                        <label for="${field.config_key}">${field.label}</label>
+                                                                                        <input type="${field.type}" class="form-control" name="${field.config_key}" id="${field.config_key}" value="${getConfigValue(cc, field.config_key)}" data-autosave="true">
+                                                                                    </div>`);
+                                                                }
+                                                            }
+
+                                                            modalBody.append(`
+                                                                <div class="accordion-header" style="margin-top:20px;cursor:pointer;" onclick="toggleAccordion('${target}-product-restrictions', this)">
+                                                                    <i class="fas fa-plus accordion-toggle-icon"></i>Define ${target} Specific Product Restrictions
+                                                                </div>
+                                                                <div style="margin-top:20px;display:none;" id="${target}-product-restrictions">
+                                                                    <div class="other-restrictions-header"><strong>${target} Product Restrictions</strong></div>
+                                                                    <div class="helperDialog">
+                                                                        This section allows you refine what product you list on ${target} specifically.
+                                                                    </div>
+                                                                    <div id="product-restrictions-container"></div>
+                                                            `);
+                                                           
+                                                            const product_restrictions_container = document.getElementById('product-restrictions-container');
+                                                            
+                                                            if (['gunbroker', 'woo'].includes(target)) {
+                                                                const restrictions = [
+                                                                    {"field": "product_class", "modal": "productClassModal", "name": "Product Classes", "select_text": "Select Product Classes"},
+                                                                    {"field": "category", "modal": "categoryModal", "name": "Categories", "select_text": "Select Categories"},
+                                                                    {"field": "brand", "modal": "brandModal", "name": "Brands", "select_text": "Select Brands"},
+                                                                    {"field": "sku", "modal": "prompt", "name": "SKU", "select_text": "Add SKU"},
+                                                                    {"field": "upc", "modal": "prompt", "name": "UPC", "select_text": "Add UPC"} 
+                                                                ];
+                                                                restrictions.forEach(restriction => {
+                                                                    const section = document.createElement('div');
+                                                                    section.className = 'restriction-section';
+                                                                    
+                                                                    const header = document.createElement('div');
+                                                                    header.className = 'restriction-header';
+                                                                    header.innerHTML = `<strong>${restriction.name}</strong>`;
+                                                                    section.appendChild(header);
+
+                                                                    const container = document.createElement('div');
+                                                                    container.className = 'restriction-container';
+
+                                                                    const includeDiv = document.createElement('div');
+                                                                    includeDiv.className = 'restriction-item';
+                                                                    
+                                                                    var launcher_include = `openModal('${restriction.modal}', 'targets-${target}-product_restrictions-${restriction.field}-include',2000)`;
+                                                                    var launcher_exclude = `openModal('${restriction.modal}', 'targets-${target}-product_restrictions-${restriction.field}-exclude',2000)`;
+                                                                    if (restriction.modal == "prompt"){
+                                                                        launcher_include = `promptAndAddItems(this, '${restriction.field}', 'targets-${target}-product_restrictions-${restriction.field}-include')`;
+                                                                        launcher_exclude = `promptAndAddItems(this, '${restriction.field}', 'targets-${target}-product_restrictions-${restriction.field}-exclude')`;
+                                                                    }
+                                                                    includeDiv.innerHTML = `
+                                                                        <label for="product_class">Include:</label>
+                                                                        <div class="field-container">
+                                                                            <div class="selected-items" id="targets-${target}-product_restrictions-${restriction.field}-include"></div>
+                                                                            <div class="add-item-container">
+                                                                                <span class="add-item" onclick="${launcher_include}">Select</span>&nbsp;|&nbsp;
+                                                                        <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('targets-${target}-product_restrictions-${restriction.field}-include'))">Remove All</span>
+                                                                            </div>
+                                                                        </div>`;
+                                                                    container.appendChild(includeDiv);
+
+                                                                    const excludeDiv = document.createElement('div');
+                                                                    excludeDiv.className = 'restriction-item';
+                                                                    excludeDiv.innerHTML = `
+                                                                        <label for="product_class">Exclude:</label>
+                                                                        <div class="field-container">
+                                                                            <div class="selected-items" id="targets-${target}-product_restrictions-${restriction.field}-exclude"></div>
+                                                                            <div class="add-item-container">
+                                                                                <span class="add-item" onclick="${launcher_exclude}">Select</span>&nbsp;|&nbsp;
+                                                                        <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('targets-${target}-product_restrictions-${restriction.field}-exclude'))">Remove All</span>
+                                                                            </div>
+                                                                        </div>`;
+                                                                    container.appendChild(excludeDiv);
+                                                                    section.appendChild(container);
+                                                                    product_restrictions_container.appendChild(section);
+
+                                                                    // Now load the data with existing values
+                                                                    const restrictions_types = ["product_class","category","brand","sku","upc"];
+                                                                    const include_excludes = ["include","exclude"];
+                                                                    var config = editor.get();
+                                                                    restrictions_types.forEach(restriction_type => {
+                                                                        include_excludes.forEach(include_exclude => {
+                                                                            const selectedFilterContainer = document.getElementById(`targets-${target}-product_restrictions-${restriction_type}-${include_exclude}`);
+                                                                            if (selectedFilterContainer != null) {
+                                                                                selectedFilterContainer.replaceChildren();
+                                                                                if (config.targets?.[target]?.product_restrictions?.[restriction_type]?.[include_exclude]) {
+                                                                                    addSelectedItemsToContainer(selectedFilterContainer, config.targets[target].product_restrictions[restriction_type][include_exclude]);
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    });
+                                                                });
+                                                            } else if (['gun.deals', 'wikiarms', 'ammoseek'].includes(target)) {
+                                                                var rss_field_categories = {
+                                                                    "wikiarms": ["guns","brass","powder","bullets","primers","magazines","ammunition","reloading_misc"],
+                                                                    "ammoseek": ["guns","brass","powder","bullets","primers","magazines","ammunition"],
+                                                                    "gun.deals": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"]
+                                                                }
+                                                                const restrictions = [
+                                                                    {"field": "category", "modal": "categoryModal", "name": "Categories", "select_text": "Select Categories"},
+                                                                    {"field": "sku", "modal": "prompt", "name": "SKU", "select_text": "Add SKU"}
+                                                                ];
+                                                                
+                                                                rss_field_categories[target].forEach(product_type => {
+                                                                    const section = document.createElement('div');
+                                                                    section.className = 'restriction-section';
+                                                                    
+                                                                    const header = document.createElement('div');
+                                                                    header.className = 'restriction-header';
+                                                                    header.innerHTML = `<strong>${product_type}</strong>`;
+                                                                    section.appendChild(header);
+
+                                                                    const container = document.createElement('div');
+                                                                    container.className = 'restriction-container';
+
+                                                                    const categoryDiv = document.createElement('div');
+                                                                    categoryDiv.className = 'restriction-item';
+                                                                    
+                                                                    var launcher_category = `openModal('categoryModal', 'targets-${target}-listed_products-${product_type}-category-include',2000)`;
+                                                                    var launcher_sku = `promptAndAddItems(this, 'sku', 'targets-${target}-listed_products-${product_type}-sku-include')`;
+                                                                        
+                                                                    categoryDiv.innerHTML = `
+                                                                        <label for="product_class">Categories:</label>
+                                                                        <div class="field-container">
+                                                                            <div class="selected-items" id="targets-${target}-listed_products-${product_type}-category-include"></div>
+                                                                            <div class="add-item-container">
+                                                                                <span class="add-item" onclick="${launcher_category}">Select</span>&nbsp;|&nbsp;
+                                                                        <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('targets-${target}-listed_products-${product_type}-category-include'))">Remove All</span>
+                                                                            </div>
+                                                                        </div>`;
+                                                                    container.appendChild(categoryDiv);
+
+                                                                    const skuDiv = document.createElement('div');
+                                                                    skuDiv.className = 'restriction-item';
+                                                                    skuDiv.innerHTML = `
+                                                                        <label for="product_class">SKU's:</label>
+                                                                        <div class="field-container">
+                                                                            <div class="selected-items" id="targets-${target}-listed_products-${product_type}-sku-include"></div>
+                                                                            <div class="add-item-container">
+                                                                                <span class="add-item" onclick="${launcher_sku}">Select</span>&nbsp;|&nbsp;
+                                                                        <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('targets-${target}-listed_products-${product_type}-sku-include'))">Remove All</span>
+                                                                            </div>
+                                                                        </div>`;
+                                                                    container.appendChild(skuDiv);
+
+                                                                    section.appendChild(container);
+                                                                    product_restrictions_container.appendChild(section);
+
+                                                                    // Now load the data with existing values
+                                                                    const restrictions_types = ["category","sku"];
+                                                                    var config = editor.get();
+                                                                    restrictions_types.forEach(restriction_type => {
+                                                                        const selectedFilterContainer = document.getElementById(`targets-${target}-listed_products-${product_type}-${restriction_type}-include`);
+                                                                        if (selectedFilterContainer != null) {
+                                                                            selectedFilterContainer.replaceChildren();
+                                                                            if (config.targets?.[target]?.listed_products?.[product_type]?.[restriction_type]?.['include']) {
+                                                                                addSelectedItemsToContainer(selectedFilterContainer, config.targets[target].listed_products[product_type][restriction_type]['include']);
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                  
+                                                                });
+
+
+                                                            }
+
+
+                                                            setupAutoSave();
+                                                            $('#detailsModal').modal('show');
+                                                        }
+
+
+                                                        function viewDistributorDetails(distributor, distributorId) {
+                                                            const distributorDetails = distributorFields[distributor];
+                                                            $('#detailsModalLabel').text(`${distributor} Details`);
+                                                            const modalBody = $('#modal-body');
+                                                            modalBody.empty();
+                                                            cc = editor.get();
+                                                            
+                                                            for (let key in distributorDetails) {
+                                                                const field = distributorDetails[key];
+                                                                const field_key = "distributors-" + distributor + "-" + field.config_key;
+                                                                if (field.type == "array"){
+                                                                    modalBody.append(`
+                                                                    <label for="${field_key}">${field.label}:</label>
+                                                                    <div class="field-container">
+                                                                        <div class="selected-items" id="${field_key}"></div>
+                                                                        <div class="add-item-container">
+                                                                            <span class="add-item" onclick="promptAndAddItems(this, 'email', '${field_key}')">Add Email</span>
+                                                                        </div>
+                                                                    </div>`);
+                                                                    addSelectedItemsToContainer(document.getElementById(field_key), getConfigValue(cc, field_key));
+
+                                                                }else{
+                                                                    modalBody.append(`<div class="form-group">
+                                                                                        <label for="${field_key}">${field.label}</label>
+                                                                                        <input type="${field.type}" class="form-control" name="${field_key}" id="${field_key}" value="${getConfigValue(cc, field_key)}" data-autosave="true">
+                                                                                    </div>`);
+                                                                }
+        
+                                                            }
+
+                                                            modalBody.append(`
+                                                                <div class="accordion-header" style="margin-top:20px;cursor:pointer;" onclick="toggleAccordion('${distributor}-product-restrictions', this)">
+                                                                    <i class="fas fa-plus accordion-toggle-icon"></i>Define ${distributor} Specific Product Restrictions
+                                                                </div>
+                                                                <div style="margin-top:20px;display:none;" id="${distributor}-product-restrictions">
+                                                                    <div class="other-restrictions-header"><strong>${distributor} Product Restrictions</strong></div>
+                                                                    <div class="helperDialog">
+                                                                        This section allows you refine what product is pulled from this distributor specifically. This section is optional, as your main product restrictions that apply across all distributors is configured in the "Product Restrictions" tab.
+                                                                    </div>
+                                                                    <div style="margin-top:20px;" class="restriction-section">
+                                                                        <div class="other-restrictions-header">List only products eligible for dropshipping</strong></div>
+                                                                        <div class="helperDialog">
+                                                                            If this is toggled on, only products elgible for dropshipping will be listed. If it's off, all items from the Distributor (whether or not they are elgible for dropshipping) will be listed
+                                                                        </div>
+                                                                        <div style="width:!00%;text-align:center;">
+                                                                            <label for="sell_at_map">List only products eligible for dropshipping:&nbsp;</label>
+                                                                            <label class="toggle-switch">
+                                                                                <input type="checkbox" id="distributors-${distributor}-drop_ship_only_items" name="distributors-${distributor}-drop_ship_only_items" data-autosave="true">
+                                                                                <span class="slider"></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="product-restrictions-container"></div>
+                                                            `);
+                                                           
+                                                            const product_restrictions_container = document.getElementById('product-restrictions-container');
+                                                            const restrictions = [
+                                                                {"field": "product_class", "modal": "productClassModal", "name": "Product Classes", "select_text": "Select Product Classes"},
+                                                                {"field": "category", "modal": "categoryModal", "name": "Categories", "select_text": "Select Categories"},
+                                                                {"field": "brand", "modal": "brandModal", "name": "Brands", "select_text": "Select Brands"},
+                                                                {"field": "sku", "modal": "prompt", "name": "SKU", "select_text": "Add SKU"},
+                                                                {"field": "upc", "modal": "prompt", "name": "UPC", "select_text": "Add UPC"} 
+                                                            ];
+
+                                                                
+                                                            restrictions.forEach(restriction => {
+                                                                const section = document.createElement('div');
+                                                                section.className = 'restriction-section';
+                                                                
+                                                                const header = document.createElement('div');
+                                                                header.className = 'restriction-header';
+                                                                header.innerHTML = `<strong>${restriction.name}</strong>`;
+                                                                section.appendChild(header);
+
+                                                                const container = document.createElement('div');
+                                                                container.className = 'restriction-container';
+
+                                                                const includeDiv = document.createElement('div');
+                                                                includeDiv.className = 'restriction-item';
+                                                                
+                                                                var launcher_include = `openModal('${restriction.modal}', 'distributors-${distributor}-product_restrictions-${restriction.field}-include',2000)`;
+                                                                var launcher_exclude = `openModal('${restriction.modal}', 'distributors-${distributor}-product_restrictions-${restriction.field}-exclude',2000)`;
+                                                                if (restriction.modal == "prompt"){
+                                                                    launcher_include = `promptAndAddItems(this, '${restriction.field}', 'distributors-${distributor}-product_restrictions-${restriction.field}-include')`;
+                                                                    launcher_exclude = `promptAndAddItems(this, '${restriction.field}', 'distributors-${distributor}-product_restrictions-${restriction.field}-exclude')`;
+                                                                }
+                                                                includeDiv.innerHTML = `
+                                                                    <label for="product_class">Include:</label>
+                                                                    <div class="field-container">
+                                                                        <div class="selected-items" id="distributors-${distributor}-product_restrictions-${restriction.field}-include"></div>
+                                                                        <div class="add-item-container">
+                                                                            <span class="add-item" onclick="${launcher_include}">Select</span>&nbsp;|&nbsp;
+                                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('distributors-${distributor}-product_restrictions-${restriction.field}-include'))">Remove All</span>
+                                                                        </div>
+                                                                    </div>`;
+                                                                container.appendChild(includeDiv);
+
+                                                                const excludeDiv = document.createElement('div');
+                                                                excludeDiv.className = 'restriction-item';
+                                                                excludeDiv.innerHTML = `
+                                                                    <label for="product_class">Exclude:</label>
+                                                                    <div class="field-container">
+                                                                        <div class="selected-items" id="distributors-${distributor}-product_restrictions-${restriction.field}-exclude"></div>
+                                                                        <div class="add-item-container">
+                                                                            <span class="add-item" onclick="${launcher_exclude}">Select</span>&nbsp;|&nbsp;
+                                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('distributors-${distributor}-product_restrictions-${restriction.field}-exclude'))">Remove All</span>
+                                                                        </div>
+                                                                    </div>`;
+                                                                container.appendChild(excludeDiv);
+                                                                section.appendChild(container);
+                                                                product_restrictions_container.appendChild(section);
+
+                                                                // Now load the data with existing values
+                                                                const restrictions_types = ["product_class","category","brand","sku","upc"];
+                                                                const include_excludes = ["include","exclude"];
+                                                                var config = editor.get();
+                                                                restrictions_types.forEach(restriction_type => {
+                                                                    include_excludes.forEach(include_exclude => {
+                                                                        const selectedFilterContainer = document.getElementById(`distributors-${distributor}-product_restrictions-${restriction_type}-${include_exclude}`);
+                                                                        if (selectedFilterContainer != null) {
+                                                                            selectedFilterContainer.replaceChildren();
+                                                                            if (config.distributors?.[distributor]?.product_restrictions?.[restriction_type]?.[include_exclude]) {
+                                                                                addSelectedItemsToContainer(selectedFilterContainer, config.distributors[distributor].product_restrictions[restriction_type][include_exclude]);
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                });
+                                                            });
+                                                            
+                                            
+                                                            setupAutoSave();
+                                                            
+
+                                                            $('#detailsModal').modal('show');
+                                                        }
+
+                                                        function toggleDistributorSelectContainer() {
+                                                            const selectContainer = $('#distributor-select-container');
+                                                            if ($('#available-distributors option').length === 0) {
+                                                                selectContainer.hide();
+                                                            } else {
+                                                                selectContainer.show();
+                                                            }
+                                                        }
+
+                                                        function toggleTargetSelectContainer() {
+                                                            const selectContainer = $('#target-select-container');
+                                                            if ($('#available-targets option').length === 0) {
+                                                                selectContainer.hide();
+                                                            } else {
+                                                                selectContainer.show();
+                                                            }
+                                                        }
+                                                    </script>
+                                            </div>
+
+                                            <div class="tab-pane fade" id="product-restrictions" role="tabpanel" aria-labelledby="product-restrictions-tab">
+                                                <!-- Product Restrictions Form Content -->
+
+                                                <div class="main-container">
+                                                    <div class="left-container">
+                                                        <div class="other-restrictions-header"><strong>Product Restrictions</strong></div>
+                                                        <div class="helperDialog">
+                                                            This section allows you to configure the products you would like included on your site.
+                                                            <uL style="list-style-type: disc;">
+                                                                <li>All products from Distributors are included by default. If you do nothing below, all products we be included. We do not suggest that, and instead be selective about the product listed. Use either the product class selections or the categories to select the items you want to "include". We suggest using categories, so you can be more selective.</li>
+                                                                <li><b>Important:</b> If you add items to the "include" sections, those items selected will be the <u>ONLY</u> product listed on your site. For example, If you add a single UPC to the includes, your site will only have that single product listed.</li>
+                                                                <li>If you have items in the "include" section, there is no need to have items in the "exclude" section, since only those items in the "include" will be included.</li>
+                                                                <li>Reach out to support@garidium.com if you have any questions.</li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="restriction-section">
+                                                            <div class="restriction-header"><strong>Cost-based Restrictions</strong></div>
+                                                            <div class="pricing-assumptions-form-row">
+                                                                <label for="product_restrictions-cost-global_restrictions-min_distributor_cost">Min Distributor Cost ($):</label>
+                                                                <input type="number" id="product_restrictions-cost-global_restrictions-min_distributor_cost" name="product_restrictions-cost-global_restrictions-min_distributor_cost" data-autosave="true">
+                                                            </div>
+                                                            <div class="pricing-assumptions-form-row">
+                                                                <label for="product_restrictions-cost-global_restrictions-max_distributor_cost">Max Distributor Cost ($):</label>
+                                                                <input type="number" id="product_restrictions-cost-global_restrictions-max_distributor_cost" name="product_restrictions-cost-global_restrictions-max_distributor_cost" data-autosave="true">
+                                                                
+                                                            </div>
+                                                            <div class="helperDialog" style="text-align:center;">Additional cost-based restriction options available in advanced tab</div>
+                                                        </div>
+                                                        <div class="restriction-section">
+                                                            <div class="restriction-header"><strong>Quantity-based Restrictions</strong></div>
+                                                            <div class="pricing-assumptions-form-row">
+                                                                <label for="product_restrictions-min_quantity_to_list">Min Distributor Quantity to List:</label>
+                                                                <input type="number" id="product_restrictions-min_quantity_to_list" name="product_restrictions-min_quantity_to_list" data-autosave="true">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="right-container">
+                                                        <div id="product-restrictions-container"></div>
+                                                    </div>
+                                                </div>
+                                                <script>
+                                                    const product_restrictions_container = document.getElementById('product-restrictions-container');
+                                                    const restrictions = [
+                                                        {"field": "product_class", "modal": "productClassModal", "name": "Product Classes", "select_text": "Select Product Classes"},
+                                                        {"field": "category", "modal": "categoryModal", "name": "Categories", "select_text": "Select Categories"},
+                                                        {"field": "brand", "modal": "brandModal", "name": "Brands", "select_text": "Select Brands"},
+                                                        {"field": "sku", "modal": "prompt", "name": "SKU", "select_text": "Add SKU"},
+                                                        {"field": "upc", "modal": "prompt", "name": "UPC", "select_text": "Add UPC"} 
+                                                    ];
+                                                    
+                                                    restrictions.forEach(restriction => {
+                                                        const section = document.createElement('div');
+                                                        section.className = 'restriction-section';
+                                                        
+                                                        const header = document.createElement('div');
+                                                        header.className = 'restriction-header';
+                                                        header.innerHTML = `<strong>${restriction.name}</strong>`;
+                                                        section.appendChild(header);
+
+                                                        const container = document.createElement('div');
+                                                        container.className = 'restriction-container';
+
+                                                        const includeDiv = document.createElement('div');
+                                                        includeDiv.className = 'restriction-item';
+                                                        
+                                                        var launcher_include = `openModal('${restriction.modal}', 'product_restrictions-${restriction.field}-include', 10000)`;
+                                                        var launcher_exclude = `openModal('${restriction.modal}', 'product_restrictions-${restriction.field}-exclude', 10000)`;
+                                                        if (restriction.modal == "prompt"){
+                                                            launcher_include = `promptAndAddItems(this, '${restriction.field}', 'product_restrictions-${restriction.field}-include')`;
+                                                            launcher_exclude = `promptAndAddItems(this, '${restriction.field}', 'product_restrictions-${restriction.field}-exclude')`;
+                                                        }
+                                                        includeDiv.innerHTML = `
+                                                            <label for="product_class">Include:</label>
+                                                            <div class="field-container">
+                                                                <div class="selected-items" id="product_restrictions-${restriction.field}-include"></div>
+                                                                <div class="add-item-container">
+                                                                    <span class="add-item" onclick="${launcher_include}">Select</span>&nbsp;|&nbsp;
+                                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('product_restrictions-${restriction.field}-include'))">Remove All</span>
+                                                                </div>
+                                                            </div>`;
+                                                        container.appendChild(includeDiv);
+
+                                                        const excludeDiv = document.createElement('div');
+                                                        excludeDiv.className = 'restriction-item';
+                                                        excludeDiv.innerHTML = `
+                                                            <label for="product_class">Exclude:</label>
+                                                            <div class="field-container">
+                                                                <div class="selected-items" id="product_restrictions-${restriction.field}-exclude"></div>
+                                                                <div class="add-item-container">
+                                                                    <span class="add-item" onclick="${launcher_exclude}">Select</span>&nbsp;|&nbsp;
+                                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('product_restrictions-${restriction.field}-exclude'))">Remove All</span>
+                                                                </div>
+                                                            </div>`;
+                                                        container.appendChild(excludeDiv);
+
+                                                        section.appendChild(container);
+                                                        product_restrictions_container.appendChild(section);
+                                                    });
+                                                </script>
+                                            </div>
+                                            
+                                            <div class="tab-pane fade" id="classic-configurator" role="tabpanel" aria-labelledby="classic-configurator-tab">
+                                                <!-- Advanced Configuration Content -->
+                                                <div class="helperDialog"><strong>Advanced Configuration</strong> is where the magic happens. All changes you make with the fancy UI (User Interface) in the other tabs, ultimately change what's set in here. If your brave, you can decide to only use the Advanced Tab. Feel free to swittch the mode to Text as well to enter the wonderful word of JSON editing. This configuration panel includes some options not available in other tabs. It will also highlight any errors that may exist within your current configuration.</div>
+                                                <div id="jsoneditor" style="width: 100%; height: 500px;margin-top:20px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="g_ffl_cockpit_configuration" id="g_ffl_cockpit_configuration">
+                                    <script>
+                                        function get_and_set_cockpit_configuration(api_key, isAdminRequest){
+                                            try {
+                                                if (api_key != null && api_key.length > 0){
+                                                    var admin_key = api_key;
+                                                    if (isAdminRequest){
+                                                        admin_key = "<?php echo esc_attr($gFFLCockpitKey);?>";
+                                                    }
+                                                    fetch("https://ffl-api.garidium.com", {
+                                                        method: "POST",
+                                                        headers: {
+                                                        "Accept": "application/json",
+                                                        "Content-Type": "application/json",
+                                                        "x-api-key": admin_key,
+                                                        },
+                                                        body: JSON.stringify({"action": "get_subscription", "data": {"api_key": api_key}})
+                                                    })
+                                                    .then(response=>response.json())
+                                                    .then(data=>{
+                                                        try{
+                                                            cockpit_configuration = JSON.parse(data[0].cockpit_configuration);
+                                                            editor.set(cockpit_configuration);
+                                                            load_fancy_editor(cockpit_configuration);
+                                                            setupAutoSave();
+                                                        } catch (error) {
+                                                            alert(error);
+                                                            alert("No configuration found for this key, setting to default.");
+                                                        }
+                                                    });
+                                                }else{
+                                                    alert("No API Key Configured");
+                                                }
+                                            }catch(error){
+                                                alert("Please validate key, no configuration was found");
+                                                console.log(error);
                                             }
-                                        }catch(error){
-                                            alert("Please validate key, no configuration was found");
-                                            console.log(error);
                                         }
-                                    }
-                                </script>
-                                <script>
-                                    var editor = new JSONEditor(document.getElementById("jsoneditor"));
-                                    editor.set({"Loading Configuration": "Please wait..."});
-                                    window.onload = function(){
-                                        fetch("https://ffl-api.garidium.com", {
-                                            method: "POST",
-                                            headers: {
-                                            "Accept": "application/json",
-                                            "Content-Type": "application/json",
-                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>",
-                                            },
-                                            body: JSON.stringify({"action": "get_configuration_schema", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey);?>"}})
-                                        })
-                                        .then(response=>response.json())
-                                        .then(data=>{ 
-                                            // Get the dropdown element
-                                            if (data!=null){
-                                                // now that we have the schema, lets build the grid
-                                                build_grid(data.schema);
-                                             }
-                                        });
-                                    }
-                            
-                                    function build_grid(config_schema){
-                                        var options = {
-                                            modes: ['text','tree'],
-                                            mode: 'tree',
-                                            ace: ace,
-                                            schema: config_schema
-                                        }
-                                        editor.destroy();
-                                        editor = new JSONEditor(document.getElementById("jsoneditor"), options);
+                                    </script>
+                                    <script>
+                                        var editor = new JSONEditor(document.getElementById("jsoneditor"));
                                         editor.set({"Loading Configuration": "Please wait..."});
-                                        get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCockpitKey);?>", false);
-                                        if (window.location.host == 'garidium.com' || window.location.host == 'localhost:8000'){
-                                            document.getElementById('g-ffl-admin-buttons').style.display = '';
+                                        window.onload = function(){
+                                            setupAutoSave();
+                                            fetch("https://ffl-api.garidium.com", {
+                                                method: "POST",
+                                                headers: {
+                                                "Accept": "application/json",
+                                                "Content-Type": "application/json",
+                                                "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>",
+                                                },
+                                                body: JSON.stringify({"action": "get_configuration_schema", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey);?>"}})
+                                            })
+                                            .then(response=>response.json())
+                                            .then(data=>{ 
+                                                // Get the dropdown element
+                                                if (data!=null){
+                                                    // now that we have the schema, lets build the grid
+                                                    build_grid(data.schema);
+                                                }
+                                            });
                                         }
-                                     }
-                                </script>
+                                
+                                        function build_grid(config_schema){
+                                            var options = {
+                                                modes: ['text','tree'],
+                                                mode: 'tree',
+                                                ace: ace,
+                                                schema: config_schema
+                                            }
+                                            editor.destroy();
+                                            editor = new JSONEditor(document.getElementById("jsoneditor"), options);
+                                            editor.set({"Loading Configuration": "Please wait..."});
+                                            get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCockpitKey);?>", false);
+                                            if (window.location.host == 'garidium.com' || window.location.host == 'localhost:8000'){
+                                                document.getElementById('g-ffl-admin-buttons').style.display = '';
+                                            }
+                                        }
+                                    </script>
                                 </td>
                             </tr>
                             <tr valign="top" id="white_label_settings_name" style="display:none;">
@@ -278,17 +2775,21 @@ class g_ffl_Cockpit_Admin
                                 </td>
                             </tr>
                         </table>
-                        <table style="width:100%;">
+                        <a style="cursor:pointer;" onclick="document.getElementById('white_label_settings_name').style.display='';document.getElementById('white_label_settings_url').style.display='';">&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;</a>
+                </div>
+                <table style="width:100%;">
                             <tr>
                                 <td>
                                     <div>
-                                        <button class="button alt" id="save_cockpit_configuration_button">Save Changes</button>
+                                        <button class="btn btn-primary" id="save_cockpit_configuration_button">Save Changes</button>
                                         <script type="text/javascript">
                                             document.getElementById("save_cockpit_configuration_button").addEventListener("click", function(){
                                                 document.getElementById("save_cockpit_configuration_button").disabled = true;
                                                 document.getElementById('save_cockpit_configuration_button').innerText = 'Please Wait...';
                                                 event.preventDefault();
-                                                setConfig(gFFLCockpitKey);
+                                                if (setConfig(gFFLCockpitKey)){
+                                                    load_fancy_editor(editor.get());
+                                                }
                                                 document.getElementById("save_cockpit_configuration_button").disabled = false;
                                                 document.getElementById('save_cockpit_configuration_button').innerText = 'Save Changes';
                                             });
@@ -345,35 +2846,6 @@ class g_ffl_Cockpit_Admin
                                 </td>
                             </tr>
                         </table>
-                        <br>
-                        <table style="border: solid black 1px;">
-                            <tr style="background-color:#EEEEEE;weight:bold;font-style:italic;"><td colspan=2>Product Class Code Reference</td></tr>
-                            <tr><td><b>AC</b></td><td>Accessories</td></tr>
-                            <tr><td><b>AG</b></td><td>Air Guns & Accessories</td></tr>
-                            <tr><td><b>AO</b></td><td>Ammunition</td></tr>
-                            <tr><td><b>AP</b></td><td>Apparel</td></tr>
-                            <tr><td><b>AR</b></td><td>Archery</td></tr>
-                            <tr><td><b>BP</b></td><td>Black Powder Firearms</td></tr>
-                            <tr><td><b>BS</b></td><td>Binoculars & Spotting</td></tr>
-                            <tr><td><b>FA</b></td><td>Firearms</td></tr>
-                            <tr><td><b>FI</b></td><td>Fishing</td></tr>
-                            <tr><td><b>FP</b></td><td>Firearms Parts</td></tr>
-                            <tr><td><b>HS</b></td><td>Holsters</td></tr>
-                            <tr><td><b>HT</b></td><td>Hunting</td></tr>
-                            <tr><td><b>HZ</b></td><td>Hazardous</td></tr>
-                            <tr><td><b>KN</b></td><td>Knives</td></tr>
-                            <tr><td><b>LL</b></td><td>Lights & Lasers</td></tr>
-                            <tr><td><b>MG</b></td><td>Magazines</td></tr>
-                            <tr><td><b>MZ</b></td><td>Muzzleloading</td></tr>
-                            <tr><td><b>OP</b></td><td>Optics</td></tr>
-                            <tr><td><b>OT</b></td><td>Other</td></tr>
-                            <tr><td><b>RC</b></td><td>Range Bags & Cases</td></tr>
-                            <tr><td><b>RL</b></td><td>Reloading</td></tr>
-                            <tr><td><b>SF</b></td><td>Safes</td></tr>
-                            <tr><td><b>SO</b></td><td>SOT</td></tr>
-                        </table>
-                        <a style="cursor:pointer;" onclick="document.getElementById('white_label_settings_name').style.display='';document.getElementById('white_label_settings_url').style.display='';">&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;</a>
-                </div>
             </div>
             <div id="product_feed" class="tabcontent">
                 <!-- The Modal -->
@@ -556,7 +3028,6 @@ class g_ffl_Cockpit_Admin
                 </div>
             </div>
             <div id="fulfillment" class="tabcontent">
-                <h3>Fulfillment History</h3>
                 <div class="postbox" style="padding: 10px;margin-top: 10px;">
                     <!-- <p>The Product Feed is based on your Configuration. The synchronization process will run every 15-minutes, at which point any changes you make to your configuration will be applied. This list will show items from all distributors configured, and with quantities less than your minimum listing quantity. We list one product per UPC, based on availability and price.</p> -->
                     <div id="order_fulfillment_table"></div>
@@ -880,9 +3351,34 @@ class g_ffl_Cockpit_Admin
                     }
                 </script>
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
+                    <div style="padding:10px;">If you have any questions about FFL Cockpit configuration, send an email to support@garidium.com detailing your questions. We'll get back as soon as we can. Include your name and your website URL so we can look up your configuration. Also, make to review our <a target=_blank href="https://garidium.com/category/help-center/">Help Center</a> for tips on using Cockpit.</div>
                     <div class="video_grid" id="training_videos"></div>
                 </div>
             </div>    
+            <table style="width:100%;">
+                <tr>
+                    <td style="width:150px;font-weight:bold;" scope="row">FFL Cockpit Key:</td>
+                    <td>
+                    <form method="post" action="options.php" style="display: flex; align-items: center;">
+                        <?php settings_fields('g-ffl-cockpit-settings'); ?>
+                        <input oninput="document.getElementById('set_key_form').style.display='inline';" type="password" style="width: 350px;" name="g_ffl_cockpit_key" id="g_ffl_cockpit_key" 
+                            aria-describedby="login_error" class="input password-input" size="20"
+                            value="<?php echo esc_attr($gFFLCockpitKey); ?>"/>
+                        <span id="set_key_form" style="display: none; margin-left: 10px;">
+                            <?php submit_button('Set Key', 'primary', 'submit-button'); ?>
+                        </span>
+                    </form>
+                    </td>
+                    <td align="right">
+                        <div id="g-ffl-admin-buttons" align="right" style="margin:20px;display:none;">
+                            <b>Admin Functions:&nbsp;</b>
+                            <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, true);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('save_cockpit_configuration_button').style.display='none';">Load Config</a>
+                            <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value);">Save</a>
+                            <span style="padding:10px;color:red;display:none;" id="admin_current_editing_key"></span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
 
     <?php }

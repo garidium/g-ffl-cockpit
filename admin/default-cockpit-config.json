@@ -831,7 +831,7 @@
       },
       "password": "XXXX",
       "username": "XXXX",
-      "environment": "sandbox",
+      "environment": "production",
       "payment_methods": {
         "COD": false,
         "Amex": true,
