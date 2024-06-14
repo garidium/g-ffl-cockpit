@@ -156,8 +156,8 @@ class g_ffl_Cockpit_Admin
             </div>
             <!-- Tab content -->
             <div id="configuration" class="tabcontent">
-            <!--<h3>Configuration</h3>-->
-                <div class="postbox" style="margin-top: 10px">
+                <div class="postbox" style="margin-top: 10px;">
+                        <span id="unsaved-indicator">There are <span style="color:red;text-decoration: underline;">Unsaved Changes</span> to your configuratiaon. Hit the "Save Changes" button at the bottom of your screen, or refresh the browser page to revert.<span class="validator_view" id="validation-errors"></span></span>
                         <?php settings_fields('g-ffl-cockpit-settings'); ?>
                         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
                         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -330,9 +330,43 @@ class g_ffl_Cockpit_Admin
                                 }
                             }
 
-                            function openModal(modalId, selectedItemsId, zIndex=1000) {
+                            function openModal(modalId, selectedItemsId) {
                                 const modal = document.getElementById(modalId);
                                 const modal_options = document.getElementById(modalId + "List");
+                                
+                                // Create the search div
+                                const searchDiv = document.getElementById(modalId + "SearchDiv");
+                                
+                                if (searchDiv != null){
+                                    
+                                    const div = document.createElement('div');
+                                    searchDiv.replaceChildren();
+                                    var searchType = "brand";
+                                    if (modalId.startsWith("category")){
+                                        searchType = "category";
+                                    } else if (modalId.startsWith("ingnoreMap")){
+                                        searchType = "ingnoreMapBrand";
+                                    }
+                                    const input = document.createElement('input');
+                                    input.type = 'text';
+                                    input.className = 'optionFilterInput';
+                                    input.id = searchType + 'SearchInput';
+                                    input.placeholder = 'Search...';
+
+                                    // Append input element to the div
+                                    document.getElementById(modalId + 'SearchDiv').appendChild(input);
+
+                                    // Attach keyup event to the input element
+                                    input.onkeyup = function() {
+                                        filterOptions(searchType + 'SearchInput', searchType + 'ModalList');
+                                    };
+
+                                    
+                                    div.appendChild(input);
+                                    searchDiv.appendChild(div);
+                                }
+
+
                                 if (modalId != "priceBasedMarginModal"){
                                     modal_options.replaceChildren();
                                     var api_function = "get_product_classes";
@@ -345,7 +379,7 @@ class g_ffl_Cockpit_Admin
                                 }
 
                                 modal.style.display = "block";
-                                modal.style.zIndex = zIndex;
+                               // modal.style.zIndex = zIndex;
                                 modal.setAttribute('data-selected-items-id', selectedItemsId);
                             }
 
@@ -803,6 +837,17 @@ class g_ffl_Cockpit_Admin
                             }
                         </script>
                         <style>
+                            #unsaved-indicator {
+                                text-align: left;
+                                padding: 5px;
+                                width: 100%;
+                                display: none;
+                            }
+                            .validator_view {
+                                text-align: left;
+                                padding: 5px;
+                                width: 100%;
+                            }
                             .card {
                                 width: 220px;
                                 margin-bottom: 10px;
@@ -904,14 +949,17 @@ class g_ffl_Cockpit_Admin
                                 margin-top: 10px;
                                 text-align: center;
                                 cursor: pointer;
-                                color: #007bff;
+                                
                             }
                             .action-links .remove-link {
                                 color: red;
                                 margin-left: 5px;
+                                text-decoration: underline;
                             }
                             .action-links span {
                                 margin: 0 5px;
+                                color: #2271b1;
+                                text-decoration: underline;
                             }
                             .card-header img {
                                 max-height: 75px;
@@ -970,7 +1018,11 @@ class g_ffl_Cockpit_Admin
                                 color: #5F6D9D;
                                 font-weight:bold;
                             }
-                            
+
+                            #order_fulfillment_table a {
+                                color: #2271b1;; /* Sets the link color within the specific div */
+                            }
+
                             .pricing-assumptions-form-header {
                                 font-size: 1.5em;
                                 margin-bottom: 20px;
@@ -1029,7 +1081,7 @@ class g_ffl_Cockpit_Admin
                                 width: 60%; /* or your preferred width */
                                 box-sizing: border-box;
                             }
-                                .form-container {
+                            .form-container {
                                 max-width: 800px;
                                 margin: auto;
                                 padding: 20px;
@@ -1089,7 +1141,7 @@ class g_ffl_Cockpit_Admin
                             }
                             .add-item, .add-group, .accordion-toggle {
                                 cursor: pointer;
-                                color: blue;
+                                color: #2271b1;
                                 text-decoration: underline;
                                 display: inline-block;
                             }
@@ -1145,7 +1197,7 @@ class g_ffl_Cockpit_Admin
                                 width: 500px;
                                 box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
                                 position: relative;
-                                z-index: 10000;
+                                
                             }
                             .close {
                                 color: red;
@@ -1287,6 +1339,39 @@ class g_ffl_Cockpit_Admin
                             .selected-items {
                                 flex-grow: 1;
                             }
+                            .modalHeader{
+                                font-weight:bold;
+                                font-size:15pt;
+                                padding:5px;
+                            }
+                            .cost-restrictions {
+                                display: flex;
+                                justify-content: space-between;
+                            }
+
+                            .cost-field {
+                                flex: 1;
+                                margin-right: 10px; /* Adds some space between the two fields */
+                            }
+
+                            .cost-field:last-child {
+                                margin-right: 0; /* Removes margin from the last child */
+                            }
+
+                            .cost-field label {
+                                display: block;
+                                margin-bottom: 5px;
+                            }
+
+                            .cost-field input {
+                                width: 100%;
+                                padding: 5px;
+                                box-sizing: border-box;
+                            }
+                            @keyframes spin {
+                                0% { transform: rotate(0deg); }
+                                100% { transform: rotate(360deg); }
+                            }
                         </style>
 
                         <!-- Modal -->
@@ -1312,42 +1397,39 @@ class g_ffl_Cockpit_Admin
                         <table class="form-table">
                             <tr valign="top">
                                 <td colspan=3>
-                                        <div class="ui_form_container">
+                                        <div class="ui_form_container">                                        
+                                         <div id="brandModal" class="modal">
+                                            <div class="modal-content">
+                                                <span class="close" onclick="closeModal('brandModal')">&times;</span>
+                                                <span class="modalHeader">Select Brands</span>
+                                                <div id="brandModalSearchDiv"></div>
+                                                <div class="modalPopupContent" id="brandModalList"></div>
+                                                <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('brandModal', 'brand')">Apply</button>
+                                            </div>
+                                        </div>
+                                        <div id="ignoreMapBrandModal" class="modal">
+                                            <div class="modal-content">
+                                                <span class="close" onclick="closeModal('ignoreMapBrandModal')">&times;</span>
+                                                <span class="modalHeader">Select Brands</span>
+                                                <div id="ignoreMapBrandModalSearchDiv"></div>
+                                                <div class="modalPopupContent" id="ignoreMapBrandModalList"></div>
+                                                <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('ignoreMapBrandModal', 'brand')">Apply</button>
+                                            </div>
+                                        </div>
                                         <div id="categoryModal" class="modal">
                                             <div class="modal-content">
                                                 <span class="close" onclick="closeModal('categoryModal')">&times;</span>
-                                                <h2>Select Categories</h2>
-                                                <input type="text" class="optionFilterInput" id="categoryFilterInput" onkeyup="filterOptions('categoryFilterInput','categoryModalList')" placeholder="Search for categories...">
+                                                <span class="modalHeader">Select Categories</span>
+                                                <div id="categoryModalSearchDiv"></div>
                                                 <div class="modalPopupContent" id="categoryModalList"></div>
                                                 <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('categoryModal', 'category')">Apply</button>
                                             </div>
                                         </div>
 
-                                        <!-- Modals for Brand, Category, Product Class, and Price Based Margin -->
-                                        <div id="brandModal" class="modal">
-                                            <div class="modal-content">
-                                                <span class="close" onclick="closeModal('brandModal')">&times;</span>
-                                                <h2>Select Brands</h2>
-                                                <input type="text" class="optionFilterInput" id="brandSearchInput" onkeyup="filterOptions('brandSearchInput','brandModalList')" placeholder="Search for brands...">
-                                                <div class="modalPopupContent" id="brandModalList"></div>
-                                                <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('brandModal', 'brand')">Apply</button>
-                                            </div>
-                                        </div>
-
-                                        <div id="ignoreMapBrandModal" class="modal">
-                                            <div class="modal-content">
-                                                <span class="close" onclick="closeModal('ignoreMapBrandModal')">&times;</span>
-                                                <h2>Select Brands</h2>
-                                                <input type="text" class="optionFilterInput" id="ignoreMapBrandInput" onkeyup="filterOptions('ignoreMapBrandInput','ignoreMapBrandModalList')" placeholder="Search for brands...">
-                                                <div class="modalPopupContent" id="ignoreMapBrandModalList"></div>
-                                                <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('ignoreMapBrandModal', 'brand')">Apply</button>
-                                            </div>
-                                        </div>
-                                        
                                         <div id="productClassModal" class="modal">
                                             <div class="modal-content">
                                                 <span class="close" onclick="closeModal('productClassModal')">&times;</span>
-                                                <h2>Select Product Classes</h2>
+                                                <span  class="modalHeader">Select Product Classes</span>
                                                 <div class="modalPopupContent" id="productClassModalList"></div>
                                                 <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('productClassModal', 'product_class')">Apply</button>
                                             </div>
@@ -1377,7 +1459,10 @@ class g_ffl_Cockpit_Admin
                                             </li>
                                         </ul>
                   
-                                        <div class="tab-content" id="configTabContent">
+                                        <div  class="tab-content" id="configTabContent">
+                                            <div class="overlay" id="configuration_loading_overlay" style="display:flex;position: absolute;top: 0;left: 0;width: 100%;height: 100%;background-color: rgba(255, 255, 255, 0.7);justify-content: center;align-items: center;">
+                                                <div class="loader" style="border: 8px solid #f3f3f3;border-top: 8px solid #3498db;border-radius: 50%;width: 50px;height: 50px;animation: spin 1s linear infinite;"></div>
+                                            </div>
                                             <div class="tab-pane fade" id="pricing" role="tabpanel" aria-labelledby="pricing-tab">
                                             <div class="helperDialog"><strong>Pricing/Margin settings</strong> allow you to fine-tune list prices of your product on your site. There are core pricing assumptions, and custom margin groups you can setup to price specific types of products accordingly. <strong>Important:</strong> Margin settings in percentage should be entered in their decimal format. (Examples: 25% = 0.25, 2.49% = 0.0249...etc)</div>
                                             <div class="pricing-tab-container">
@@ -1527,7 +1612,7 @@ class g_ffl_Cockpit_Admin
                                                             currentDiv = document.createElement('div');
                                                             currentDiv.className = 'form-group';
                                                             currentDiv.innerHTML = `
-                                                                <label class="email_template_header" for="${email_template.config_key}">${email_template.group_label}</label>
+                                                                <label class="helperDialog" for="${email_template.config_key}">${email_template.group_label}</label>
                                                                 <label class="email-template-label">Subject</i></label>
                                                                 <input style="margin-bottom:20px;" placeholder="Email Subject" type="text" class="form-control" id="${email_template.config_key}" data-autosave="true">
                                                             `;
@@ -1691,6 +1776,7 @@ class g_ffl_Cockpit_Admin
                                                         </div>
                                                     </div>
                                                     <script>
+                                                        let initialCockpitConfiguration = null;
                                                         function get_distributor_default_config(distid){
                                                             fetch("https://ffl-api.garidium.com", {
                                                                 method: "POST",
@@ -1748,7 +1834,7 @@ class g_ffl_Cockpit_Admin
                                                                 "manage_product_categories": {"config_key": "targets-woo-manage_product_categories", "type": "boolean", "label": "Manage Product Categories"}
                                                             },
                                                             "gunbroker": {
-                                                                "username": {"config_key": "targets-gunbroker-username", "type": "string", "label": "Username", "helperText":"<strong>Gunbroker Credentials</strong> will be the same you would use to login to the Gunbroker website."},
+                                                                "username": {"config_key": "targets-gunbroker-username", "type": "string", "label": "Username", "helperText":"<strong>Gunbroker Credentials</strong> will be the same you would use to login to the Gunbroker website. For additional assistance on setting up Gunbroker, visit our <a target=_blank href=\"https://garidium.com/ffl-cockpit-gunbroker-setup/\">Help Center</a>"},
                                                                 "password": {"config_key": "targets-gunbroker-password", "type": "string", "label": "Password"},
                                                                 "automated_fulfillment": {"config_key": "targets-gunbroker-automated_fulfillment", "type": "boolean", "label": "Automate Fulfillment"},
                                                                 "send_fulfillment_emails": {"config_key": "targets-gunbroker-send_fulfillment_emails", "type": "boolean", "label": "Send Fulfillment Emails"},
@@ -1910,6 +1996,7 @@ class g_ffl_Cockpit_Admin
                                                         function load_fancy_editor(config){
                                                             $('#distributors-container').empty();
                                                             $('#targets-container').empty();
+                      
                                                             for (let key in config.distributors) {
                                                                 addDistributorForm(key, config.distributors[key]);
                                                             }
@@ -1917,6 +2004,7 @@ class g_ffl_Cockpit_Admin
                                                             for (let key in config.targets) {
                                                                 addTargetForm(key, config.targets[key]);
                                                             }
+                                                            
                                                             //pricing fields
                                                             document.getElementById("pricing-margin-default-margin_percentage").value = config.pricing.margin.default.margin_percentage;
                                                             document.getElementById("pricing-margin-default-margin_dollar").value = config.pricing.margin.default.margin_dollar;
@@ -1930,8 +2018,10 @@ class g_ffl_Cockpit_Admin
                                                             document.getElementById("pricing-sell_at_map").checked = config.pricing.sell_at_map;
                                                             
                                                             $('#pricing-ignore_map_brands').empty();
-                                                            addSelectedItemsToContainer(document.getElementById("pricing-ignore_map_brands"), config.pricing.ignore_map_brands);
-
+                                                            if (config.pricing.ignore_map_brands){
+                                                                addSelectedItemsToContainer(document.getElementById("pricing-ignore_map_brands"), config.pricing.ignore_map_brands);
+                                                            }
+                                                            
                                                             $('#margin-group-container').empty();
                                                             for (let key in config.pricing.margin) {
                                                                 if (key!="default"){
@@ -1980,10 +2070,11 @@ class g_ffl_Cockpit_Admin
                                                                     addSelectedItemsToContainer(document.getElementById(`product_restrictions-${restriction}-${include_exclude}`), config.product_restrictions[restriction][include_exclude]);
                                                                 });
                                                             });
-                                                        
-
                                                             populateAvailableDistributors();
                                                             populateAvailableTargets();
+
+                                    
+                                                            document.getElementById("configuration_loading_overlay").style.display="none";
                                                         }
 
                                                         function populateAvailableDistributors() {
@@ -2056,8 +2147,10 @@ class g_ffl_Cockpit_Admin
                                                         }
 
                                                         function addTargetForm(target = "", config = {}) {
+                                                            if (!targetSchema[target]){
+                                                                return;
+                                                            }
                                                             const target_id = targetSchema[target].id;
-
                                                             let formHtml = `<div class="targetcards">
                                                                                 <div class="card mt-2" id="${target_id}">
                                                                                     <div class="card-header">
@@ -2250,8 +2343,9 @@ class g_ffl_Cockpit_Admin
                                                                 }
                                                             }
 
+                                                            
                                                             modalBody.append(`
-                                                                <div class="accordion-header" style="margin-top:20px;cursor:pointer;" onclick="toggleAccordion('${target}-product-restrictions', this)">
+                                                                <div class="accordion-header" id="pr_header" style="margin-top:20px;cursor:pointer;" onclick="toggleAccordion('${target}-product-restrictions', this)">
                                                                     <i class="fas fa-plus accordion-toggle-icon"></i>Define ${target} Specific Product Restrictions
                                                                 </div>
                                                                 <div style="margin-top:20px;display:none;" id="${target}-product-restrictions">
@@ -2261,6 +2355,11 @@ class g_ffl_Cockpit_Admin
                                                                     </div>
                                                                     <div id="product-restrictions-container"></div>
                                                             `);
+
+                                                            // automatically open product restrictions for certain targets
+                                                            if (['wikiarms', 'gun.deals', 'ammoseek'].includes(target)) {
+                                                                document.getElementById('pr_header').click();
+                                                            }
                                                            
                                                             const product_restrictions_container = document.getElementById('product-restrictions-container');
                                                             
@@ -2287,8 +2386,8 @@ class g_ffl_Cockpit_Admin
                                                                     const includeDiv = document.createElement('div');
                                                                     includeDiv.className = 'restriction-item';
                                                                     
-                                                                    var launcher_include = `openModal('${restriction.modal}', 'targets-${target}-product_restrictions-${restriction.field}-include',2000)`;
-                                                                    var launcher_exclude = `openModal('${restriction.modal}', 'targets-${target}-product_restrictions-${restriction.field}-exclude',2000)`;
+                                                                    var launcher_include = `openModal('${restriction.modal}', 'targets-${target}-product_restrictions-${restriction.field}-include')`;
+                                                                    var launcher_exclude = `openModal('${restriction.modal}', 'targets-${target}-product_restrictions-${restriction.field}-exclude')`;
                                                                     if (restriction.modal == "prompt"){
                                                                         launcher_include = `promptAndAddItems(this, '${restriction.field}', 'targets-${target}-product_restrictions-${restriction.field}-include')`;
                                                                         launcher_exclude = `promptAndAddItems(this, '${restriction.field}', 'targets-${target}-product_restrictions-${restriction.field}-exclude')`;
@@ -2462,11 +2561,28 @@ class g_ffl_Cockpit_Admin
                                                                         <div style="width:!00%;text-align:center;">
                                                                             <label for="sell_at_map">List only products eligible for dropshipping:&nbsp;</label>
                                                                             <label class="toggle-switch">
-                                                                                <input type="checkbox" id="distributors-${distributor}-drop_ship_only_items" name="distributors-${distributor}-drop_ship_only_items" data-autosave="true">
+                                                                                <input type="checkbox" id="distributors-${distributor}-drop_ship_only_items" name="distributors-${distributor}-drop_ship_only_items" ${getConfigValue(cc, "distributors-" + distributor + "-drop_ship_only_items") ? 'checked' : ''}  data-autosave="true">
                                                                                 <span class="slider"></span>
                                                                             </label>
                                                                         </div>
                                                                     </div>
+                                                                    <div style="margin-top:20px;" class="restriction-section">
+                                                                        <div class="other-restrictions-header">Product Cost Retrictions</strong></div>
+                                                                        <div class="helperDialog">
+                                                                            Some distributors have handling fees for orders below a certain amount. These cost controls give you the ability to set a minimum cost for items listed on your site from ${distributor}
+                                                                        </div>
+                                                                        <div class="cost-restrictions">
+                                                                            <div class="cost-field">
+                                                                                <label for="distributors-${distributor}-product_restrictions-cost-global_restrictions-min_distributor_cost">Min Cost:&nbsp;</label>
+                                                                                <input class="form-control" type="number" id="distributors-${distributor}-product_restrictions-cost-global_restrictions-min_distributor_cost" name="distributors-${distributor}-product_restrictions-cost-global_restrictions-min_distributor_cost" data-autosave="true" value="${getConfigValue(cc, "distributors-" + distributor + "-product_restrictions-cost-global_restrictions-min_distributor_cost")}">
+                                                                            </div>
+                                                                            <div class="cost-field"> 
+                                                                                <label for="distributors-${distributor}-product_restrictions-cost-global_restrictions-max_distributor_cost">Max Cost:</label>
+                                                                                <input class="form-control" type="number" id="distributors-${distributor}-product_restrictions-cost-global_restrictions-max_distributor_cost" name="distributors-${distributor}-product_restrictions-cost-global_restrictions-max_distributor_cost" data-autosave="true" value="${getConfigValue(cc, "distributors-" + distributor + "-product_restrictions-cost-global_restrictions-max_distributor_cost")}">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
                                                                     <div id="product-restrictions-container"></div>
                                                             `);
                                                            
@@ -2544,10 +2660,8 @@ class g_ffl_Cockpit_Admin
                                                                 });
                                                             });
                                                             
-                                            
                                                             setupAutoSave();
-                                                            
-
+                                                        
                                                             $('#detailsModal').modal('show');
                                                         }
 
@@ -2702,6 +2816,7 @@ class g_ffl_Cockpit_Admin
                                                         try{
                                                             cockpit_configuration = JSON.parse(data[0].cockpit_configuration);
                                                             editor.set(cockpit_configuration);
+                                                            initialCockpitConfiguration = editor.get();
                                                             load_fancy_editor(cockpit_configuration);
                                                             setupAutoSave();
                                                         } catch (error) {
@@ -2741,21 +2856,123 @@ class g_ffl_Cockpit_Admin
                                                 }
                                             });
                                         }
-                                
+                                        function getValidationErrorMessage(errors) {
+                                            let messages = [];
+
+                                            if (Array.isArray(errors)) {
+                                                errors.forEach(error => {
+                                                    if (error.message) {
+                                                        messages.push({"dataPath": error.dataPath, "message": error.message});
+                                                    } else if (error.error) {
+                                                        messages.push({"dataPath": error.error.dataPath, "message": error.error.message});
+                                                    } else if (error.errors) {
+                                                        error.errors.forEach(innerError => {
+                                                            if (innerError.message) {
+                                                                messages.push({"dataPath": innerError.dataPath, "message": innerError.message});
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            } else if (typeof errors === 'object' && errors !== null) {
+                                                if (errors.message) {
+                                                    messages.push({"dataPath": errors.dataPath, "message": errors.message});
+                                                } else if (errors.errors) {
+                                                    errors.errors.forEach(innerError => {
+                                                        if (innerError.message) {
+                                                            messages.push({"dataPath": innerError.dataPath, "message": innerError.message});
+                                                        }
+                                                    });
+                                                }
+                                            }
+
+                                            if (messages.length === 0) {
+                                                messages.push('An unknown error occurred.');
+                                            }
+
+                                            // Display messages to the user
+                                            var returnMessage = "";
+                                            messages.forEach(message => {
+                                                var errorMessage = message.message;
+                                                if (message.message.includes("1791")){
+                                                    errorMessage = "One of your selected brands is invalid, or has been removed and consolidated with another brand name."
+                                                }else if (message.message.includes("AR Rifles")){
+                                                    errorMessage = "One of your selected categories is invalid."
+                                                }
+                                                returnMessage += "<li>" + message.dataPath + " - " + errorMessage + "</li>";
+                                            });
+                                            return returnMessage;
+                                        }
+
                                         function build_grid(config_schema){
-                                            var options = {
+                                            const onChangeHandler = function () {
+                                                const currentJson = editor.get();
+                                                const isChanged = initialCockpitConfiguration !=null && JSON.stringify(currentJson) !== JSON.stringify(initialCockpitConfiguration);
+                                                document.getElementById('unsaved-indicator').style.display = isChanged ? 'block' : 'none';
+                                                const errors = editor.validate();
+                                                // Assume 'editor' is your jsoneditor instance
+                                                editor.validate().then((results) => {
+                                                    const errorContainer = document.getElementById("validation-errors");
+                                                    if (results.length === 0) {
+                                                        errorContainer.innerHTML = '';
+                                                    } else {
+                                                        let errorMessages = 'There are <span style="color:red;text-decoration:underline;">' + results.length + ' errors detected</span> in your configuration. Please review and resolve these errors or you will not be able to save your changes.<br><br><span style="color:red;font-weight:bold;">Errors:</span><ul style="margin-top:5px;margin-bottom:0px;padding-bottom:0px;color:red;padding-left: 30px;list-style-type: disc;">';
+                                                        errorMessages += getValidationErrorMessage(results);
+                                                        errorMessages += '</ul>';
+                                                        errorContainer.innerHTML = errorMessages;
+                                                    }
+                                                }).catch((err) => {
+                                                    console.error("Validation failed:", err);
+                                                });
+
+                                                /*
+                                                const errorContainer = document.getElementById("validation-errors");
+                                                if (errors.length > 0) {
+                                                    let errorMessages = '<ul>';
+                                                    errors.forEach(error => {
+                                                        errorMessages += `<li>${error.message} at ${error.path.join('.')}</li>`;
+                                                    });
+                                                    errorMessages += '</ul>';
+                                                    errorContainer.innerHTML = errorMessages;
+                                                } else {
+                                                    errorContainer.innerHTML = '';
+                                                }
+                                                */
+                                            };
+
+                                            const options = {
                                                 modes: ['text','tree'],
                                                 mode: 'tree',
                                                 ace: ace,
-                                                schema: config_schema
-                                            }
+                                                schema: config_schema,
+                                                onChange: onChangeHandler
+                                            };
                                             editor.destroy();
                                             editor = new JSONEditor(document.getElementById("jsoneditor"), options);
+                                           
                                             editor.set({"Loading Configuration": "Please wait..."});
                                             get_and_set_cockpit_configuration("<?php echo esc_attr($gFFLCockpitKey);?>", false);
+                                
+                                            // Override the set function to include onChangeHandler
+                                            const originalSet = editor.set.bind(editor);
+                                            editor.set = function (json) {
+                                                originalSet(json);
+                                                onChangeHandler();
+                                            };
+
                                             if (window.location.host == 'garidium.com' || window.location.host == 'localhost:8000'){
                                                 document.getElementById('g-ffl-admin-buttons').style.display = '';
                                             }
+
+                                            // Warn user before leaving the page with unsaved changes
+                                            window.addEventListener('beforeunload', function (e) {
+                                                if (initialCockpitConfiguration!=null && JSON.stringify(editor.get()) !== JSON.stringify(initialCockpitConfiguration)) {
+                                                    const confirmationMessage = 'You have unsaved changes. Are you sure you want to leave?';
+                                                    e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+                                                    return confirmationMessage; // Gecko, WebKit, Chrome <34
+                                                }
+                                            });
+
+                                            
                                         }
                                     </script>
                                 </td>
@@ -2849,21 +3066,21 @@ class g_ffl_Cockpit_Admin
             </div>
             <div id="product_feed" class="tabcontent">
                 <!-- The Modal -->
-                <div id="myModal" class="cockpit-modal">
+                <div id="productDetailsModal" class="cockpit-modal">
                     <!-- Modal content -->
                     <div class="cockpit-modal-content">
-                        <span class="close">&times;</span>
+                        <span id="productDetailImageModalCloser" class="close">&times;</span>
                         <div align="center" id="product_detail_div"></div>
                     </div>
                     <script>
                         // Get the modal
-                        var modal = document.getElementById("myModal");
+                        var modal = document.getElementById("productDetailsModal");
 
                         // Get the button that opens the modal
                         var btn = document.getElementById("myBtn");
 
                         // Get the <span> element that closes the modal
-                        var span = document.getElementsByClassName("close")[0];
+                        var span = document.getElementById("productDetailImageModalCloser");
 
                         function load_product_data(title, distributor, sku, img_url){
                             //alert(data);
@@ -2876,12 +3093,6 @@ class g_ffl_Cockpit_Admin
                             modal.style.display = "none";
                         }
 
-                        // When the user clicks anywhere outside of the modal, close it
-                        window.onclick = function(event) {
-                            if (event.target == modal) {
-                                modal.style.display = "none";
-                            }
-                        }
                     </script>
                 </div>
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">

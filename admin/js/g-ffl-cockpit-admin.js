@@ -61,6 +61,8 @@ function setConfig(g_ffl_cockpit_key){
 			console.log("g-FFL Cockpit Configuration Changes:", data.success);
 			if (data.success){
 				alert("FFL Cockpit Changes Applied");
+				initialCockpitConfiguration = editor.get();
+				document.getElementById("unsaved-indicator").style.display='none';
 			}else{
 				alert("No Changes were Detected in your configuration.")
 			}		
