@@ -1805,7 +1805,7 @@ class g_ffl_Cockpit_Admin
                                                             "2nd Amendment Wholesale": {"distid": "2AW", "description": "2nd Amendment Wholesale Product Feed Configuration"},
                                                             "Chattanooga Shooting Supplies": {"distid": "CSSI", "description": "Chattanooga Shooting Supplies Product Feed Configuration"},
                                                             "Sports South": {"distid": "TSW", "description": "Sports South Product Feed Configuration"},
-                                                            "Sportsmans Supply": {"distid": "SSI", "description": "Sportsmans Supply Product Feed Configuration"},
+                                                            //"Sportsmans Supply": {"distid": "SSI", "description": "Sportsmans Supply Product Feed Configuration"},
                                                             "AmChar": {"distid": "AMC", "description": "AmChar Supply Product Feed Configuration"},
                                                             "CamFour": {"distid": "CAM4", "description": "CamFour Supply Product Feed Configuration"},
                                                             "Crow": {"distid": "CROW", "description": "Crow Shooting Supply Product Feed Configuration"},
@@ -1825,7 +1825,7 @@ class g_ffl_Cockpit_Admin
                                                             "woo": {
                                                                 "url": {"config_key": "targets-woo-url", "type": "string", "label": "Website URL"},
                                                                 "automated_fulfillment": {"config_key": "targets-woo-automated_fulfillment", "type": "boolean", "label": "Automate Fulfillment"},
-                                                                "send_fulfillment_emails": {"config_key": "targets-woo-send_fulfillment_emails", "type": "boolean", "label": "Send Fulfillment Emails"},
+                                                                "send_fulfillment_emails": {"config_key": "targets-woo-send_fulfillment_emails", "type": "boolean", "label": "Send Fulfillment Emails", "default": true},
                                                                 "remove_out_of_stock": {"config_key": "targets-woo-remove_out_of_stock", "type": "boolean", "label": "Remove Out-of-Stock Products"},
                                                                 "manage_product_attributes": {"config_key": "targets-woo-manage_product_attributes", "type": "boolean", "label": "Manage Product Attributes"},
                                                                 "manage_product_categories": {"config_key": "targets-woo-manage_product_categories", "type": "boolean", "label": "Manage Product Categories"}
@@ -1834,7 +1834,7 @@ class g_ffl_Cockpit_Admin
                                                                 "username": {"config_key": "targets-gunbroker-username", "type": "string", "label": "Username", "helperText":"<strong>Gunbroker Credentials</strong> will be the same you would use to login to the Gunbroker website. For additional assistance on setting up Gunbroker, visit our <a target=_blank href=\"https://garidium.com/ffl-cockpit-gunbroker-setup/\">Help Center</a>"},
                                                                 "password": {"config_key": "targets-gunbroker-password", "type": "string", "label": "Password"},
                                                                 "automated_fulfillment": {"config_key": "targets-gunbroker-automated_fulfillment", "type": "boolean", "label": "Automate Fulfillment"},
-                                                                "send_fulfillment_emails": {"config_key": "targets-gunbroker-send_fulfillment_emails", "type": "boolean", "label": "Send Fulfillment Emails"},
+                                                                "send_fulfillment_emails": {"config_key": "targets-gunbroker-send_fulfillment_emails", "type": "boolean", "label": "Send Fulfillment Emails", "default": true},
                                                                 "from_postal_code": {"config_key": "targets-gunbroker-from_postal_code", "type": "number", "label": "Your Zip Code"},
                                                                 "standard_text_id": {"config_key": "targets-gunbroker-standard_text_id", "type": "number", "label": "Gunbroker Standard Text ID", "helperText":"<steong>Standard Text ID</strong> is an id value representing Terms of Sale text you have configured in Gunbroker. You can find (or create) your Standard Text ID by going here: <a target=_blank href='https://www.gunbroker.com/a/my-gunbroker/my-account/standard-text'>Gunbroker Terms of Sale Setup</a>"},
                                                                 "standard_description_html": {"config_key": "targets-gunbroker-standard_description_html", "type": "rich_text", "label": "Common Description", "helperText":"<strong>Standard Description Text</strong> allows you to add a custom message at the bottom of all your listings. We usually recommend adding in your company logo, and leaving the Terms of Sale to what you have in the Gunbroker Standard Text setiup."}
@@ -1884,10 +1884,12 @@ class g_ffl_Cockpit_Admin
                                                                 "product_feed_ftp_user": {"config_key": "fulfillment-", "type": "string", "label": "Product Feed FTP Username"},
                                                                 "product_feed_ftp_password": {"config_key": "fulfillment-drop_ship_only_items", "type": "string", "label": "Product Feed FTP Password"}
                                                             },
+                                                            /*
                                                             "Sportsmans Supply": {
                                                                 "product_feed_ftp_user": {"config_key": "fulfillment-", "type": "string", "label": "Product Feed FTP Username"},
                                                                 "product_feed_ftp_password": {"config_key": "fulfillment-drop_ship_only_items", "type": "string", "label": "Product Feed FTP Password"}
                                                             },
+                                                            */
                                                             "RSR Group": {
                                                                 "drop_ship_account_number": {"config_key": "fulfillment-API_USER", "type": "string", "label": "Drop-Ship Account Number"},
                                                                 "drop_ship_account_password": {"config_key": "fulfillment-API_PASSWORD", "type": "string", "label": "Drop-Ship Account Password"},
@@ -2330,7 +2332,7 @@ class g_ffl_Cockpit_Admin
                                                                     modalBody.append(`<div class="form-group">
                                                                                         <label for="${field.config_key}">${field.label}</label>
                                                                                         <label class="toggle-switch">
-                                                                                            <input type="checkbox" id="${field.config_key}" name="${field.config_key}" ${getConfigValue(cc, field.config_key) ? 'checked' : ''} data-autosave="true">
+                                                                                            <input type="checkbox" id="${field.config_key}" name="${field.config_key}" ${(field.default && field.default == true) || getConfigValue(cc, field.config_key) == true ? 'checked' : ''} data-autosave="true">
                                                                                             <span class="slider"></span>
                                                                                         </label>
                                                                                     </div>`);
