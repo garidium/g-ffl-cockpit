@@ -157,7 +157,8 @@ class g_ffl_Cockpit_Admin
             <!-- Tab content -->
             <div id="configuration" class="tabcontent">
                 <div class="postbox" style="margin-top: 10px;">
-                        <span id="unsaved-indicator">There are <span style="color:red;text-decoration: underline;">Unsaved Changes</span> to your configuratiaon. Hit the "Save Changes" button at the bottom of your screen, or refresh the browser page to revert.<span class="validator_view" id="validation-errors"></span></span>
+                        <span id="unsaved-indicator">There are <span style="color:red;text-decoration: underline;">Unsaved Changes</span> to your configuratiaon. Hit the "Save Changes" button at the bottom of your screen, or refresh the browser page to revert.</span>
+                        <span class="validator_view" id="validation-errors"></span>
                         <?php settings_fields('g-ffl-cockpit-settings'); ?>
                         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
                         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -344,15 +345,14 @@ class g_ffl_Cockpit_Admin
                                     var searchType = "brand";
                                     if (modalId.startsWith("category")){
                                         searchType = "category";
-                                    } else if (modalId.startsWith("ingnoreMap")){
-                                        searchType = "ingnoreMapBrand";
+                                    } else if (modalId.startsWith("ignoreMap")){
+                                        searchType = "ignoreMapBrand";
                                     }
                                     const input = document.createElement('input');
                                     input.type = 'text';
                                     input.className = 'optionFilterInput';
                                     input.id = searchType + 'SearchInput';
                                     input.placeholder = 'Search...';
-
                                     // Append input element to the div
                                     document.getElementById(modalId + 'SearchDiv').appendChild(input);
 
@@ -360,12 +360,9 @@ class g_ffl_Cockpit_Admin
                                     input.onkeyup = function() {
                                         filterOptions(searchType + 'SearchInput', searchType + 'ModalList');
                                     };
-
-                                    
                                     div.appendChild(input);
                                     searchDiv.appendChild(div);
                                 }
-
 
                                 if (modalId != "priceBasedMarginModal"){
                                     modal_options.replaceChildren();
@@ -755,7 +752,7 @@ class g_ffl_Cockpit_Admin
                                     <td>${maxPrice}</td>
                                     <td>${marginDollar}</td>
                                     <td>${marginPercentage}</td>
-                                    <td><i class="fas fa-trash-alt title="Remove Item" remove-link" onclick="removePricedBasedMarginTier(this, '${margin_group}', ${minPrice}, ${maxPrice}, ${marginDollar}, ${marginPercentage})"></i></td>
+                                    <td><i class="fas fa-trash-alt remove-link" title="Remove Item" onclick="removePricedBasedMarginTier(this, '${margin_group}', ${minPrice}, ${maxPrice}, ${marginDollar}, ${marginPercentage})"></i></td>
                                 `;
                                 tableBody.appendChild(row);
                             }
@@ -2066,8 +2063,10 @@ class g_ffl_Cockpit_Admin
                                                             const include_excludes = ["include","exclude"];
                                                             restrictions.forEach(restriction => {
                                                                 include_excludes.forEach(include_exclude => {
-                                                                    $(`#product_restrictions-${restriction}-${include_exclude}`).empty();
-                                                                    addSelectedItemsToContainer(document.getElementById(`product_restrictions-${restriction}-${include_exclude}`), config.product_restrictions[restriction][include_exclude]);
+                                                                    if (config.product_restrictions[restriction]){
+                                                                        $(`#product_restrictions-${restriction}-${include_exclude}`).empty();
+                                                                        addSelectedItemsToContainer(document.getElementById(`product_restrictions-${restriction}-${include_exclude}`), config.product_restrictions[restriction][include_exclude]);
+                                                                    }
                                                                 });
                                                             });
                                                             populateAvailableDistributors();
@@ -2460,7 +2459,7 @@ class g_ffl_Cockpit_Admin
                                                                     const categoryDiv = document.createElement('div');
                                                                     categoryDiv.className = 'restriction-item';
                                                                     
-                                                                    var launcher_category = `openModal('categoryModal', 'targets-${target}-listed_products-${product_type}-category-include',2000)`;
+                                                                    var launcher_category = `openModal('categoryModal', 'targets-${target}-listed_products-${product_type}-category-include')`;
                                                                     var launcher_sku = `promptAndAddItems(this, 'sku', 'targets-${target}-listed_products-${product_type}-sku-include')`;
                                                                         
                                                                     categoryDiv.innerHTML = `
@@ -2611,8 +2610,8 @@ class g_ffl_Cockpit_Admin
                                                                 const includeDiv = document.createElement('div');
                                                                 includeDiv.className = 'restriction-item';
                                                                 
-                                                                var launcher_include = `openModal('${restriction.modal}', 'distributors-${distributor}-product_restrictions-${restriction.field}-include',2000)`;
-                                                                var launcher_exclude = `openModal('${restriction.modal}', 'distributors-${distributor}-product_restrictions-${restriction.field}-exclude',2000)`;
+                                                                var launcher_include = `openModal('${restriction.modal}', 'distributors-${distributor}-product_restrictions-${restriction.field}-include')`;
+                                                                var launcher_exclude = `openModal('${restriction.modal}', 'distributors-${distributor}-product_restrictions-${restriction.field}-exclude')`;
                                                                 if (restriction.modal == "prompt"){
                                                                     launcher_include = `promptAndAddItems(this, '${restriction.field}', 'distributors-${distributor}-product_restrictions-${restriction.field}-include')`;
                                                                     launcher_exclude = `promptAndAddItems(this, '${restriction.field}', 'distributors-${distributor}-product_restrictions-${restriction.field}-exclude')`;
@@ -2750,8 +2749,8 @@ class g_ffl_Cockpit_Admin
                                                         const includeDiv = document.createElement('div');
                                                         includeDiv.className = 'restriction-item';
                                                         
-                                                        var launcher_include = `openModal('${restriction.modal}', 'product_restrictions-${restriction.field}-include', 10000)`;
-                                                        var launcher_exclude = `openModal('${restriction.modal}', 'product_restrictions-${restriction.field}-exclude', 10000)`;
+                                                        var launcher_include = `openModal('${restriction.modal}', 'product_restrictions-${restriction.field}-include')`;
+                                                        var launcher_exclude = `openModal('${restriction.modal}', 'product_restrictions-${restriction.field}-exclude')`;
                                                         if (restriction.modal == "prompt"){
                                                             launcher_include = `promptAndAddItems(this, '${restriction.field}', 'product_restrictions-${restriction.field}-include')`;
                                                             launcher_exclude = `promptAndAddItems(this, '${restriction.field}', 'product_restrictions-${restriction.field}-exclude')`;
@@ -2858,28 +2857,27 @@ class g_ffl_Cockpit_Admin
                                         }
                                         function getValidationErrorMessage(errors) {
                                             let messages = [];
-
                                             if (Array.isArray(errors)) {
                                                 errors.forEach(error => {
                                                     if (error.message) {
-                                                        messages.push({"dataPath": error.dataPath, "message": error.message});
+                                                        messages.push({"dataPath": error.dataPath, "message": error.message, "data": error.data ? `(${error.data}) ` : ""});
                                                     } else if (error.error) {
-                                                        messages.push({"dataPath": error.error.dataPath, "message": error.error.message});
+                                                        messages.push({"dataPath": error.error.dataPath, "message": error.error.message, "data": error.error.data ? `(${error.error.data}) ` : ""});
                                                     } else if (error.errors) {
                                                         error.errors.forEach(innerError => {
                                                             if (innerError.message) {
-                                                                messages.push({"dataPath": innerError.dataPath, "message": innerError.message});
+                                                                messages.push({"dataPath": innerError.dataPath, "message": innerError.message, "data": innerError.data ? `(${innerError.data}) ` : ""});
                                                             }
                                                         });
                                                     }
                                                 });
                                             } else if (typeof errors === 'object' && errors !== null) {
                                                 if (errors.message) {
-                                                    messages.push({"dataPath": errors.dataPath, "message": errors.message});
+                                                    messages.push({"dataPath": errors.dataPath, "message": errors.message, "data": errors.data ? `(${errors.data}) ` : ""});
                                                 } else if (errors.errors) {
                                                     errors.errors.forEach(innerError => {
                                                         if (innerError.message) {
-                                                            messages.push({"dataPath": innerError.dataPath, "message": innerError.message});
+                                                            messages.push({"dataPath": innerError.dataPath, "message": innerError.message, "data": innerError.data ? `(${innerError.data}) ` : ""});
                                                         }
                                                     });
                                                 }
@@ -2890,18 +2888,21 @@ class g_ffl_Cockpit_Admin
                                             }
 
                                             // Display messages to the user
-                                            var returnMessage = "";
+                                            let returnMessage = "";
                                             messages.forEach(message => {
-                                                var errorMessage = message.message;
-                                                if (message.message.includes("1791")){
-                                                    errorMessage = "One of your selected brands is invalid, or has been removed and consolidated with another brand name."
-                                                }else if (message.message.includes("AR Rifles")){
-                                                    errorMessage = "One of your selected categories is invalid."
+                                                let errorMessage = message.message;
+                                                if (message.message.includes("1791")) {
+                                                    errorMessage = "One or more of your selected brands " + message.data + " is invalid, or has been removed and consolidated with another brand name.";
+                                                } else if (message.message.includes("AR Rifles")) {
+                                                    errorMessage = "One of your selected categories " + message.data + " is invalid.";
+                                                } else {
+                                                    errorMessage = message.data + errorMessage;
                                                 }
-                                                returnMessage += "<li>" + message.dataPath + " - " + errorMessage + "</li>";
+                                                returnMessage += `<li>${message.dataPath} - ${errorMessage}</li>`;
                                             });
                                             return returnMessage;
                                         }
+``
 
                                         function build_grid(config_schema){
                                             const onChangeHandler = function () {
@@ -3583,7 +3584,7 @@ class g_ffl_Cockpit_Admin
                     <td align="right">
                         <div id="g-ffl-admin-buttons" align="right" style="margin:20px;display:none;">
                             <b>Admin Functions:&nbsp;</b>
-                            <a class="button alt" onclick="get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, true);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('save_cockpit_configuration_button').style.display='none';">Load Config</a>
+                            <a class="button alt" onclick="document.getElementById('configuration').style.border='solid red 3px';initialCockpitConfiguration = null;get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, true);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('save_cockpit_configuration_button').style.display='none';">Load Config</a>
                             <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value);">Save</a>
                             <span style="padding:10px;color:red;display:none;" id="admin_current_editing_key"></span>
                         </div>

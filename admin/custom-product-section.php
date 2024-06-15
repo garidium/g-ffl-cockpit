@@ -38,6 +38,62 @@ function custom_product_section_tab($tabs) {
     return $tabs;
 }
 
+
+
+/*
+
+// Display radio buttons on the product page
+add_action( 'woocommerce_before_add_to_cart_button', 'add_custom_product_options' );
+function add_custom_product_options() {
+    global $product;
+
+    // Define your custom options
+    $options = array(
+        'warehouse1' => 'Warehouse 1',
+        'warehouse2' => 'Warehouse 2',
+        'warehouse3' => 'Warehouse 3'
+    );
+
+    echo '<div class="custom-product-options">';
+    echo '<h4>Select an Option:</h4>';
+    foreach ( $options as $key => $value ) {
+        echo '<input type="radio" id="' . esc_attr( $key ) . '" name="custom_product_option" value="' . esc_attr( $key ) . '">';
+        echo '<label for="' . esc_attr( $key ) . '">' . esc_html( $value ) . '</label><br>';
+    }
+    echo '</div>';
+}
+
+// Add selected option as metadata to the cart item
+add_filter( 'woocommerce_add_cart_item_data', 'add_custom_option_to_cart_item', 10, 2 );
+function add_custom_option_to_cart_item( $cart_item_data, $product_id ) {
+    if ( isset( $_POST['custom_product_option'] ) ) {
+        $cart_item_data['custom_product_option'] = sanitize_text_field( $_POST['custom_product_option'] );
+    }
+    return $cart_item_data;
+}
+
+// Display the custom option in the cart
+add_filter( 'woocommerce_get_item_data', 'display_custom_option_in_cart', 10, 2 );
+function display_custom_option_in_cart( $item_data, $cart_item ) {
+    if ( isset( $cart_item['custom_product_option'] ) ) {
+        $item_data[] = array(
+            'key'   => __( 'Selected Warehouse', 'custom-product-options' ),
+            'value' => wc_clean( $cart_item['custom_product_option'] ),
+        );
+    }
+    return $item_data;
+}
+
+// Save custom option to order item meta
+add_action( 'woocommerce_checkout_create_order_line_item', 'save_custom_option_to_order_item_meta', 10, 4 );
+function save_custom_option_to_order_item_meta( $item, $cart_item_key, $values, $order ) {
+    if ( isset( $values['custom_product_option'] ) ) {
+        $item->add_meta_data( __( 'Selected Warehouse', 'custom-product-options' ), $values['custom_product_option'] );
+    }
+}
+
+*/
+
 // Callback function to display content of the custom section
 function custom_product_section_content() {
     global $product;
