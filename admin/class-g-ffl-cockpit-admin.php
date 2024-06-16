@@ -168,6 +168,67 @@ class g_ffl_Cockpit_Admin
                         <script src="https://garidium.s3.amazonaws.com/ffl-api/plugin/cockpit/tinymce/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
                                                
                         <script>
+                            const statesAndTerritories = [
+                                { value: "", text: "Select State/Territory" },
+                                { value: "AL", text: "Alabama" },
+                                { value: "AK", text: "Alaska" },
+                                { value: "AZ", text: "Arizona" },
+                                { value: "AR", text: "Arkansas" },
+                                { value: "CA", text: "California" },
+                                { value: "CO", text: "Colorado" },
+                                { value: "CT", text: "Connecticut" },
+                                { value: "DE", text: "Delaware" },
+                                { value: "FL", text: "Florida" },
+                                { value: "GA", text: "Georgia" },
+                                { value: "HI", text: "Hawaii" },
+                                { value: "ID", text: "Idaho" },
+                                { value: "IL", text: "Illinois" },
+                                { value: "IN", text: "Indiana" },
+                                { value: "IA", text: "Iowa" },
+                                { value: "KS", text: "Kansas" },
+                                { value: "KY", text: "Kentucky" },
+                                { value: "LA", text: "Louisiana" },
+                                { value: "ME", text: "Maine" },
+                                { value: "MD", text: "Maryland" },
+                                { value: "MA", text: "Massachusetts" },
+                                { value: "MI", text: "Michigan" },
+                                { value: "MN", text: "Minnesota" },
+                                { value: "MS", text: "Mississippi" },
+                                { value: "MO", text: "Missouri" },
+                                { value: "MT", text: "Montana" },
+                                { value: "NE", text: "Nebraska" },
+                                { value: "NV", text: "Nevada" },
+                                { value: "NH", text: "New Hampshire" },
+                                { value: "NJ", text: "New Jersey" },
+                                { value: "NM", text: "New Mexico" },
+                                { value: "NY", text: "New York" },
+                                { value: "NC", text: "North Carolina" },
+                                { value: "ND", text: "North Dakota" },
+                                { value: "OH", text: "Ohio" },
+                                { value: "OK", text: "Oklahoma" },
+                                { value: "OR", text: "Oregon" },
+                                { value: "PA", text: "Pennsylvania" },
+                                { value: "RI", text: "Rhode Island" },
+                                { value: "SC", text: "South Carolina" },
+                                { value: "SD", text: "South Dakota" },
+                                { value: "TN", text: "Tennessee" },
+                                { value: "TX", text: "Texas" },
+                                { value: "UT", text: "Utah" },
+                                { value: "VT", text: "Vermont" },
+                                { value: "VA", text: "Virginia" },
+                                { value: "WA", text: "Washington" },
+                                { value: "WV", text: "West Virginia" },
+                                { value: "WI", text: "Wisconsin" },
+                                { value: "WY", text: "Wyoming" },
+                                { value: "DC", text: "District of Columbia" },
+                                { value: "AS", text: "American Samoa" },
+                                { value: "GU", text: "Guam" },
+                                { value: "MP", text: "Northern Mariana Islands" },
+                                { value: "PR", text: "Puerto Rico" },
+                                { value: "UM", text: "United States Minor Outlying Islands" },
+                                { value: "VI", text: "U.S. Virgin Islands" }
+                            ];
+
                             let typingTimer;
                             const doneTypingInterval = 2000;
                             function setupAutoSave() {
@@ -1529,7 +1590,7 @@ class g_ffl_Cockpit_Admin
                                                         <div id="priceBasedMarginModal" class="modal">
                                                             <div class="modal-content">
                                                                 <span class="close" onclick="closeModal('priceBasedMarginModal')">&times;</span>
-                                                                <h2>Add Price Based Margin</h2>
+                                                                <span class="modalHeader">Add Price Based Margin</span>
                                                                 <div>
                                                                     <label for="min_price">Min Price ($):</label>
                                                                     <input type="number" id="min_price" value="0">
@@ -1691,65 +1752,16 @@ class g_ffl_Cockpit_Admin
                                                     </div>
                                                     <div class="pricing-assumptions-form-row">
                                                         <label for="fulfillment-ship_to_store-address-state">State:</label>
-                                                        <select id="fulfillment-ship_to_store-address-state" name="fulfillment-ship_to_store-address-state"  data-autosave="true">
-                                                            <option value="">Select State/Territory</option>
-                                                            <option value="AL">Alabama</option>
-                                                            <option value="AK">Alaska</option>
-                                                            <option value="AS">American Samoa</option>
-                                                            <option value="AZ">Arizona</option>
-                                                            <option value="AR">Arkansas</option>
-                                                            <option value="CA">California</option>
-                                                            <option value="CO">Colorado</option>
-                                                            <option value="CT">Connecticut</option>
-                                                            <option value="DE">Delaware</option>
-                                                            <option value="DC">District of Columbia</option>
-                                                            <option value="FL">Florida</option>
-                                                            <option value="GA">Georgia</option>
-                                                            <option value="GU">Guam</option>
-                                                            <option value="HI">Hawaii</option>
-                                                            <option value="ID">Idaho</option>
-                                                            <option value="IL">Illinois</option>
-                                                            <option value="IN">Indiana</option>
-                                                            <option value="IA">Iowa</option>
-                                                            <option value="KS">Kansas</option>
-                                                            <option value="KY">Kentucky</option>
-                                                            <option value="LA">Louisiana</option>
-                                                            <option value="ME">Maine</option>
-                                                            <option value="MD">Maryland</option>
-                                                            <option value="MA">Massachusetts</option>
-                                                            <option value="MI">Michigan</option>
-                                                            <option value="MN">Minnesota</option>
-                                                            <option value="MS">Mississippi</option>
-                                                            <option value="MO">Missouri</option>
-                                                            <option value="MT">Montana</option>
-                                                            <option value="NE">Nebraska</option>
-                                                            <option value="NV">Nevada</option>
-                                                            <option value="NH">New Hampshire</option>
-                                                            <option value="NJ">New Jersey</option>
-                                                            <option value="NM">New Mexico</option>
-                                                            <option value="NY">New York</option>
-                                                            <option value="NC">North Carolina</option>
-                                                            <option value="ND">North Dakota</option>
-                                                            <option value="MP">Northern Mariana Islands</option>
-                                                            <option value="OH">Ohio</option>
-                                                            <option value="OK">Oklahoma</option>
-                                                            <option value="OR">Oregon</option>
-                                                            <option value="PA">Pennsylvania</option>
-                                                            <option value="PR">Puerto Rico</option>
-                                                            <option value="RI">Rhode Island</option>
-                                                            <option value="SC">South Carolina</option>
-                                                            <option value="SD">South Dakota</option>
-                                                            <option value="TN">Tennessee</option>
-                                                            <option value="TX">Texas</option>
-                                                            <option value="UT">Utah</option>
-                                                            <option value="VT">Vermont</option>
-                                                            <option value="VI">Virgin Islands</option>
-                                                            <option value="VA">Virginia</option>
-                                                            <option value="WA">Washington</option>
-                                                            <option value="WV">West Virginia</option>
-                                                            <option value="WI">Wisconsin</option>
-                                                            <option value="WY">Wyoming</option>
-                                                        </select>
+                                                        <select id="fulfillment-ship_to_store-address-state" name="fulfillment-ship_to_store-address-state"  data-autosave="true"></select>
+                                                        <script>
+                                                            const dropdown = document.getElementById('fulfillment-ship_to_store-address-state');
+                                                            statesAndTerritories.forEach(state => {
+                                                                const option = document.createElement('option');
+                                                                option.value = state.value;
+                                                                option.textContent = state.text;
+                                                                dropdown.appendChild(option);
+                                                            });
+                                                        </script>
                                                     </div>
                                                     <div class="pricing-assumptions-form-row">
                                                         <label for="fulfillment-ship_to_store-address-postal_code">Zip Code:</label>
@@ -1814,11 +1826,11 @@ class g_ffl_Cockpit_Admin
                                                         };
 
                                                         const targetSchema = {
-                                                            "woo": {"id": "woo", "description": "Populate Distributor product to your Worpress/WooCommerce site."},
-                                                            "ammoseek": {"id": "ammoseek", "description": "Send product to Ammoseek.com"},
-                                                            "wikiarms": {"id": "wikiarms", "description": "Send product to WikiArms.com"},
-                                                            "gun.deals": {"id": "gun.deals", "description": "Send product to Gun.deals"},
-                                                            "gunbroker": {"id": "gunbroker", "description": "Send product to Gunbroker"}
+                                                            "woo": {"id": "woo", "displayName": "WooCommerce", "description": "Populate Distributor product to your Worpress/WooCommerce site."},
+                                                            "ammoseek": {"id": "ammoseek", "displayName": "AmmoSeek", "description": "Send product to Ammoseek.com"},
+                                                            "wikiarms": {"id": "wikiarms", "displayName": "WikiArms", "description": "Send product to WikiArms.com"},
+                                                            "gun.deals": {"id": "gun.deals","displayName": "Gun.Deals", "description": "Send product to Gun.deals"},
+                                                            "gunbroker": {"id": "gunbroker", "displayName": "Gunbroker","description": "Send product to Gunbroker"}
                                                         }
 
                                                         const targetFields = {
@@ -1912,7 +1924,15 @@ class g_ffl_Cockpit_Admin
                                                             },
                                                             "2nd Amendment Wholesale": {
                                                                 "api_token": {"config_key": "fulfillment-API_TOKEN", "type": "string", "label": "API Token"},
-                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
+                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"},
+                                                                "company": {"config_key": "fulfillment-billing_address-company", "type": "string", "label": "Company Name", "helperText":"2nd Amendment Wholesaler requires us to pass in your <strong>billing address/information</strong> when we create orders with them. Please enter that information below."},
+                                                                "last_name": {"config_key": "fulfillment-billing_address-last_name", "type": "string", "label": "Last Name"},
+                                                                "first_name": {"config_key": "fulfillment-billing_address-first_name", "type": "string", "label": "First Name"},
+                                                                "address_street": {"config_key": "fulfillment-billing_address-address_street", "type": "string", "label": "Street Address"},
+                                                                "city": {"config_key": "fulfillment-billing_address-company", "type": "string", "label": "City"},
+                                                                "state": {"config_key": "fulfillment-billing_address-state", "type": "state-selector", "label": "State"},
+                                                                "postal_code": {"config_key": "fulfillment-billing_address-postal_code", "type": "string", "label": "Company Name"},
+                                                                "phone": {"config_key": "fulfillment-billing_address-phone", "type": "string", "label": "Phone Number"}
                                                             },
                                                             "CamFour": {
                                                                 "api_key": {"config_key": "product_feed-api_key", "type": "string", "label": "API Key"}
@@ -2093,8 +2113,8 @@ class g_ffl_Cockpit_Admin
                                                             const selectElement = $('#available-targets');
                                                             selectElement.empty();
                                                             for (let key in targetSchema) {
-                                                                if (!$(`#targets-container .card-title:contains(${key})`).length) {
-                                                                    selectElement.append(`<option value="${key}">${key}</option>`);
+                                                                if (!$(`#targets-container .card-title:contains(${targetSchema[key].displayName})`).length) {
+                                                                    selectElement.append(`<option value="${key}">${targetSchema[key].displayName}</option>`);
                                                                 }
                                                             }
                                                             toggleTargetSelectContainer();
@@ -2158,7 +2178,7 @@ class g_ffl_Cockpit_Admin
                                                                                         <div class="distid_image_area">
                                                                                             <img src="https://garidium.s3.amazonaws.com/ffl-api/plugin/images/target_logo_${target_id}.png" alt="${target} logo">
                                                                                         </div>
-                                                                                        <h5 class="card-title">${target}</h5>
+                                                                                        <h5 class="card-title">${targetSchema[target].displayName}</h5>
                                                                                         <label class="toggle-switch">
                                                                                             <input onchange="update_target_active('${target_id}');" type="checkbox" id="${target_id}-active" name="${target_id}-active" ${config.active ? 'checked' : ''}>
                                                                                             <span class="slider"></span>
@@ -2217,7 +2237,7 @@ class g_ffl_Cockpit_Admin
 
 
                                                             // Add the removed distributor back to the available list
-                                                            $('#available-targets').append(`<option value="${targetId}">${targetId}</option>`);
+                                                            $('#available-targets').append(`<option value="${targetId}">${targetSchema[targetId].displayName}</option>`);
 
                                                             // Check if distributor dropdown and button should be shown
                                                             toggleTargetSelectContainer();
@@ -2265,7 +2285,7 @@ class g_ffl_Cockpit_Admin
                                                
                                                         function viewTargetDetails(target, targetId) {
                                                             const targetDetails = targetFields[target];
-                                                            $('#detailsModalLabel').text(`${target} Details`);
+                                                            $('#detailsModalLabel').text(`${targetSchema[target].displayName}`);
                                                             const modalBody = $('#modal-body');
                                                             modalBody.empty();
                                                             cc = editor.get();
@@ -2344,16 +2364,24 @@ class g_ffl_Cockpit_Admin
                                                                 }
                                                             }
 
+                                                            if (['wikiarms', 'gun.deals', 'ammoseek'].includes(target)) {
+                                                                modalBody.append(`
+                                                                <div class="helperDialog">
+                                                                    Specify <strong>Product Restrictions specific to ${target} </strong> in the section below. Expand the section and define which products you want to list on ${target} within each of their product groups.  
+                                                                </div>`);
+                                                            }else{
+                                                                modalBody.append(`
+                                                                <div class="helperDialog">
+                                                                    Specify <strong>Product Restrictions specific to ${target} </strong> in the section below. Expand the section and define which products you want to list on ${target}. By default all products will be listed based on your global product restriction settings, so this is an optional configuration if you need to only show certain products on ${target}.
+                                                                </div>`);
+                                                            }
                                                             
                                                             modalBody.append(`
                                                                 <div class="accordion-header" id="pr_header" style="margin-top:20px;cursor:pointer;" onclick="toggleAccordion('${target}-product-restrictions', this)">
-                                                                    <i class="fas fa-plus accordion-toggle-icon"></i>Define ${target} Specific Product Restrictions
+                                                                    <i class="fas fa-plus accordion-toggle-icon"></i>${target} Product Restrictions
                                                                 </div>
                                                                 <div style="margin-top:20px;display:none;" id="${target}-product-restrictions">
                                                                     <div class="other-restrictions-header"><strong>${target} Product Restrictions</strong></div>
-                                                                    <div class="helperDialog">
-                                                                        This section allows you refine what product you list on ${target} specifically.
-                                                                    </div>
                                                                     <div id="product-restrictions-container"></div>
                                                             `);
 
@@ -2517,7 +2545,7 @@ class g_ffl_Cockpit_Admin
 
                                                         function viewDistributorDetails(distributor, distributorId) {
                                                             const distributorDetails = distributorFields[distributor];
-                                                            $('#detailsModalLabel').text(`${distributor} Details`);
+                                                            $('#detailsModalLabel').text(`${distributor}`);
                                                             const modalBody = $('#modal-body');
                                                             modalBody.empty();
                                                             cc = editor.get();
@@ -2525,15 +2553,44 @@ class g_ffl_Cockpit_Admin
                                                             for (let key in distributorDetails) {
                                                                 const field = distributorDetails[key];
                                                                 const field_key = "distributors-" + distributor + "-" + field.config_key;
+                                                                if (field.helperText){
+                                                                    modalBody.append(`
+                                                                    <div class="helperDialog">
+                                                                        ${field.helperText}
+                                                                    </div>
+                                                                    `);
+                                                                }
                                                                 if (field.type == "array"){
                                                                     modalBody.append(`
                                                                     <label for="${field_key}">${field.label}:</label>
-                                                                    <div class="field-container">
+                                                                    <div class="field-container" style="padding-bottom:5px;margin-bottom:20px;border-bottom:solid #ccc 1px;">
                                                                         <div class="selected-items" id="${field_key}"></div>
                                                                         <div class="add-item-container">
                                                                             <span class="add-item" onclick="promptAndAddItems(this, 'email', '${field_key}')">Add Email</span>
                                                                         </div>
                                                                     </div>`);
+                                                                    addSelectedItemsToContainer(document.getElementById(field_key), getConfigValue(cc, field_key));
+
+                                                                } else if (field.type == "state-selector"){
+                                                                    modalBody.append(`
+                                                                        <div class="form-group">
+                                                                            <label for="${field_key}">${field.label}</label>
+                                                                            <select class="form-control" name="${field_key}" id="${field_key}" data-autosave="true"></select>
+                                                                        </div>
+                                                                    `);
+
+                                                                    const selectedState = getConfigValue(cc, field_key);
+                                                                    const dropdown = document.getElementById(field_key);
+                                                                    statesAndTerritories.forEach(state => {
+                                                                        const option = document.createElement('option');
+                                                                        option.value = state.value;
+                                                                        option.textContent = state.text;
+                                                                        if (selectedState == state.value) {
+                                                                            option.selected = true;
+                                                                        }
+                                                                        dropdown.appendChild(option);
+                                                                    });
+
                                                                     addSelectedItemsToContainer(document.getElementById(field_key), getConfigValue(cc, field_key));
 
                                                                 }else{
@@ -2546,14 +2603,14 @@ class g_ffl_Cockpit_Admin
                                                             }
 
                                                             modalBody.append(`
+                                                                <div class="helperDialog">
+                                                                    Specify <strong>Product Restrictions specific to ${distributor} </strong> in the section below. Expand the section and define which products you want to pull in from ${distributor}. By default all products will come through based on your global product restriction settings, so this is an optional configuration if you need to only pull certain products from ${distributor}.
+                                                                </div>
                                                                 <div class="accordion-header" style="margin-top:20px;cursor:pointer;" onclick="toggleAccordion('${distributor}-product-restrictions', this)">
-                                                                    <i class="fas fa-plus accordion-toggle-icon"></i>Define ${distributor} Specific Product Restrictions
+                                                                    <i class="fas fa-plus accordion-toggle-icon"></i>${distributor} Product Restrictions
                                                                 </div>
                                                                 <div style="margin-top:20px;display:none;" id="${distributor}-product-restrictions">
                                                                     <div class="other-restrictions-header"><strong>${distributor} Product Restrictions</strong></div>
-                                                                    <div class="helperDialog">
-                                                                        This section allows you refine what product is pulled from this distributor specifically. This section is optional, as your main product restrictions that apply across all distributors is configured in the "Product Restrictions" tab.
-                                                                    </div>
                                                                     <div style="margin-top:20px;" class="restriction-section">
                                                                         <div class="other-restrictions-header">List only products eligible for dropshipping</strong></div>
                                                                         <div class="helperDialog">
