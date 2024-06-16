@@ -320,6 +320,7 @@ class g_ffl_Cockpit_Admin
                                     modalList.appendChild(container);
                                     container.style.display = ""; // Ensure non-matches are displayed
                                 });
+                                modalList.scrollTop = 0;
                             }
 
                             async function load_modal_check_option(modal, action, selectedItemsContainerId) {
@@ -1727,8 +1728,8 @@ class g_ffl_Cockpit_Admin
                                                         if (template.type === 'body') {
                                                             tinymce.init({
                                                                 selector: `#${template.config_key}`,
-                                                                plugins: 'code',
-                                                                toolbar: 'undo redo | formatselect | bold italic backcolor forecolor | bullist numlist outdent indent | removeformat | code',
+                                                                plugins: 'code link lists image imagetools',
+                                                                toolbar: 'code link image | bold italic backcolor forecolor | numlist bullist',
                                                                 license_key: 'gpl',
                                                                 menubar: false,
                                                                 branding: false,
@@ -2345,8 +2346,8 @@ class g_ffl_Cockpit_Admin
                                                                     tinymce.remove(`#${field.config_key}`);
                                                                     tinymce.init({
                                                                         selector: `#${field.config_key}`,
-                                                                        plugins: 'code',
-                                                                        toolbar: 'undo redo | formatselect | bold italic backcolor forecolor | bullist numlist outdent indent | removeformat | code',
+                                                                        plugins: 'code link lists image imagetools',
+                                                                        toolbar: 'code link image | bold italic backcolor forecolor | numlist bullist',
                                                                         license_key: 'gpl',
                                                                         menubar: false,
                                                                         branding: false,
@@ -3000,7 +3001,7 @@ class g_ffl_Cockpit_Admin
                                                     if (results.length === 0) {
                                                         errorContainer.innerHTML = '';
                                                     } else {
-                                                        let errorMessages = 'There are <span style="color:red;text-decoration:underline;">' + results.length + ' errors detected</span> in your configuration. Please review and resolve these errors or you will not be able to save your changes.<br><br><span style="color:red;font-weight:bold;">Errors:</span><ul style="margin-top:5px;margin-bottom:0px;padding-bottom:0px;color:red;padding-left: 30px;list-style-type: disc;">';
+                                                        let errorMessages = 'There are <span style="color:red;text-decoration:underline;">' + results.length + ' errors detected</span> in your configuration. Please review and resolve these errors or you will not be able to save your changes.<br><br><span style="margin-left:5px;color:red;font-weight:bold;">Errors:</span><ul style="margin-top:5px;margin-bottom:0px;padding-bottom:0px;color:red;padding-left: 30px;list-style-type: disc;">';
                                                         errorMessages += getValidationErrorMessage(results);
                                                         errorMessages += '</ul>';
                                                         errorContainer.innerHTML = errorMessages;
