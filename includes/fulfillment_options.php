@@ -27,6 +27,7 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
     $orderId = $order->get_id();
   
     echo '
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <div class="table-container" style="position: relative;">
             <div class="overlay" id="fulfillment_options_overlay" style="display:flex;position: absolute;top: 0;left: 0;width: 100%;height: 100%;background-color: rgba(255, 255, 255, 0.7);justify-content: center;align-items: center;">
                 <div class="loader" style="border: 8px solid #f3f3f3;border-top: 8px solid #3498db;border-radius: 50%;width: 50px;height: 50px;animation: spin 1s linear infinite;"></div>
@@ -178,6 +179,33 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                         });
                     } catch (error) {
                         console.error(error);
+                    }
+                }
+            }
+
+            function hideOrder(distid, distributor_order_id){
+                if (window.confirm("Are you sure you want to hide this order, disassociating it from this WooCommerce Order? It will be erased from your view (but still in the database). It will be ignored from Cockpit from now until the end of time. This action WILL NOT CANCEL the order with the distributor.")){
+                    if (window.confirm("Are you REALLY SURE?? We will not take requests to unhide an order because you did it by mistake..., and again.. this WILl NOT CANCEL the order with your distributor.")){
+                        try{
+                            fetch("https://ffl-api.garidium.com", {
+                                method: "POST",
+                                headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/json",
+                                "x-api-key": "',esc_attr($aKey),'",
+                                },
+                                body: JSON.stringify({"action": "hide_distributor_order", "data": {"api_key": "',esc_attr($aKey),'", "distid": distid, "order_id": ',esc_attr($orderId),', "distributor_order_id": distributor_order_id}})
+                            })
+                            .then(response=>response.json())
+                            .then(data=>{  
+                                if (!data.success){
+                                    alert("Failed to Hide the Order, contact support@garidium.com so we can address the problem ASAP.");
+                                }  
+                                load_order_grid(data.fulfillment_orders); 
+                            });
+                        } catch (error) {
+                            console.error(error);
+                        }
                     }
                 }
             }
@@ -407,7 +435,7 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                             }
                             row.appendChild(col);
                         }
-
+                        
                         // add actions column
                         let col = document.createElement("td");
                         col.innerHTML = "<a target=_blank href=\"" + orders[i].order_url + "\">View</a>";
@@ -415,8 +443,11 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                             col.innerHTML += " | <a style=\"text-decoration:underline;cursor:pointer;\" onclick=\"cancelOrder(\'" + orders[i].distid + "\', \'" + orders[i].distributor_order_id + "\');\">Cancel</a>";
                         }
                         col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
+                        col.innerHTML += ` | <a style="cursor:pointer; float:right;" onclick="hideOrder(\'${orders[i].distid}\', \'${orders[i].distributor_order_id}\')">
+                                            <i class="fas fa-eye-slash" style="color:gray;"></i>
+                                        </a>`;     
                         row.appendChild(col);
-                        tbody.appendChild(row);
+                        tbody.appendChild(row);                      
                     }    
                 }
             }

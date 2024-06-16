@@ -1660,16 +1660,16 @@ class g_ffl_Cockpit_Admin
                                                 <!-- Fulfillment Form Content -->
                                                 <script>
                                                     const email_templates = [
-                                                        {"type": "subject", "group_label":"Email Template: Order Processed", "label":"Order Processed (FFL Order) Subject", "id": "order_processed_subject", "config_key":"fulfillment-emailer-templates-order_processed-subject"},
+                                                        {"type": "subject", "group_label":"Email Template: <strong>Order Processed</strong>", "label":"Order Processed (FFL Order) Subject", "id": "order_processed_subject", "config_key":"fulfillment-emailer-templates-order_processed-subject"},
                                                         {"type": "body", "label":"FFL Order", "id": "order_processed_ffl", "config_key":"fulfillment-emailer-templates-order_processed-message_ffl_order"},
                                                         {"type": "body", "label":"Non-FFL Order", "id": "order_processed_nonffl", "config_key":"fulfillment-emailer-templates-order_processed-message_non_ffl_order"},
-                                                        {"type": "subject","group_label":"Email Template: Order Shipped", "label":"Order Shipped (FFL Order) Subject", "id": "order_shipped_subject", "config_key":"fulfillment-emailer-templates-order_shipped-subject"},
+                                                        {"type": "subject","group_label":"Email Template: <strong>Order Shipped</strong>", "label":"Order Shipped (FFL Order) Subject", "id": "order_shipped_subject", "config_key":"fulfillment-emailer-templates-order_shipped-subject"},
                                                         {"type": "body", "label":"FFL Order", "id": "order_shipped_ffl", "config_key":"fulfillment-emailer-templates-order_shipped-message_ffl_order"},
                                                         {"type": "body", "label":"Non-FFL Order", "id": "order_shipped_nonffl", "config_key":"fulfillment-emailer-templates-order_shipped-message_non_ffl_order"},
-                                                        {"type": "subject","group_label":"Email Template: Order Delivered", "label":"Order Delivered (FFL Order) Subject", "id": "order_delivered_subject", "config_key":"fulfillment-emailer-templates-order_delivered-subject"},
+                                                        {"type": "subject","group_label":"Email Template: <strong>Order Delivered</strong>", "label":"Order Delivered (FFL Order) Subject", "id": "order_delivered_subject", "config_key":"fulfillment-emailer-templates-order_delivered-subject"},
                                                         {"type": "body", "label":"FFL Order", "id": "order_delivered_ffl", "config_key":"fulfillment-emailer-templates-order_delivered-message_ffl_order"},
                                                         {"type": "body", "label":"Non-FFL Order", "id": "order_delivered_nonffl", "config_key":"fulfillment-emailer-templates-order_delivered-message_non_ffl_order"},
-                                                        {"type": "subject", "group_label": "Email Template: FFL Document Request", "label":"FFL Document Request Subject", "id": "ffl_request_subject", "config_key":"fulfillment-emailer-templates-ffl_request-subject"},
+                                                        {"type": "subject", "group_label": "Email Template: <strong>FFL Document Request</strong>", "label":"FFL Document Request Subject", "id": "ffl_request_subject", "config_key":"fulfillment-emailer-templates-ffl_request-subject"},
                                                         {"type": "body", "label":"FFL Document Request", "id": "ffl_request", "config_key":"fulfillment-emailer-templates-ffl_request-message"}
                                                     ];
 
@@ -3395,6 +3395,8 @@ class g_ffl_Cockpit_Admin
                                 },
                                 {name: "Ship Status",
                                     formatter: (_, row) => {
+                                        const hideIcon = `<a style="margin-right:3px;cursor:pointer; float:right;" onclick="hideOrder('${row.cells[2].data}', '${row.cells[1].data}', '${row.cells[3].data}')">
+                                            <i class="fas fa-eye-slash" style="color:gray;"></i></a>`;
                                         if (row.cells[11].data == "delivered"){
                                             return gridjs.html(`<a target=_blank href="${row.cells[10].data}"><span style="color:green;">Delivered</span></a>`);
                                         }else if (row.cells[11].data == "return_to_sender"){
@@ -3403,7 +3405,7 @@ class g_ffl_Cockpit_Admin
                                             if (row.cells[10].data != null) {
                                                 return gridjs.html(`<a target=_blank href="${row.cells[10].data}">${row.cells[11].data==null?"In Transit":row.cells[11].data}</a>`);
                                             }else{
-                                                return gridjs.html(row.cells[11].data);
+                                                return gridjs.html((row.cells[11].data!=null?row.cells[11].data:"") + `${hideIcon}`);
                                             }
                                         }
                                     }
@@ -3476,6 +3478,33 @@ class g_ffl_Cockpit_Admin
                             } 
                         });
                   
+                        function hideOrder(distid, order_id, distributor_order_id){
+                            if (window.confirm("Are you sure you want to hide this distributor order, disassociating it from this Order? It will be erased from your view (but still in the database). It will be ignored from Cockpit from now until the end of time. This action WILL NOT CANCEL the order with the distributor.")){
+                                if (window.confirm("Are you REALLY SURE?? We will not take requests to unhide an order because you did it by mistake..., and again.. this WILl NOT CANCEL the order with your distributor.")){
+                                    try{
+                                        fetch("https://ffl-api.garidium.com", {
+                                            method: "POST",
+                                            headers: {
+                                            "Accept": "application/json",
+                                            "Content-Type": "application/json",
+                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                            },
+                                            body: JSON.stringify({"action": "hide_distributor_order", "data": {"distid": distid,"order_id": order_id, "distributor_order_id":distributor_order_id, "api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"}})
+                                        })
+                                        .then(response=>response.json())
+                                        .then(data=>{  
+                                            if (!data.success){
+                                                alert("Failed to Hide the Order, contact support@garidium.com so we can address the problem ASAP.");
+                                            }  
+                                            of_grid.forceRender();
+                                        });
+                                    } catch (error) {
+                                        console.error(error);
+                                    }
+                                }
+                            }
+                        }
+                        
                         document.getElementById("download_fulfillment_history_button").addEventListener("click", function(){
                             document.getElementById("download_fulfillment_history_button").disabled = true;
                             document.getElementById('download_fulfillment_history_button').innerText = 'Please Wait...';

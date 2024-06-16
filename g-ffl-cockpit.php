@@ -84,7 +84,7 @@ add_action( 'before_woocommerce_init', function() {
 		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 	}
 } );
-/*
+
 function garidium_custom_seo_meta_tags() {
     if (is_product()) {
         echo '<!-- Garidium FFL Cockpit SEO -->';
@@ -107,8 +107,11 @@ function garidium_custom_seo_meta_tags() {
         echo '<!-- Garidium FFL Cockpit SEO -->';
     }
 }
-add_action('wp_head', 'garidium_custom_seo_meta_tags');
-*/
+
+if (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'garidium.com') !== false) {
+    add_action('wp_head', 'garidium_custom_seo_meta_tags');
+}
+
 
 /**
  * Begins execution of the plugin.
