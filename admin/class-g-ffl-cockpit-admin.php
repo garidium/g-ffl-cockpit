@@ -278,12 +278,8 @@ class g_ffl_Cockpit_Admin
                             }
 
                           
-                            function filterOptions(inputElementId, modalListId) {
-                                const input = document.getElementById(inputElementId);
-                                if (input.value.length < 2) {
-                                    return;
-                                }
-                                const filter = input.value.toLowerCase();
+                            function filterOptions(searchTerm, modalListId) {
+                                const filter = searchTerm.toLowerCase();
                                 const modalList = document.getElementById(modalListId);
                                 const containers = Array.from(modalList.getElementsByClassName('checkbox-option'));
 
@@ -391,6 +387,12 @@ class g_ffl_Cockpit_Admin
                                     alert("Problem retrieving options.");
                                 }
                             }
+                            // Function to remove all event listeners
+                            function removeAllEventListeners(element) {
+                                const newElement = element.cloneNode(true);
+                                element.parentNode.replaceChild(newElement, element);
+                                return newElement;
+                            }
 
                             function openModal(modalId, selectedItemsId) {
                                 const modal = document.getElementById(modalId);
@@ -400,8 +402,8 @@ class g_ffl_Cockpit_Admin
                                 const searchDiv = document.getElementById(modalId + "SearchDiv");
                                 
                                 if (searchDiv != null){
-                                    
                                     const div = document.createElement('div');
+                                    div.style = "margin-bottom:20px";
                                     searchDiv.replaceChildren();
                                     var searchType = "brand";
                                     if (modalId.startsWith("category")){
@@ -409,19 +411,42 @@ class g_ffl_Cockpit_Admin
                                     } else if (modalId.startsWith("ignoreMap")){
                                         searchType = "ignoreMapBrand";
                                     }
-                                    const input = document.createElement('input');
-                                    input.type = 'text';
-                                    input.className = 'optionFilterInput';
-                                    input.id = searchType + 'SearchInput';
-                                    input.placeholder = 'Search...';
+                                    const container = document.createElement('span');
+                                    container.style = 'margin-left:20px;';
+                                    // Static part of the text
+                                    const staticText = document.createTextNode('Filter: ');
+
+                                    // Dynamic part of the text, styled as a link
+                                    const link = document.createElement('a');
+                                    link.id = searchType + 'SearchInput';
+                                    link.href = '#'; // Prevent default anchor behavior
+                                    link.textContent = 'Enter Search Term';
+                                    link.style.textDecoration = 'underline'; // Style to look like a link
+                                    link.style.color = 'blue'; // Optional: Color to look like a link
+
+                                    // Add click listener to prompt for search term and update the text
+                                    link.addEventListener('click', function(event) {
+                                        event.preventDefault(); // Prevent default anchor behavior
+                                        const newValue = prompt("Enter Search Term", link.textContent);
+                                        if (newValue !== null) { // Check if the user didn't cancel the prompt
+                                            link.textContent = newValue;
+                                            filterOptions(document.getElementById(searchType + 'SearchInput').textContent, searchType + 'ModalList');
+                                        }
+                                    });
+
+                                    // Append the static text and link to the container
+                                    container.appendChild(staticText);
+                                    container.appendChild(link);
+                                  
                                     // Append input element to the div
-                                    document.getElementById(modalId + 'SearchDiv').appendChild(input);
+                                    div.appendChild(container);
 
                                     // Attach keyup event to the input element
+                                    /*
                                     input.onkeyup = function() {
                                         filterOptions(searchType + 'SearchInput', searchType + 'ModalList');
                                     };
-                                    div.appendChild(input);
+                                    */
                                     searchDiv.appendChild(div);
                                 }
 
