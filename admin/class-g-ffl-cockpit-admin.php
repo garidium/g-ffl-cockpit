@@ -138,6 +138,7 @@ class g_ffl_Cockpit_Admin
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         
+        
         <style>
             .tab-pane {
                 min-height: 500px;
@@ -252,7 +253,12 @@ class g_ffl_Cockpit_Admin
                                 });
                             }
 
-
+                            function refreshEditor(){
+                                load_fancy_editor(editor.get());
+                                document.getElementById("unsaved-indicator").style.display='none';
+                                initialCockpitConfiguration = editor.get();
+                            }
+                   
                             function autoSave(field) {
                                 let value;
                                 if (tinymce.get(field.id)) {
@@ -462,14 +468,18 @@ class g_ffl_Cockpit_Admin
                                     load_modal_check_option(modal_options, api_function, selectedItemsId)
                                 }
 
+                                
                                 modal.style.display = "block";
                                // modal.style.zIndex = zIndex;
                                 modal.setAttribute('data-selected-items-id', selectedItemsId);
+
+                              
                             }
 
                             function closeModal(modalId) {
                                 const modal = document.getElementById(modalId);
                                 modal.style.display = "none";
+                                
                             }
 
                             function saveSelections(modalId, itemType) {
@@ -597,6 +607,9 @@ class g_ffl_Cockpit_Admin
                             function addMarginGroup(margin_name=null, margin_config=null, is_new=false) {
                                 if (is_new && margin_name == null){
                                     margin_name = prompt(`Enter your custom margin group name (ex: Firearms, Ammunition):`);
+                                    if (margin_name == null){
+                                        return;
+                                    }
                                     var config = editor.get();
                                     config.pricing.margin[margin_name] = {
                                         "margin_dollar": config.pricing.margin.default.margin_dollar,
@@ -826,8 +839,16 @@ class g_ffl_Cockpit_Admin
                                 groupName.textContent = input.value;
                             }
 
+                            function removeAllRowsExceptHeader(table) {
+                                var rowCount = table.rows.length;
+                                for (var i = rowCount - 1; i > 0; i--) {
+                                    table.deleteRow(i);
+                                }
+                            }
+
                             function loadPriceBasedMargin(margin_group, tableBody, minPrice, maxPrice, marginDollar, marginPercentage){
                                 const row = document.createElement('tr');
+                                $(margin_group.id).empty();
                                 const margin = {
                                     "minimum_unit_cost": minPrice,
                                     "maximum_unit_cost": maxPrice,
@@ -1459,8 +1480,8 @@ class g_ffl_Cockpit_Admin
                         </style>
 
                         <!-- Modal -->
-                        <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true" >
+                            <div id="modal_dialog" class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="detailsModalLabel">Distributor Details</h5>
@@ -1477,6 +1498,7 @@ class g_ffl_Cockpit_Admin
                                 </div>
                             </div>
                         </div>
+                        
 
                         <table class="form-table">
                             <tr valign="top">
@@ -1605,6 +1627,26 @@ class g_ffl_Cockpit_Admin
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <div class="form-row">
+                                                            <label for="price-based-margin-table-default">Price Based Margin:</label>
+                                                            <div class="field-container">
+                                                                <table class="price-based-margin-table" id="price-based-margin-table-group-default">
+                                                                    <thead>
+                                                                        <tr style="white-space: nowrap;">
+                                                                            <th>Min ($)</th>
+                                                                            <th>Max ($)</th>
+                                                                            <th>Margin ($)</th>
+                                                                            <th>Margin (%)</th>
+                                                                            <th></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody></tbody>
+                                                                </table>
+                                                                <div class="add-item-container">
+                                                                    <span class="add-item" onclick="openModal('priceBasedMarginModal', 'price-based-margin-table-group-default')">Add Price Based Margin</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <div class="pricing-assumptions-form-container custom-margin-container">
                                                         <div class="pricing-assumptions-form-header">Custom Margin Settings</div>
@@ -1728,7 +1770,7 @@ class g_ffl_Cockpit_Admin
                                                         if (template.type === 'body') {
                                                             tinymce.init({
                                                                 selector: `#${template.config_key}`,
-                                                                plugins: 'code link lists image imagetools',
+                                                                plugins: 'code link lists image',
                                                                 toolbar: 'code link image | bold italic backcolor forecolor | numlist bullist',
                                                                 license_key: 'gpl',
                                                                 menubar: false,
@@ -1812,6 +1854,57 @@ class g_ffl_Cockpit_Admin
                                                     </div>
                                                     <script>
                                                         let initialCockpitConfiguration = null;
+                                                        let distributorsSchema = null;
+                                                        let targetSchema = null;
+                                                        
+                                                        async function get_distributors_schema() {
+                                                            if (distributorsSchema == null) {
+                                                                try {
+                                                                    const response = await fetch("https://ffl-api.garidium.com", {
+                                                                        method: "POST",
+                                                                        headers: {
+                                                                            "Accept": "application/json",
+                                                                            "Content-Type": "application/json",
+                                                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
+                                                                        },
+                                                                        body: JSON.stringify({ "action": "get_distributors_schema" })
+                                                                    });
+
+                                                                    const data = await response.json();
+                                                                    distributorsSchema = data;
+                                                                } catch (error) {
+                                                                    console.error('Error fetching target schema:', error);
+                                                                    return null; // Return null or handle the error as needed
+                                                                }
+                                                            }
+                                                            
+                                                            return distributorsSchema;
+                                                        }
+
+                                                        async function get_target_schema() {
+                                                            if (targetSchema == null) {
+                                                                try {
+                                                                    const response = await fetch("https://ffl-api.garidium.com", {
+                                                                        method: "POST",
+                                                                        headers: {
+                                                                            "Accept": "application/json",
+                                                                            "Content-Type": "application/json",
+                                                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
+                                                                        },
+                                                                        body: JSON.stringify({ "action": "get_targets_schema" })
+                                                                    });
+
+                                                                    const data = await response.json();
+                                                                    targetSchema = data;
+                                                                } catch (error) {
+                                                                    console.error('Error fetching target schema:', error);
+                                                                    return null; // Return null or handle the error as needed
+                                                                }
+                                                            }
+                                                            
+                                                            return targetSchema;
+                                                        }
+
                                                         function get_distributor_default_config(distid){
                                                             fetch("https://ffl-api.garidium.com", {
                                                                 method: "POST",
@@ -1826,185 +1919,25 @@ class g_ffl_Cockpit_Admin
                                                             .then(data=>{
                                                                 try{
                                                                     response = JSON.parse(data.default_config);
-                                                                    console.log(response);
                                                                     return response;
                                                                 } catch (error) {
                                                                     alert("No default configuration found for this distributor, please contact FFL Cockpit Support.");
                                                                 }
                                                             });
                                                         }
-
-                                                        const distributorsSchema = {
-                                                            "Lipseys": {"distid": "LIP", "description": "Lipseys Product Feed Configuration"},
-                                                            "Zanders": {"distid": "ZND", "description": "Zanders Product Feed Configuration"},
-                                                            "Davidsons": {"distid": "DAV", "description": "Davidsons Product Feed Configuration"},
-                                                            "RSR Group": {"distid": "RSR", "description": "RSR Group Product Feed Configuration"},
-                                                            "Bill Hicks": {"distid": "BILL", "description": "Bill Hicks Product Feed Configuration"},
-                                                            "2nd Amendment Wholesale": {"distid": "2AW", "description": "2nd Amendment Wholesale Product Feed Configuration"},
-                                                            "Chattanooga Shooting Supplies": {"distid": "CSSI", "description": "Chattanooga Shooting Supplies Product Feed Configuration"},
-                                                            "Sports South": {"distid": "TSW", "description": "Sports South Product Feed Configuration"},
-                                                            //"Sportsmans Supply": {"distid": "SSI", "description": "Sportsmans Supply Product Feed Configuration"},
-                                                            "AmChar": {"distid": "AMC", "description": "AmChar Supply Product Feed Configuration"},
-                                                            "CamFour": {"distid": "CAM4", "description": "CamFour Supply Product Feed Configuration"},
-                                                            "Crow": {"distid": "CROW", "description": "Crow Shooting Supply Product Feed Configuration"},
-                                                            "Gun Accessory Supply": {"distid": "GAS", "description": "Gun Accessory Supply Product Feed Configuration"},
-                                                            "MSR": {"distid": "MSR", "description": "MSR Distribution Product Feed Configuration"}
-                                                        };
-
-                                                        const targetSchema = {
-                                                            "woo": {"id": "woo", "displayName": "WooCommerce", "description": "Populate Distributor product to your Worpress/WooCommerce site."},
-                                                            "ammoseek": {"id": "ammoseek", "displayName": "AmmoSeek", "description": "Send product to Ammoseek.com"},
-                                                            "wikiarms": {"id": "wikiarms", "displayName": "WikiArms", "description": "Send product to WikiArms.com"},
-                                                            "gun.deals": {"id": "gun.deals","displayName": "Gun.Deals", "description": "Send product to Gun.deals"},
-                                                            "gunbroker": {"id": "gunbroker", "displayName": "Gunbroker","description": "Send product to Gunbroker"}
-                                                        }
-
-                                                        const targetFields = {
-                                                            "woo": {
-                                                                "url": {"config_key": "targets-woo-url", "type": "string", "label": "Website URL"},
-                                                                "automated_fulfillment": {"config_key": "targets-woo-automated_fulfillment", "type": "boolean", "label": "Automate Fulfillment"},
-                                                                "send_fulfillment_emails": {"config_key": "targets-woo-send_fulfillment_emails", "type": "boolean", "label": "Send Fulfillment Emails", "default": true},
-                                                                "remove_out_of_stock": {"config_key": "targets-woo-remove_out_of_stock", "type": "boolean", "label": "Remove Out-of-Stock Products"},
-                                                                "manage_product_attributes": {"config_key": "targets-woo-manage_product_attributes", "type": "boolean", "label": "Manage Product Attributes"},
-                                                                "manage_product_categories": {"config_key": "targets-woo-manage_product_categories", "type": "boolean", "label": "Manage Product Categories"}
-                                                            },
-                                                            "gunbroker": {
-                                                                "username": {"config_key": "targets-gunbroker-username", "type": "string", "label": "Username", "helperText":"<strong>Gunbroker Credentials</strong> will be the same you would use to login to the Gunbroker website. For additional assistance on setting up Gunbroker, visit our <a target=_blank href=\"https://garidium.com/ffl-cockpit-gunbroker-setup/\">Help Center</a>"},
-                                                                "password": {"config_key": "targets-gunbroker-password", "type": "string", "label": "Password"},
-                                                                "automated_fulfillment": {"config_key": "targets-gunbroker-automated_fulfillment", "type": "boolean", "label": "Automate Fulfillment"},
-                                                                "send_fulfillment_emails": {"config_key": "targets-gunbroker-send_fulfillment_emails", "type": "boolean", "label": "Send Fulfillment Emails", "default": true},
-                                                                "from_postal_code": {"config_key": "targets-gunbroker-from_postal_code", "type": "number", "label": "Your Zip Code"},
-                                                                "standard_text_id": {"config_key": "targets-gunbroker-standard_text_id", "type": "number", "label": "Gunbroker Standard Text ID", "helperText":"<steong>Standard Text ID</strong> is an id value representing Terms of Sale text you have configured in Gunbroker. You can find (or create) your Standard Text ID by going here: <a target=_blank href='https://www.gunbroker.com/a/my-gunbroker/my-account/standard-text'>Gunbroker Terms of Sale Setup</a>"},
-                                                                "standard_description_html": {"config_key": "targets-gunbroker-standard_description_html", "type": "rich_text", "label": "Common Description", "helperText":"<strong>Standard Description Text</strong> allows you to add a custom message at the bottom of all your listings. We usually recommend adding in your company logo, and leaving the Terms of Sale to what you have in the Gunbroker Standard Text setiup."}
-                                                            },
-                                                            "ammoseek": {
-                                                                "shipping_text": {"config_key": "targets-ammoseek-shipping_text", "type": "string", "label": "Shipping Text", "helperText":"<strong>Shipping Text</strong> is a common text that is added to the shipping fields in your AmmoSeek listings."},
-                                                                "purchase_limit": {"config_key": "targets-ammoseek-listed_product-ammunition-purchase_limit", "type": "number", "label": "Ammunition Purchase Limit"},
-                                                            },
-                                                            "wikiarms": {
-                                                                "shipping_text": {"config_key": "targets-wikiarms-shipping_text", "type": "string", "label": "Shipping Text", "helperText":"<strong>Shipping Text</strong> is a common text that is added to the shipping fields in your WikiArms listings."},
-                                                                "purchase_limit": {"config_key": "targets-wikiarms-listed_product-ammunition-purchase_limit", "type": "number", "label": "Ammunition Purchase Limit"},
-                                                            },
-                                                            "gun.deals": {
-                                                                "shipping_text": {"config_key": "targets-gun.deals-shipping_text", "type": "string", "label": "Shipping Text", "helperText":"<strong>Shipping Text</strong> is a common text that is added to the shipping fields in your Gun.Deals listings."},
-                                                            }
-                                                        }
-
-                                                        const distributorFields = {
-                                                            "Lipseys": {
-                                                                "drop_ship_account_email": {"config_key": "fulfillment-API_USER", "type": "string", "label": "Drop-Ship Account Email"},
-                                                                "drop_ship_account_password": {"config_key": "fulfillment-API_PASSWORD", "type": "string", "label": "Drop-Ship Account Password"},
-                                                                "main_account_email": {"config_key": "fulfillment-ship_to_store-API_USER", "type": "string", "label": "Main Account Email"},
-                                                                "main_account_password": {"config_key": "fulfillment-ship_to_store-API_PASSWORD", "type": "string", "label": "Main Account Password"},
-                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
-                                                            },
-                                                            "Sports South": {
-                                                                "api_user": {"config_key": "fulfillment-api_user", "type": "string", "label": "API Username"},
-                                                                "api_customer_number": {"config_key": "fulfillment-api_customer_number", "type": "string", "label": "Customer Number"},
-                                                                "api_password": {"config_key": "fulfillment-api_password", "type": "string", "label": "API Password"},
-                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
-                                                            },
-                                                            "MSR": {
-                                                                "username": {"config_key": "fulfillment-API_USER", "type": "string", "label": "Username"},
-                                                                "password": {"config_key": "fulfillment-API_PASSWORD", "type": "string", "label": "Password"},
-                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
-                                                            },
-                                                            "Zanders": {
-                                                                "accessories_api_user": {"config_key": "fulfillment-accessories-api_user", "type": "string", "label": "Accessories Account Email"},
-                                                                "accessories_account_password": {"config_key": "fulfillment-accessories-api_password", "type": "string", "label": "Accessories Account Password"},
-                                                                "firearms_api_user": {"config_key": "fulfillment-firearms-api_user", "type": "string", "label": "Firearms Account Email"},
-                                                                "firearms_account_password": {"config_key": "fulfillment-firearms-api_password", "type": "string", "label": "Firearms Account Password"},
-                                                                "main_api_user": {"config_key": "fulfillment-ship_to_store-api_user", "type": "string", "label": "Main Account Email"},
-                                                                "main_account_password": {"config_key": "fulfillment-ship_to_store-api_password", "type": "string", "label": "Main Account Password"},
-                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
-                                                            },
-                                                            "Davidsons": {
-                                                                "product_feed_ftp_user": {"config_key": "fulfillment-", "type": "string", "label": "Product Feed FTP Username"},
-                                                                "product_feed_ftp_password": {"config_key": "fulfillment-drop_ship_only_items", "type": "string", "label": "Product Feed FTP Password"}
-                                                            },
-                                                            /*
-                                                            "Sportsmans Supply": {
-                                                                "product_feed_ftp_user": {"config_key": "fulfillment-", "type": "string", "label": "Product Feed FTP Username"},
-                                                                "product_feed_ftp_password": {"config_key": "fulfillment-drop_ship_only_items", "type": "string", "label": "Product Feed FTP Password"}
-                                                            },
-                                                            */
-                                                            "RSR Group": {
-                                                                "drop_ship_account_number": {"config_key": "fulfillment-API_USER", "type": "string", "label": "Drop-Ship Account Number"},
-                                                                "drop_ship_account_password": {"config_key": "fulfillment-API_PASSWORD", "type": "string", "label": "Drop-Ship Account Password"},
-                                                                "main_account_number": {"config_key": "fulfillment-ship_to_store-store_account", "type": "string", "label": "Main Account Number"},
-                                                                "main_account_password": {"config_key": "fulfillment-ship_to_store-password", "type": "string", "label": "Main Account Password"}
-                                                            },
-                                                            "Bill Hicks": {
-                                                                "customer_number": {"config_key": "fulfillment-customer_number", "type": "string", "label": "Customer Number"},
-                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
-                                                            },
-                                                            "Crow": {
-                                                                "api_security_code": {"config_key": "fulfillment-security_code", "type": "string", "label": "API Security Code"},
-                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"}
-                                                            },
-                                                            "Gun Accessory Supply": {
-                                                                "api_security_code": {"config_key": "fulfillment-security_code", "type": "string", "label": "API Security Code"}
-                                                            },
-                                                            "AmChar": {
-                                                                "api_key": {"config_key": "fulfillment-api_key", "type": "string", "label": "API Key"}
-                                                            },
-                                                            "2nd Amendment Wholesale": {
-                                                                "api_token": {"config_key": "fulfillment-API_TOKEN", "type": "string", "label": "API Token"},
-                                                                "ffl_recipient_email": {"config_key": "fulfillment-ffl_recipient_emails", "type": "array", "label": "Emails to send FFL documents to (Your Notification Email will be included by default)"},
-                                                                "company": {"config_key": "fulfillment-billing_address-company", "type": "string", "label": "Company Name", "helperText":"2nd Amendment Wholesaler requires us to pass in your <strong>billing address/information</strong> when we create orders with them. Please enter that information below."},
-                                                                "last_name": {"config_key": "fulfillment-billing_address-last_name", "type": "string", "label": "Last Name"},
-                                                                "first_name": {"config_key": "fulfillment-billing_address-first_name", "type": "string", "label": "First Name"},
-                                                                "address_street": {"config_key": "fulfillment-billing_address-address_street", "type": "string", "label": "Street Address"},
-                                                                "city": {"config_key": "fulfillment-billing_address-company", "type": "string", "label": "City"},
-                                                                "state": {"config_key": "fulfillment-billing_address-state", "type": "state-selector", "label": "State"},
-                                                                "postal_code": {"config_key": "fulfillment-billing_address-postal_code", "type": "string", "label": "Company Name"},
-                                                                "phone": {"config_key": "fulfillment-billing_address-phone", "type": "string", "label": "Phone Number"}
-                                                            },
-                                                            "CamFour": {
-                                                                "api_key": {"config_key": "product_feed-api_key", "type": "string", "label": "API Key"}
-                                                            },
-                                                            "Chattanooga Shooting Supplies": {
-                                                                "api_sid": {"config_key": "fulfillment-API_SID", "type": "string", "label": "API SID"},
-                                                                "api_token": {"config_key": "fulfillment-API_TOKEN", "type": "string", "label": "API Token"}
-                                                            }
-                                                        };
-
+                                                        
                                                         $(document).ready(function () {
-                                                            // Populate the available distributors dropdown
-                                                            populateAvailableDistributors();
-
-                                                            $('#add-distributor').on('click', function () {
+                                                           $('#add-distributor').on('click', function () {
                                                                 const selectedDistributor = $('#available-distributors').val();
                                                                 if (selectedDistributor) {
                                                                     addDistributorForm(selectedDistributor, {});
 
                                                                     // Now add the distributor info to the configuration
-                                                                    const distid = distributorsSchema[selectedDistributor].distid;
-                                                                    fetch("https://ffl-api.garidium.com", {
-                                                                        method: "POST",
-                                                                        headers: {
-                                                                        "Accept": "application/json",
-                                                                        "Content-Type": "application/json",
-                                                                        "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
-                                                                        },
-                                                                        body: JSON.stringify({"action": "get_distributor_default_config", "data": {"distid": distid}})
-                                                                    })
-                                                                    .then(response=>response.json())
-                                                                    .then(data=>{
-                                                                        try{
-                                                                            response = JSON.parse(data.default_config);
-                                                                            config = editor.get();
-                                                                            config.distributors[selectedDistributor] = response;
-                                                                            editor.set(config);
-                                                                        } catch (error) {
-                                                                            alert("No default configuration found for this distributor, please contact FFL Cockpit Support.");
-                                                                        }
-                                                                    });
+                                                                    config = editor.get();
+                                                                    config.distributors[selectedDistributor] = JSON.parse(distributorsSchema[selectedDistributor]['default_config']);
+                                                                    editor.set(config);
                                                                 }
                                                             });
-
-                                                            // Populate the available distributors dropdown
-                                                            populateAvailableTargets();
 
                                                             $('#add-target').on('click', function () {
                                                                 const selectedTarget = $('#available-targets').val();
@@ -2012,27 +1945,9 @@ class g_ffl_Cockpit_Admin
                                                                     addTargetForm(selectedTarget, {});
 
                                                                     // Now add the distributor info to the configuration
-                                                                    const target_id = targetSchema[selectedTarget].id;
-                                                                    fetch("https://ffl-api.garidium.com", {
-                                                                        method: "POST",
-                                                                        headers: {
-                                                                        "Accept": "application/json",
-                                                                        "Content-Type": "application/json",
-                                                                        "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
-                                                                        },
-                                                                        body: JSON.stringify({"action": "get_target_default_config", "data": {"target": target_id}})
-                                                                    })
-                                                                    .then(response=>response.json())
-                                                                    .then(data=>{
-                                                                        try{
-                                                                            response = JSON.parse(data.default_config);
-                                                                            config = editor.get();
-                                                                            config.targets[selectedTarget] = response;
-                                                                            editor.set(config);
-                                                                        } catch (error) {
-                                                                            alert("No default configuration found for this target, please contact FFL Cockpit Support.");
-                                                                        }
-                                                                    });
+                                                                    config = editor.get();
+                                                                    config.targets[selectedTarget] = JSON.parse(targetSchema[selectedTarget]['default_config']);
+                                                                    editor.set(config);
                                                                 }
                                                             });
                                                             
@@ -2065,6 +1980,15 @@ class g_ffl_Cockpit_Admin
                                                             $('#pricing-ignore_map_brands').empty();
                                                             if (config.pricing.ignore_map_brands){
                                                                 addSelectedItemsToContainer(document.getElementById("pricing-ignore_map_brands"), config.pricing.ignore_map_brands);
+                                                            }
+                                                            
+                                                            // load price-based default margin table
+                                                            if (config.pricing.margin.default.price_based_margin){
+                                                                price_based_margin_table = document.getElementById(`price-based-margin-table-group-default`);
+                                                                removeAllRowsExceptHeader(price_based_margin_table);
+                                                                for (const pbm of config.pricing.margin.default.price_based_margin){
+                                                                    loadPriceBasedMargin("group-default", price_based_margin_table, pbm.minimum_unit_cost, pbm.maximum_unit_cost, pbm.margin_dollar, pbm.margin_percentage);
+                                                                }
                                                             }
                                                             
                                                             $('#margin-group-container').empty();
@@ -2119,8 +2043,6 @@ class g_ffl_Cockpit_Admin
                                                             });
                                                             populateAvailableDistributors();
                                                             populateAvailableTargets();
-
-                                    
                                                             document.getElementById("configuration_loading_overlay").style.display="none";
                                                         }
 
@@ -2139,8 +2061,8 @@ class g_ffl_Cockpit_Admin
                                                             const selectElement = $('#available-targets');
                                                             selectElement.empty();
                                                             for (let key in targetSchema) {
-                                                                if (!$(`#targets-container .card-title:contains(${targetSchema[key].displayName})`).length) {
-                                                                    selectElement.append(`<option value="${key}">${targetSchema[key].displayName}</option>`);
+                                                                if (!$(`#targets-container .card-title:contains(${targetSchema[key].display_name})`).length) {
+                                                                    selectElement.append(`<option value="${key}">${targetSchema[key].display_name}</option>`);
                                                                 }
                                                             }
                                                             toggleTargetSelectContainer();
@@ -2197,14 +2119,14 @@ class g_ffl_Cockpit_Admin
                                                             if (!targetSchema[target]){
                                                                 return;
                                                             }
-                                                            const target_id = targetSchema[target].id;
+                                                            const target_id = target;
                                                             let formHtml = `<div class="targetcards">
                                                                                 <div class="card mt-2" id="${target_id}">
                                                                                     <div class="card-header">
                                                                                         <div class="distid_image_area">
                                                                                             <img src="https://garidium.s3.amazonaws.com/ffl-api/plugin/images/target_logo_${target_id}.png" alt="${target} logo">
                                                                                         </div>
-                                                                                        <h5 class="card-title">${targetSchema[target].displayName}</h5>
+                                                                                        <h5 class="card-title">${targetSchema[target].display_name}</h5>
                                                                                         <label class="toggle-switch">
                                                                                             <input onchange="update_target_active('${target_id}');" type="checkbox" id="${target_id}-active" name="${target_id}-active" ${config.active ? 'checked' : ''}>
                                                                                             <span class="slider"></span>
@@ -2263,7 +2185,7 @@ class g_ffl_Cockpit_Admin
 
 
                                                             // Add the removed distributor back to the available list
-                                                            $('#available-targets').append(`<option value="${targetId}">${targetSchema[targetId].displayName}</option>`);
+                                                            $('#available-targets').append(`<option value="${targetId}">${targetSchema[targetId].display_name}</option>`);
 
                                                             // Check if distributor dropdown and button should be shown
                                                             toggleTargetSelectContainer();
@@ -2310,8 +2232,9 @@ class g_ffl_Cockpit_Admin
                                                         }
                                                
                                                         function viewTargetDetails(target, targetId) {
-                                                            const targetDetails = targetFields[target];
-                                                            $('#detailsModalLabel').text(`${targetSchema[target].displayName}`);
+                                                            const targetDetails = JSON.parse(targetSchema[target].ui_field_schema);
+                                                            const displayName = targetSchema[target].display_name;
+                                                            $('#detailsModalLabel').text(`${displayName}`);
                                                             const modalBody = $('#modal-body');
                                                             modalBody.empty();
                                                             cc = editor.get();
@@ -2346,7 +2269,7 @@ class g_ffl_Cockpit_Admin
                                                                     tinymce.remove(`#${field.config_key}`);
                                                                     tinymce.init({
                                                                         selector: `#${field.config_key}`,
-                                                                        plugins: 'code link lists image imagetools',
+                                                                        plugins: 'code link lists image',
                                                                         toolbar: 'code link image | bold italic backcolor forecolor | numlist bullist',
                                                                         license_key: 'gpl',
                                                                         menubar: false,
@@ -2393,21 +2316,21 @@ class g_ffl_Cockpit_Admin
                                                             if (['wikiarms', 'gun.deals', 'ammoseek'].includes(target)) {
                                                                 modalBody.append(`
                                                                 <div class="helperDialog">
-                                                                    Specify <strong>Product Restrictions specific to ${target} </strong> in the section below. Expand the section and define which products you want to list on ${target} within each of their product groups.  
+                                                                    Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${target} within each of their product groups.  
                                                                 </div>`);
                                                             }else{
                                                                 modalBody.append(`
                                                                 <div class="helperDialog">
-                                                                    Specify <strong>Product Restrictions specific to ${target} </strong> in the section below. Expand the section and define which products you want to list on ${target}. By default all products will be listed based on your global product restriction settings, so this is an optional configuration if you need to only show certain products on ${target}.
+                                                                    Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${target}. By default all products will be listed based on your global product restriction settings, so this is an optional configuration if you need to only show certain products on ${target}.
                                                                 </div>`);
                                                             }
                                                             
                                                             modalBody.append(`
                                                                 <div class="accordion-header" id="pr_header" style="margin-top:20px;cursor:pointer;" onclick="toggleAccordion('${target}-product-restrictions', this)">
-                                                                    <i class="fas fa-plus accordion-toggle-icon"></i>${target} Product Restrictions
+                                                                    <i class="fas fa-plus accordion-toggle-icon"></i>${displayName} Product Restrictions
                                                                 </div>
                                                                 <div style="margin-top:20px;display:none;" id="${target}-product-restrictions">
-                                                                    <div class="other-restrictions-header"><strong>${target} Product Restrictions</strong></div>
+                                                                    <div class="other-restrictions-header"><strong>${displayName} Product Restrictions</strong></div>
                                                                     <div id="product-restrictions-container"></div>
                                                             `);
 
@@ -2562,15 +2485,13 @@ class g_ffl_Cockpit_Admin
 
 
                                                             }
-
-
                                                             setupAutoSave();
                                                             $('#detailsModal').modal('show');
                                                         }
 
 
                                                         function viewDistributorDetails(distributor, distributorId) {
-                                                            const distributorDetails = distributorFields[distributor];
+                                                            const distributorDetails = JSON.parse(distributorsSchema[distributor].ui_field_schema);
                                                             $('#detailsModalLabel').text(`${distributor}`);
                                                             const modalBody = $('#modal-body');
                                                             modalBody.empty();
@@ -2922,6 +2843,9 @@ class g_ffl_Cockpit_Admin
                                         editor.set({"Loading Configuration": "Please wait..."});
                                         window.onload = function(){
                                             setupAutoSave();
+                                            get_target_schema();
+                                            get_distributors_schema();
+                                                            
                                             fetch("https://ffl-api.garidium.com", {
                                                 method: "POST",
                                                 headers: {
@@ -3010,19 +2934,6 @@ class g_ffl_Cockpit_Admin
                                                     console.error("Validation failed:", err);
                                                 });
 
-                                                /*
-                                                const errorContainer = document.getElementById("validation-errors");
-                                                if (errors.length > 0) {
-                                                    let errorMessages = '<ul>';
-                                                    errors.forEach(error => {
-                                                        errorMessages += `<li>${error.message} at ${error.path.join('.')}</li>`;
-                                                    });
-                                                    errorMessages += '</ul>';
-                                                    errorContainer.innerHTML = errorMessages;
-                                                } else {
-                                                    errorContainer.innerHTML = '';
-                                                }
-                                                */
                                             };
 
                                             const options = {
@@ -3091,7 +3002,7 @@ class g_ffl_Cockpit_Admin
                                                 document.getElementById('save_cockpit_configuration_button').innerText = 'Please Wait...';
                                                 event.preventDefault();
                                                 if (setConfig(gFFLCockpitKey)){
-                                                    load_fancy_editor(editor.get());
+                                                    refreshEditor();
                                                 }
                                                 document.getElementById("save_cockpit_configuration_button").disabled = false;
                                                 document.getElementById('save_cockpit_configuration_button').innerText = 'Save Changes';
@@ -3699,7 +3610,7 @@ class g_ffl_Cockpit_Admin
                         <div id="g-ffl-admin-buttons" align="right" style="margin:20px;display:none;">
                             <b>Admin Functions:&nbsp;</b>
                             <a class="button alt" onclick="document.getElementById('configuration').style.border='solid red 3px';initialCockpitConfiguration = null;get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, true);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('save_cockpit_configuration_button').style.display='none';">Load Config</a>
-                            <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value);">Save</a>
+                            <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value)?refreshEditor():alert('Save Failed');">Save</a>
                             <span style="padding:10px;color:red;display:none;" id="admin_current_editing_key"></span>
                         </div>
                     </td>
