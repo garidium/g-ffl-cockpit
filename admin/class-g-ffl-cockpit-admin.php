@@ -1957,10 +1957,12 @@ class g_ffl_Cockpit_Admin
                                                             $('#distributors-container').empty();
                                                             $('#targets-container').empty();
                       
+                                                            console.log(">>Adding Distributor Forms");
                                                             for (let key in config.distributors) {
                                                                 addDistributorForm(key, config.distributors[key]);
                                                             }
 
+                                                            console.log(">>Adding Target Forms");
                                                             for (let key in config.targets) {
                                                                 addTargetForm(key, config.targets[key]);
                                                             }
@@ -2819,11 +2821,17 @@ class g_ffl_Cockpit_Admin
                                                     .then(response=>response.json())
                                                     .then(data=>{
                                                         try{
+                                                            console.log(">Retreived Configuration");
                                                             cockpit_configuration = JSON.parse(data[0].cockpit_configuration);
+                                                            console.log(">Parsed Configuration");
                                                             editor.set(cockpit_configuration);
+                                                            console.log(">Set Configuration");
                                                             initialCockpitConfiguration = editor.get();
+                                                            console.log(">Initialied initial Configuration");
                                                             load_fancy_editor(cockpit_configuration);
+                                                            console.log(">Loaded Fancy Editor");
                                                             setupAutoSave();
+                                                            console.log(">AutoSave Setup");
                                                         } catch (error) {
                                                             alert(error);
                                                             alert("No configuration found for this key, setting to default.");

@@ -30,16 +30,33 @@ $warehouse_option_websites = array(
     // Add more URLs as needed
 );
 
+// Function to check if the product has the '_automated_listing' metadata set
+function is_cockpit_listing($product_id) {
+    return get_post_meta($product_id, 'automated_listing', 'True') ? true : false;
+}
+
 // Get the current website URL
 $current_site_url = home_url();
 
 if (in_array($current_site_url, $warehouse_option_websites)) {
-
+    
+    function disable_add_to_cart_buttons_except_product_page() {
+        if ( ! is_product() ) {
+            remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+            remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+        }
+    }
+    add_action( 'wp', 'disable_add_to_cart_buttons_except_product_page' );
+    
     // Display radio buttons on the product page
     add_action('woocommerce_before_add_to_cart_button', 'add_custom_product_options');
     // Display radio buttons on the product page
     function add_custom_product_options() {
         global $product;
+
+        if (!is_cockpit_listing($product->get_id())){
+            return;
+        }
 
         // Get the product SKU and split it by the pipe symbol
         $sku = $product->get_sku();
@@ -110,6 +127,13 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
                     flex-direction: column;
                     gap: var(--product-gap);
                 }
+
+                version2:
+
+                    .fr-single-product-alpha__cart form.cart:not(.variations_form) {
+                    display: flex;
+                    flex-direction: column;
+                    }
 
         */
         // Output the custom styles
@@ -225,6 +249,11 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
 
     // Add selected option as metadata to the cart item
     function add_custom_option_to_cart_item( $cart_item_data, $product_id ) {
+
+        if (!is_cockpit_listing($product_id)){
+            return $cart_item_data;
+        }
+
         if ( isset( $_POST['custom_product_option'] ) ) {
             $selected_option = sanitize_text_field($_POST['custom_product_option']);
             $price = isset($_POST['custom_product_option_price']) ? floatval($_POST['custom_product_option_price']) : 0;
@@ -259,6 +288,10 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
 
     // Update cart item price and shipping class
     function update_cart_item_price_shipping_class($cart_item) {
+        $product_id = $cart_item['product_id'];
+        if (!is_cockpit_listing($product_id)){
+            return $cart_item;
+        }
         if (isset($cart_item['custom_product_option_sku']) && isset($cart_item['custom_product_option_price']) && isset($cart_item['custom_product_option_shipping_class'])) {
             $cart_item['data']->set_sku($cart_item['custom_product_option_sku']);
             $cart_item['data']->set_price($cart_item['custom_product_option_price']);
@@ -271,6 +304,10 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
 
     // Display the custom option in the cart
     function display_custom_option_in_cart( $item_data, $cart_item ) {
+        $product_id = $cart_item['product_id'];
+        if (!is_cockpit_listing($product_id)){
+            return $item_data;
+        }
         if ( isset( $cart_item['custom_product_option'] ) ) {
             $item_data[] = array(
                 'key'   => __( 'Warehouse', 'custom-product-options' ),
@@ -284,6 +321,10 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
     // Save custom option to order item meta
     // Save custom option to order item meta
     function save_custom_option_to_order_item_meta( $item, $cart_item_key, $values, $order ) {
+        $product_id = $item->get_product_id(); // Get the product ID from order item
+        if (!is_cockpit_listing($product_id)){
+            return;
+        }
         if ( isset( $values['custom_product_option'] ) ) {
             // Add the custom product options as meta data
             $item->add_meta_data( __( 'Warehouse', 'custom-product-options' ), $values['custom_product_option'], true);
@@ -305,20 +346,21 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
    
 }
 
-
-
 // Hook to add custom section to product additional information tab
 add_filter('woocommerce_product_tabs', 'custom_product_section_tab');
 
 function custom_product_section_tab($tabs) {
+    global $product;
     // Check if the current user is an admin
     if (current_user_can('administrator')) {
-        // Add a new tab with the title 'Custom Section'
-        $tabs['custom_section'] = array(
-            'title'    => __('Admin', 'textdomain'),
-            'priority' => 80,
-            'callback' => 'custom_product_section_content',
-        );
+        if (is_cockpit_listing($product->get_id())){
+            // Add a new tab with the title 'Custom Section'
+            $tabs['custom_section'] = array(
+                'title'    => __('Admin', 'textdomain'),
+                'priority' => 80,
+                'callback' => 'custom_product_section_content',
+            );
+        }
     }
 
     return $tabs;
