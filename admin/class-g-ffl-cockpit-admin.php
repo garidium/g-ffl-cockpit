@@ -2037,7 +2037,7 @@ class g_ffl_Cockpit_Admin
                                                             const include_excludes = ["include","exclude"];
                                                             restrictions.forEach(restriction => {
                                                                 include_excludes.forEach(include_exclude => {
-                                                                    if (config.product_restrictions[restriction]){
+                                                                    if (config.product_restrictions[restriction][include_exclude]){
                                                                         $(`#product_restrictions-${restriction}-${include_exclude}`).empty();
                                                                         addSelectedItemsToContainer(document.getElementById(`product_restrictions-${restriction}-${include_exclude}`), config.product_restrictions[restriction][include_exclude]);
                                                                     }
@@ -2849,29 +2849,36 @@ class g_ffl_Cockpit_Admin
                                     <script>
                                         var editor = new JSONEditor(document.getElementById("jsoneditor"));
                                         editor.set({"Loading Configuration": "Please wait..."});
-                                        window.onload = function(){
-                                            setupAutoSave();
-                                            get_target_schema();
-                                            get_distributors_schema();
-                                                            
-                                            fetch("https://ffl-api.garidium.com", {
-                                                method: "POST",
-                                                headers: {
-                                                "Accept": "application/json",
-                                                "Content-Type": "application/json",
-                                                "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>",
-                                                },
-                                                body: JSON.stringify({"action": "get_configuration_schema", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey);?>"}})
-                                            })
-                                            .then(response=>response.json())
-                                            .then(data=>{ 
-                                                // Get the dropdown element
-                                                if (data!=null){
-                                                    // now that we have the schema, lets build the grid
-                                                    build_grid(data.schema);
-                                                }
-                                            });
-                                        }
+                                        window.onload = function() {
+                                            async function initialize() {
+                                                await get_target_schema();
+                                                await get_distributors_schema();
+                                                
+                                                fetch("https://ffl-api.garidium.com", {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Accept": "application/json",
+                                                        "Content-Type": "application/json",
+                                                        "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>",
+                                                    },
+                                                    body: JSON.stringify({
+                                                        "action": "get_configuration_schema",
+                                                        "data": {
+                                                            "api_key": "<?php echo esc_attr($gFFLCockpitKey);?>"
+                                                        }
+                                                    })
+                                                })
+                                                .then(response => response.json())
+                                                .then(data => { 
+                                                    if (data != null) {
+                                                        build_grid(data.schema);
+                                                    }
+                                                });
+                                            }
+                                            
+                                            initialize();
+                                        };
+
                                         function getValidationErrorMessage(errors) {
                                             let messages = [];
                                             if (Array.isArray(errors)) {
