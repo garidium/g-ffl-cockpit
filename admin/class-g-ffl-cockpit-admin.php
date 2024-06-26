@@ -148,7 +148,7 @@ class g_ffl_Cockpit_Admin
             <img src="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png');?>">
             <br><br>
             <!-- Tab links -->
-            <div class="tab">
+            <div class="tab" id="cockpit_main_tab_control">
                 <button class="tablinks" onclick="openTab(event, 'configuration')" id="defaultOpen">Configuration</button>
                 <button class="tablinks" onclick="openTab(event, 'product_feed');product_grid.render(document.getElementById('product_feed_table'));">Product Feed</button>
                 <button class="tablinks" onclick="openTab(event, 'fulfillment');of_grid.render(document.getElementById('order_fulfillment_table'));">Fulfillment</button>
@@ -1498,7 +1498,6 @@ class g_ffl_Cockpit_Admin
                                 </div>
                             </div>
                         </div>
-                        
 
                         <table class="form-table">
                             <tr valign="top">
@@ -1584,25 +1583,6 @@ class g_ffl_Cockpit_Admin
                                                             <input type="number" id="pricing-margin-default-margin_dollar" name="pricing-margin-default-margin_dollar"  data-autosave="true">
                                                         </div>
                                                         <div class="pricing-assumptions-form-row">
-                                                            <label for="pricing-sales_tax_assumption">Sales Tax Assumption:</label>
-                                                            <input type="number" id="pricing-sales_tax_assumption" name="pricing-sales_tax_assumption" min="0" max="0.99" step="0.01"  data-autosave="true">
-                                                        </div>
-                                                        <div class="pricing-assumptions-form-row">
-                                                            <label for="pricing-credit_card_fee_percent">Credit Card Fee Percent:</label>
-                                                            <input type="number" id="pricing-credit_card_fee_percent" name="pricing-credit_card_fee_percent" min="0" max="0.99" step="0.01"  data-autosave="true">
-                                                        </div>
-                                                        <div class="pricing-assumptions-form-row">
-                                                            <label for="pricing-credit_card_fee_transaction">Credit Card Fee Transaction:</label>
-                                                            <input type="number" id="pricing-credit_card_fee_transaction" name="pricing-credit_card_fee_transaction"  data-autosave="true">
-                                                        </div>
-                                                        <div class="pricing-assumptions-form-row">
-                                                            <label for="pricing-include_credit_card_fees_in_price">Include Credit Card Fees in Price:</label>
-                                                            <label style="align:left;width:50px;" class="toggle-switch">
-                                                                <input type="checkbox" id="pricing-include_credit_card_fees_in_price" name="pricing-include_credit_card_fees_in_price"  data-autosave="true">
-                                                                <span class="slider"></span>
-                                                            </label>
-                                                        </div>
-                                                        <div class="pricing-assumptions-form-row">
                                                             <label for="pricing-rounding">Price Rounding:</label>
                                                             <select id="pricing-rounding" name="pricing-rounding"  data-autosave="true">
                                                                 <option value="none">None</option>
@@ -1610,6 +1590,28 @@ class g_ffl_Cockpit_Admin
                                                                 <option value="round_up_to_99_cents">Round up to 99 Cents</option>
                                                             </select>
                                                         </div>
+                                                        
+                                                        <div class="helperDialog">Sales Tax Assumption and Credit Card fees help Cockpit calculate the total cost of a customer's order. If you include Credit Card fees, we can accurately determine these charges based on the overall order value.</div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-include_credit_card_fees_in_price">Include CC Fees in Price:</label>
+                                                            <label style="align:left;width:50px;" class="toggle-switch">
+                                                                <input type="checkbox" id="pricing-include_credit_card_fees_in_price" name="pricing-include_credit_card_fees_in_price"  data-autosave="true">
+                                                                <span class="slider"></span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-credit_card_fee_percent">CC Fee Percent:</label>
+                                                            <input type="number" id="pricing-credit_card_fee_percent" name="pricing-credit_card_fee_percent" min="0" max="0.99" step="0.01"  data-autosave="true">
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-credit_card_fee_transaction">CC Fee (per Transaction):</label>
+                                                            <input type="number" id="pricing-credit_card_fee_transaction" name="pricing-credit_card_fee_transaction"  data-autosave="true">
+                                                        </div>
+                                                        <div class="pricing-assumptions-form-row">
+                                                            <label for="pricing-sales_tax_assumption">Sales Tax Assumption:</label>
+                                                            <input type="number" id="pricing-sales_tax_assumption" name="pricing-sales_tax_assumption" min="0" max="0.99" step="0.01"  data-autosave="true">
+                                                        </div>
+                                                        <div class="helperDialog"><strong>Sell at MAP</strong> prices all products at the MAP price, overriding margin settings if there is a MAP on the product. When deactivated, products are priced at MAP only if the margin-based list price falls below MAP.</div>
                                                         <div class="pricing-assumptions-form-row">
                                                             <label for="sell_at_map">Sell at MAP:</label>
                                                             <label style="align:left;width:50px;" class="toggle-switch">
@@ -1807,6 +1809,10 @@ class g_ffl_Cockpit_Admin
                                                         <input type="text" id="fulfillment-ship_to_store-ffl" name="fulfillment-ship_to_store-ffl" data-autosave="true">
                                                     </div>
                                                     <div class="pricing-assumptions-form-row">
+                                                        <label for="fulfillment-ship_to_store-phone">Phone Number:</label>
+                                                        <input type="number" id="fulfillment-ship_to_store-phone" name="fulfillment-ship_to_store-phone" data-autosave="true">
+                                                    </div>
+                                                    <div class="pricing-assumptions-form-row">
                                                         <label for="fulfillment-ship_to_store-address-ship_to_name">Business/Name:</label>
                                                         <input type="text" id="fulfillment-ship_to_store-address-ship_to_name" name="fulfillment-ship_to_store-address-ship_to_name"  data-autosave="true">
                                                     </div>
@@ -1905,54 +1911,6 @@ class g_ffl_Cockpit_Admin
                                                             return targetSchema;
                                                         }
 
-                                                        function get_distributor_default_config(distid){
-                                                            fetch("https://ffl-api.garidium.com", {
-                                                                method: "POST",
-                                                                headers: {
-                                                                "Accept": "application/json",
-                                                                "Content-Type": "application/json",
-                                                                "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
-                                                                },
-                                                                body: JSON.stringify({"action": "get_distributor_default_config", "data": {"distid": distid}})
-                                                            })
-                                                            .then(response=>response.json())
-                                                            .then(data=>{
-                                                                try{
-                                                                    response = JSON.parse(data.default_config);
-                                                                    return response;
-                                                                } catch (error) {
-                                                                    alert("No default configuration found for this distributor, please contact FFL Cockpit Support.");
-                                                                }
-                                                            });
-                                                        }
-                                                        
-                                                        $(document).ready(function () {
-                                                           $('#add-distributor').on('click', function () {
-                                                                const selectedDistributor = $('#available-distributors').val();
-                                                                if (selectedDistributor) {
-                                                                    addDistributorForm(selectedDistributor, {});
-
-                                                                    // Now add the distributor info to the configuration
-                                                                    config = editor.get();
-                                                                    config.distributors[selectedDistributor] = JSON.parse(distributorsSchema[selectedDistributor]['default_config']);
-                                                                    editor.set(config);
-                                                                }
-                                                            });
-
-                                                            $('#add-target').on('click', function () {
-                                                                const selectedTarget = $('#available-targets').val();
-                                                                if (selectedTarget) {
-                                                                    addTargetForm(selectedTarget, {});
-
-                                                                    // Now add the distributor info to the configuration
-                                                                    config = editor.get();
-                                                                    config.targets[selectedTarget] = JSON.parse(targetSchema[selectedTarget]['default_config']);
-                                                                    editor.set(config);
-                                                                }
-                                                            });
-                                                            
-                                                        });
-
                                                         function load_fancy_editor(config){
                                                             $('#distributors-container').empty();
                                                             $('#targets-container').empty();
@@ -2003,6 +1961,7 @@ class g_ffl_Cockpit_Admin
                                                             // Ship-to-Store/Location Info
                                                             document.getElementById("fulfillment-ship_to_store-address-ship_to_name").value = config.fulfillment.ship_to_store.address.ship_to_name;
                                                             document.getElementById("fulfillment-ship_to_store-ffl").value = config.fulfillment.ship_to_store.ffl;
+                                                            document.getElementById("fulfillment-ship_to_store-phone").value = config.fulfillment.ship_to_store.phone?config.fulfillment.ship_to_store.phone:"";
                                                             document.getElementById("fulfillment-ship_to_store-address-address_street").value = config.fulfillment.ship_to_store.address.address_street;
                                                             document.getElementById("fulfillment-ship_to_store-address-city").value = config.fulfillment.ship_to_store.address.city;
                                                             document.getElementById("fulfillment-ship_to_store-address-postal_code").value = config.fulfillment.ship_to_store.address.postal_code;
@@ -2085,36 +2044,38 @@ class g_ffl_Cockpit_Admin
                                                         }
 
                                                         function addDistributorForm(distributor = "", config = {}) {
-                                                            const distid = distributorsSchema[distributor].distid;
-                                                            let formHtml = `<div class="distcards">
-                                                                                <div class="card mt-2" id="${distid}">
-                                                                                    <div class="card-header">
-                                                                                        <div class="distid_image_area">
-                                                                                            <img src="https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_${distid}.png" alt="${distributor} logo">
+                                                            if (distributorsSchema[distributor]){
+                                                                const distid = distributorsSchema[distributor].distid;
+                                                                let formHtml = `<div class="distcards">
+                                                                                    <div class="card mt-2" id="${distid}">
+                                                                                        <div class="card-header">
+                                                                                            <div class="distid_image_area">
+                                                                                                <img src="https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_${distid}.png" alt="${distributor} logo">
+                                                                                            </div>
+                                                                                            <h5 class="card-title">${distributor}</h5>
+                                                                                            <label class="toggle-switch">
+                                                                                                <input onchange="update_distributor_active('${distid}', '${distributor}');" type="checkbox" id="${distid}-active" name="${distid}-active" ${config.active ? 'checked' : ''}>
+                                                                                                <span class="slider"></span>
+                                                                                            </label>
                                                                                         </div>
-                                                                                        <h5 class="card-title">${distributor}</h5>
-                                                                                        <label class="toggle-switch">
-                                                                                            <input onchange="update_distributor_active('${distid}', '${distributor}');" type="checkbox" id="${distid}-active" name="${distid}-active" ${config.active ? 'checked' : ''}>
-                                                                                            <span class="slider"></span>
-                                                                                        </label>
-                                                                                    </div>
-                                                                                    <div class="card-body">
-                                                                                        <div class="action-links">
-                                                                                            <span class="configure-link" onclick="viewDistributorDetails('${distributor}', '${distid}')">Configure</span>
-                                                                                            <span>|</span>
-                                                                                            <span class="remove-link" onclick="confirmRemoveDistributor('${distid}')">Remove</span>
+                                                                                        <div class="card-body">
+                                                                                            <div class="action-links">
+                                                                                                <span class="configure-link" onclick="viewDistributorDetails('${distributor}', '${distid}')">Configure</span>
+                                                                                                <span>|</span>
+                                                                                                <span class="remove-link" onclick="confirmRemoveDistributor('${distid}')">Remove</span>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                </div>
-                                                                            </div>`;
+                                                                                </div>`;
 
-                                                            $('#distributors-container').append(formHtml);
+                                                                $('#distributors-container').append(formHtml);
 
-                                                            // Remove the selected distributor from the available list
-                                                            $(`#available-distributors option[value="${distributor}"]`).remove();
+                                                                // Remove the selected distributor from the available list
+                                                                $(`#available-distributors option[value="${distributor}"]`).remove();
 
-                                                            // Check if all distributors are added
-                                                            toggleDistributorSelectContainer();
+                                                                // Check if all distributors are added
+                                                                toggleDistributorSelectContainer();
+                                                            }
                                                         }
 
                                                         function addTargetForm(target = "", config = {}) {
@@ -2833,7 +2794,6 @@ class g_ffl_Cockpit_Admin
                                                             setupAutoSave();
                                                             console.log(">AutoSave Setup");
                                                         } catch (error) {
-                                                            alert(error);
                                                             alert("No configuration found for this key, setting to default.");
                                                         }
                                                     });
@@ -2849,11 +2809,20 @@ class g_ffl_Cockpit_Admin
                                     <script>
                                         var editor = new JSONEditor(document.getElementById("jsoneditor"));
                                         editor.set({"Loading Configuration": "Please wait..."});
-                                        window.onload = function() {
+                                        $(document).ready(function () {
+                                            
                                             async function initialize() {
-                                                await get_target_schema();
+                                                var tschema = await get_target_schema();
+                                                if (tschema == null || gFFLCockpitKey == null || gFFLCockpitKey == undefined || gFFLCockpitKey.length < 40){
+                                                    document.getElementById('configuration').innerHTML='<b>There was a problem retreiving your FFL Cockpit configuration</b>. If you have not purchased a key for FFL Cockpit, you can do so here: <a target=_blank href="https://garidium.com/product/ffl-cockpit-checkout-bundle/">Purchase FFL Cockpit Key</a>. If you have a key, and believe you entered it properly below, please contact support@garidium.com for assistance. This error can also appear if there was a temporary system outage. In that case please check back later.';
+                                                    document.getElementById('configuration').style.background = "#e7bec5";
+                                                    document.getElementById('configuration').style.margin = "20px";
+                                                    document.getElementById('configuration').style.border = "solid black 2px";
+                                                    document.getElementById('cockpit_main_tab_control').style.display='none';
+                                                    return;
+                                                }
+
                                                 await get_distributors_schema();
-                                                
                                                 fetch("https://ffl-api.garidium.com", {
                                                     method: "POST",
                                                     headers: {
@@ -2872,12 +2841,42 @@ class g_ffl_Cockpit_Admin
                                                 .then(data => { 
                                                     if (data != null) {
                                                         build_grid(data.schema);
+                                                        $('#add-distributor').on('click', function () {
+                                                                const selectedDistributor = $('#available-distributors').val();
+                                                                if (selectedDistributor) {
+                                                                    addDistributorForm(selectedDistributor, {});
+
+                                                                    // Now add the distributor info to the configuration
+                                                                    config = editor.get();
+                                                                    config.distributors[selectedDistributor] = JSON.parse(distributorsSchema[selectedDistributor]['default_config']);
+                                                                    editor.set(config);
+                                                                }
+                                                            });
+
+                                                        $('#add-target').on('click', function () {
+                                                            const selectedTarget = $('#available-targets').val();
+                                                            if (selectedTarget) {
+                                                                addTargetForm(selectedTarget, {});
+
+                                                                // Now add the distributor info to the configuration
+                                                                config = editor.get();
+                                                                config.targets[selectedTarget] = JSON.parse(targetSchema[selectedTarget]['default_config']);
+                                                                editor.set(config);
+                                                            }
+                                                        });
+                                                        return true;
                                                     }
                                                 });
+                                                return false;
                                             }
-                                            
                                             initialize();
-                                        };
+                                        });
+
+                                        $(document).on('mouseup', function (e) { 
+                                            if (e.target.id == "detailsModal") { 
+                                                $('#detailsModal').modal('hide');
+                                            } 
+                                        });
 
                                         function getValidationErrorMessage(errors) {
                                             let messages = [];
@@ -3095,7 +3094,6 @@ class g_ffl_Cockpit_Admin
                         var span = document.getElementById("productDetailImageModalCloser");
 
                         function load_product_data(title, distributor, sku, img_url){
-                            //alert(data);
                             modal.style.display = "block";
                             document.getElementById("product_detail_div").innerHTML = "<h3>" + title + "</h3><br><img class='responsive-image' src='" + img_url + "'/><br><img style='height:75px;' src='" + get_distributor_logo(distributor) + "'/><br>" + sku;
                         }
