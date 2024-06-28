@@ -1477,6 +1477,19 @@ class g_ffl_Cockpit_Admin
                                 0% { transform: rotate(0deg); }
                                 100% { transform: rotate(360deg); }
                             }
+
+                            .cockpit-watermark {
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                color: red;
+                                font-size: 10px;
+                                font-weight: bold;
+                                background: rgba(255, 255, 255, 0.7); /* Optional: Add background to improve readability */
+                                padding: 2px 2px; /* Optional: Add some padding */
+                                border-radius: 3px; /* Optional: Add rounded corners */
+                            }
                         </style>
 
                         <!-- Modal -->
@@ -2052,7 +2065,7 @@ class g_ffl_Cockpit_Admin
                                                                                             <div class="distid_image_area">
                                                                                                 <img src="https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_${distid}.png" alt="${distributor} logo">
                                                                                             </div>
-                                                                                            <h5 class="card-title">${distributor}</h5>
+                                                                                            <h5 class="card-title">${distributor}</h5>${distributorsSchema[distributor].automated_fulfillment?"":" <span class='cockpit-watermark'>Product Feed Only</span>"}
                                                                                             <label class="toggle-switch">
                                                                                                 <input onchange="update_distributor_active('${distid}', '${distributor}');" type="checkbox" id="${distid}-active" name="${distid}-active" ${config.active ? 'checked' : ''}>
                                                                                                 <span class="slider"></span>
@@ -2663,7 +2676,7 @@ class g_ffl_Cockpit_Admin
                                                             This section allows you to configure the products you would like included on your site.
                                                             <uL style="list-style-type: disc;">
                                                                 <li>All products from Distributors are included by default. If you do nothing below, all products we be included. We do not suggest that, and instead be selective about the product listed. Use either the product class selections or the categories to select the items you want to "include". We suggest using categories, so you can be more selective.</li>
-                                                                <li><b>Important:</b> If you add items to the "include" sections, those items selected will be the <u>ONLY</u> product listed on your site. For example, If you add a single UPC to the includes, your site will only have that single product listed.</li>
+                                                                <li><span style="color:red;"><b>**Important:</b> If you add items to the "include" sections, those items selected will be the <u>ONLY</u> product listed on your site.</span> For example, If you add a single UPC to the includes, your site will only have that single product listed.</li>
                                                                 <li>If you have items in the "include" section, there is no need to have items in the "exclude" section, since only those items in the "include" will be included.</li>
                                                                 <li>Reach out to support@garidium.com if you have any questions.</li>
                                                             </ul>
@@ -2725,7 +2738,7 @@ class g_ffl_Cockpit_Admin
                                                             launcher_exclude = `promptAndAddItems(this, '${restriction.field}', 'product_restrictions-${restriction.field}-exclude')`;
                                                         }
                                                         includeDiv.innerHTML = `
-                                                            <label for="product_class">Include:</label>
+                                                            <label for="product_class"><span style="color:red">**</span>Include:</label>
                                                             <div class="field-container">
                                                                 <div class="selected-items" id="product_restrictions-${restriction.field}-include"></div>
                                                                 <div class="add-item-container">
