@@ -150,7 +150,7 @@ class g_ffl_Cockpit_Admin
             <!-- Tab links -->
             <div class="tab" id="cockpit_main_tab_control">
                 <button class="tablinks" onclick="openTab(event, 'configuration')" id="defaultOpen">Configuration</button>
-                <button class="tablinks" onclick="openTab(event, 'product_feed');product_grid.render(document.getElementById('product_feed_table'));">Product Feed</button>
+                <button class="tablinks" onclick="openTab(event, 'product_feed')">Product Feed</button>
                 <button class="tablinks" onclick="openTab(event, 'fulfillment');of_grid.render(document.getElementById('order_fulfillment_table'));">Fulfillment</button>
                 <button class="tablinks" onclick="openTab(event, 'logs');log_grid.render(document.getElementById('log_table'));">Logs</button>
                 <button class="tablinks" onclick="openTab(event, 'help_center');load_help_videos();">Help Center</button>
@@ -1294,7 +1294,7 @@ class g_ffl_Cockpit_Admin
                                 background-color: rgba(0,0,0,0.4);
                                 padding-top: 60px;
                             }
-                            .modal-content {
+                            .cockpit-modal-content {
                                 background-color: #fefefe;
                                 margin: 5% auto;
                                 padding: 20px;
@@ -1490,12 +1490,19 @@ class g_ffl_Cockpit_Admin
                                 padding: 2px 2px; /* Optional: Add some padding */
                                 border-radius: 3px; /* Optional: Add rounded corners */
                             }
+                            .cockpit-product-search-container {
+                                display: flex;
+                                align-items: center;
+                                width:50%;
+                                margin-bottom:20px;
+                            }
+
                         </style>
 
                         <!-- Modal -->
                         <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true" >
                             <div id="modal_dialog" class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
+                                <div class="cockpit-modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="detailsModalLabel">Distributor Details</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -1517,7 +1524,7 @@ class g_ffl_Cockpit_Admin
                                 <td colspan=3>
                                         <div class="ui_form_container">                                        
                                          <div id="brandModal" class="modal">
-                                            <div class="modal-content">
+                                            <div class="cockpit-modal-content">
                                                 <span class="close" onclick="closeModal('brandModal')">&times;</span>
                                                 <span class="modalHeader">Select Brands</span>
                                                 <div id="brandModalSearchDiv"></div>
@@ -1526,7 +1533,7 @@ class g_ffl_Cockpit_Admin
                                             </div>
                                         </div>
                                         <div id="ignoreMapBrandModal" class="modal">
-                                            <div class="modal-content">
+                                            <div class="cockpit-modal-content">
                                                 <span class="close" onclick="closeModal('ignoreMapBrandModal')">&times;</span>
                                                 <span class="modalHeader">Select Brands</span>
                                                 <div id="ignoreMapBrandModalSearchDiv"></div>
@@ -1535,7 +1542,7 @@ class g_ffl_Cockpit_Admin
                                             </div>
                                         </div>
                                         <div id="categoryModal" class="modal">
-                                            <div class="modal-content">
+                                            <div class="cockpit-modal-content">
                                                 <span class="close" onclick="closeModal('categoryModal')">&times;</span>
                                                 <span class="modalHeader">Select Categories</span>
                                                 <div id="categoryModalSearchDiv"></div>
@@ -1545,7 +1552,7 @@ class g_ffl_Cockpit_Admin
                                         </div>
 
                                         <div id="productClassModal" class="modal">
-                                            <div class="modal-content">
+                                            <div class="cockpit-modal-content">
                                                 <span class="close" onclick="closeModal('productClassModal')">&times;</span>
                                                 <span  class="modalHeader">Select Product Classes</span>
                                                 <div class="modalPopupContent" id="productClassModalList"></div>
@@ -1671,7 +1678,7 @@ class g_ffl_Cockpit_Admin
                                                             <span class="add-group" onclick="addMarginGroup(null,null,true)">Add Margin Group</span>
                                                         </div>
                                                         <div id="priceBasedMarginModal" class="modal">
-                                                            <div class="modal-content">
+                                                            <div class="cockpit-modal-content">
                                                                 <span class="close" onclick="closeModal('priceBasedMarginModal')">&times;</span>
                                                                 <span class="modalHeader">Add Price Based Margin</span>
                                                                 <div>
@@ -3039,7 +3046,7 @@ class g_ffl_Cockpit_Admin
                                 </td>
                                 <td align="right">
                                     <div>
-                                    <button class="button alt" id="validate_configuration_button">Validate Configuration</button>
+                                    <button class="btn btn-primary" id="validate_configuration_button">Validate Configuration</button>
                                         <script>
                                             document.getElementById("validate_configuration_button").addEventListener("click", function(){
                                             document.getElementById("validate_configuration_button").disabled = true;
@@ -3062,7 +3069,7 @@ class g_ffl_Cockpit_Admin
                                             });
                                         </script>
 
-                                        <button class="button alt" id="send_test_fulfillment_emails_button">Send Test Fulfillment Emails</button>
+                                        <button class="btn btn-primary" id="send_test_fulfillment_emails_button">Send Test Fulfillment Emails</button>
                                         <script>
                                             document.getElementById("send_test_fulfillment_emails_button").addEventListener("click", function(){
                                                 document.getElementById("send_test_fulfillment_emails_button").disabled = true;
@@ -3120,8 +3127,12 @@ class g_ffl_Cockpit_Admin
                 </div>
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
                     <!-- <p>The Product Feed is based on your Configuration. The synchronization process will run every 15-minutes, at which point any changes you make to your configuration will be applied. This list will show items from all distributors configured, and with quantities less than your minimum listing quantity. We list one product per UPC, based on availability and price.</p> -->
+                    <div class="cockpit-product-search-container">
+                        <input class="form-control" type="text" id="cokcpit-product-search-input" placeholder="Enter Search Term (Ex: UPC, SKU, MPN. Manufacturer, Product Name)" onkeypress="if (event.key === 'Enter') loadGrid()"/>
+                        <button style="margin-left:5px;" class="btn btn-primary" onclick="loadGrid()">Search</button>
+                    </div>
                     <div id="product_feed_table"></div>
-                    <div style="padding:5px;"><button id="download_inventory_button" class="button alt" data-marker-id="">Download Inventory</button></div>
+                    <div style="padding:5px;margin-top:50px;"><button id="download_inventory_button" class="button alt" data-marker-id="">Download Inventory</button></div>
                     <script>
                         const window_height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) * 0.8;
                         function get_distributor_logo(code){
@@ -3145,98 +3156,112 @@ class g_ffl_Cockpit_Admin
                             return "";
                         }
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
-                        var product_grid = new gridjs.Grid({
-                            columns: [
-                                //formatter: (_, row) => `${row.cells[0].data?row.cells[2].data + '*':row.cells[2].data}`
-                                //{sort: false, name: "List", width: '50px', formatter: (cell) => `${cell?"Y":"N"}`}, 
-                                {name: 'Dist', width: '60px',
-                                    formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[0].data)}">`)
-                                },
-                                {name: 'SKU'}, 
-                                {sort: false, name: 'Product Image',
-                                    formatter: (_, row) => gridjs.html(`<a style="cursor:pointer;" onclick="load_product_data('${row.cells[3].data.replaceAll("\"","&quot;") + "','" + row.cells[0].data + "','" + row.cells[1].data + "','" + (row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}')"><img style="max-height:40px;max-width:100px;height:auto;width:auto;" src="${(row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}"></a>`)
-                                },
-                                {name: 'Name', width: '200px'}, 
-                                {name: "UPC"},
-                                {name: "MFG"},
-                                {name: "MPN"},
-                                {name: "Qty", width: '55px'},
-                                {name: 'Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
-                                //{name: 'MAP', width: '80px', formatter: (cell) => `${(cell==null || cell == 0)?'':'$'+cell.toFixed(2)}`}, 
-                                {name: 'Ship', width: '60px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
-                                {name: 'Total', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
-                                {name: 'MAP', width: '80px', formatter: (cell) => `${cell!=null?"$" + cell.toFixed(2):""}`}, 
-                                //{name: "MPN", width: '150px'},
-                                //{name: "Category", width: '120px'},
-                                //{name: 'Price', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`},   
-                                //{name: 'DS', width: '50px'}
-                            ],
-                            sort: {
-                                multiColumn: false,
-                                server: {
-                                    url: (prev, columns) => {
-                                        if (!columns.length) return prev;
-                                        const col = columns[0];
-                                        const dir = col.direction === 1 ? 'asc' : 'desc';
-                                        let colName = ['distid', 'distsku', 'distsku', 'name', 'upc', 'mfg_name', 'mpn', 'qty_on_hand', 'unit_price', 'shipping_cost', 'total_cost', 'map_price'][col.index];
-                                        let sortUrl = `${prev}&order_column=${colName}&order_direction=${dir}`;
-                                        return sortUrl;
+                        let productGrid;
+                        function loadGrid() {
+                            const keyword = document.getElementById('cokcpit-product-search-input').value;
+                            if (keyword.length<3){
+                                alert("Enter a Search Term with at least 3 characters.");
+                                return;
+                            }
+                            if (productGrid) {
+                                productGrid.updateConfig({
+                                    server: {
+                                        url: `https://ffl-api.garidium.com/product?action=get_filtered_catalog&search=${keyword}`,
+                                        method: 'GET',
+                                        headers: {
+                                            "Accept": "application/json",
+                                            "Content-Type": "application/json",
+                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                        },
+                                        then: data => JSON.parse(data).products.map(product => [
+                                            product.distid, 
+                                            product.distsku,
+                                            JSON.parse(product.images), 
+                                            product.name,
+                                            product.upc, 
+                                            product.mfg_name,
+                                            product.mpn,
+                                            product.qty_on_hand, 
+                                            product.unit_price,  
+                                            product.shipping_cost,
+                                            product.total_cost,
+                                            product.map_price
+                                        ]),
+                                        total: data => JSON.parse(data).count
                                     }
-                                }
-                            },
-                            search: {
-                                server: {
-                                    url: (prev, keyword) => `${prev}&search=${keyword}`
-                                }
-                            },
-                            resizable: true,
-                            pagination: {
-                                limit: 100,
-                                server: {
-                                    url: (prev, page, limit) => `${prev}&limit=${limit}&offset=${page * limit}`
-                                }
-                            },
-                            fixedHeader: true,
-                            //height: window_height,
-                            //width: '1500px',
-                            style: {
-                                td: {
-                                    'padding': '3px'
-                                },
-                                th: {
-                                    'padding': '3px'
-                                }
-                            },
-                            server: {
-                                url: 'https://ffl-api.garidium.com/product?action=get_filtered_catalog',
-                                method: 'GET',
-                                headers: {
-                                    "Accept": "application/json",
-                                    "Content-Type": "application/json",
-                                    "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
-			                    },
-                                then: data => JSON.parse(data).products.map(product => [//product.is_best_item,
-                                                                   product.distid, 
-                                                                   product.distsku,
-                                                                   JSON.parse(product.images), // # change to image
-                                                                   product.name,
-                                                                   product.upc, 
-                                                                   product.mfg_name, //+ ' (' + product.mpn + ")",
-                                                                   product.mpn,
-                                                                   product.qty_on_hand, 
-                                                                   product.unit_price,  
-                                                                   product.shipping_cost,
-                                                                   product.total_cost,
-                                                                   product.map_price]),  
-                                                                   //product.drop_ship_flg,
-                                                                   //product.map_price, 
-                                                                   //product.item_cat,                                          
-                                                                   //product.price])                                                            
-                                                                   //product.drop_ship_flg])
-                                total: data => JSON.parse(data).count
-                            } 
-                        });
-                    
+                                }).forceRender();
+                            } else {
+                                productGrid = new gridjs.Grid({
+                                    columns: [
+                                        {name: 'Dist', width: '60px', formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[0].data)}">`)},
+                                        {name: 'SKU'}, 
+                                        {sort: false, name: 'Product Image', formatter: (_, row) => gridjs.html(`<a style="cursor:pointer;" onclick="load_product_data('${row.cells[3].data.replaceAll("\"","&quot;") + "','" + row.cells[0].data + "','" + row.cells[1].data + "','" + (row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}')"><img style="max-height:40px;max-width:100px;height:auto;width:auto;" src="${(row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}"></a>`)},
+                                        {name: 'Name', width: '200px'}, 
+                                        {name: "UPC"},
+                                        {name: "MFG"},
+                                        {name: "MPN"},
+                                        {name: "Qty", width: '55px'},
+                                        {name: 'Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
+                                        {name: 'Ship', width: '60px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
+                                        {name: 'Total', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
+                                        {name: 'MAP', width: '80px', formatter: (cell) => `${cell!=null?"$" + cell.toFixed(2):""}`}
+                                    ],
+                                    sort: {
+                                        multiColumn: false,
+                                        server: {
+                                            url: (prev, columns) => {
+                                                if (!columns.length) return prev;
+                                                const col = columns[0];
+                                                const dir = col.direction === 1 ? 'asc' : 'desc';
+                                                let colName = ['distid', 'distsku', 'distsku', 'name', 'upc', 'mfg_name', 'mpn', 'qty_on_hand', 'unit_price', 'shipping_cost', 'total_cost', 'map_price'][col.index];
+                                                return `${prev}&order_column=${colName}&order_direction=${dir}`;
+                                            }
+                                        }
+                                    },
+                                    resizable: true,
+                                    pagination: {
+                                        limit: 100,
+                                        server: {
+                                            url: (prev, page, limit) => `${prev}&limit=${limit}&offset=${page * limit}`
+                                        }
+                                    },
+                                    fixedHeader: true,
+                                    style: {
+                                        td: {
+                                            'padding': '3px'
+                                        },
+                                        th: {
+                                            'padding': '3px'
+                                        }
+                                    },
+                                    server: {
+                                        url: `https://ffl-api.garidium.com/product?action=get_filtered_catalog&search=${keyword}`,
+                                        method: 'GET',
+                                        headers: {
+                                            "Accept": "application/json",
+                                            "Content-Type": "application/json",
+                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                        },
+                                        then: data => JSON.parse(data).products.map(product => [
+                                            product.distid, 
+                                            product.distsku,
+                                            JSON.parse(product.images), 
+                                            product.name,
+                                            product.upc, 
+                                            product.mfg_name,
+                                            product.mpn,
+                                            product.qty_on_hand, 
+                                            product.unit_price,  
+                                            product.shipping_cost,
+                                            product.total_cost,
+                                            product.map_price
+                                        ]),
+                                        total: data => JSON.parse(data).count
+                                    } 
+                                }).render(document.getElementById('product_feed_table'));
+                            }
+                        }
+
                         document.getElementById("download_inventory_button").addEventListener("click", function(){
                             document.getElementById("download_inventory_button").disabled = true;
                             document.getElementById('download_inventory_button').innerText = 'Please Wait...';
