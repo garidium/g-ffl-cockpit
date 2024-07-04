@@ -1502,7 +1502,7 @@ class g_ffl_Cockpit_Admin
                         <!-- Modal -->
                         <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true" >
                             <div id="modal_dialog" class="modal-dialog modal-dialog-centered">
-                                <div class="cockpit-modal-content">
+                                <div class="cockpit-modal-content modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="detailsModalLabel">Distributor Details</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -1524,7 +1524,7 @@ class g_ffl_Cockpit_Admin
                                 <td colspan=3>
                                         <div class="ui_form_container">                                        
                                          <div id="brandModal" class="modal">
-                                            <div class="cockpit-modal-content">
+                                            <div class="cockpit-modal-content modal-content">
                                                 <span class="close" onclick="closeModal('brandModal')">&times;</span>
                                                 <span class="modalHeader">Select Brands</span>
                                                 <div id="brandModalSearchDiv"></div>
@@ -1533,7 +1533,7 @@ class g_ffl_Cockpit_Admin
                                             </div>
                                         </div>
                                         <div id="ignoreMapBrandModal" class="modal">
-                                            <div class="cockpit-modal-content">
+                                            <div class="cockpit-modal-content modal-content">
                                                 <span class="close" onclick="closeModal('ignoreMapBrandModal')">&times;</span>
                                                 <span class="modalHeader">Select Brands</span>
                                                 <div id="ignoreMapBrandModalSearchDiv"></div>
@@ -1542,7 +1542,7 @@ class g_ffl_Cockpit_Admin
                                             </div>
                                         </div>
                                         <div id="categoryModal" class="modal">
-                                            <div class="cockpit-modal-content">
+                                            <div class="cockpit-modal-content modal-content">
                                                 <span class="close" onclick="closeModal('categoryModal')">&times;</span>
                                                 <span class="modalHeader">Select Categories</span>
                                                 <div id="categoryModalSearchDiv"></div>
@@ -1552,7 +1552,7 @@ class g_ffl_Cockpit_Admin
                                         </div>
 
                                         <div id="productClassModal" class="modal">
-                                            <div class="cockpit-modal-content">
+                                            <div class="cockpit-modal-content modal-content">
                                                 <span class="close" onclick="closeModal('productClassModal')">&times;</span>
                                                 <span  class="modalHeader">Select Product Classes</span>
                                                 <div class="modalPopupContent" id="productClassModalList"></div>
@@ -1678,7 +1678,7 @@ class g_ffl_Cockpit_Admin
                                                             <span class="add-group" onclick="addMarginGroup(null,null,true)">Add Margin Group</span>
                                                         </div>
                                                         <div id="priceBasedMarginModal" class="modal">
-                                                            <div class="cockpit-modal-content">
+                                                            <div class="cockpit-modal-content modal-content">
                                                                 <span class="close" onclick="closeModal('priceBasedMarginModal')">&times;</span>
                                                                 <span class="modalHeader">Add Price Based Margin</span>
                                                                 <div>
@@ -3099,7 +3099,7 @@ class g_ffl_Cockpit_Admin
                 <!-- The Modal -->
                 <div id="productDetailsModal" class="cockpit-modal">
                     <!-- Modal content -->
-                    <div class="cockpit-modal-content">
+                    <div class="cockpit-modal-content modal-content">
                         <span id="productDetailImageModalCloser" class="close">&times;</span>
                         <div align="center" id="product_detail_div"></div>
                     </div>

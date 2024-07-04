@@ -5,7 +5,7 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.5
 Requires PHP: 7.0
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+47. v1.4.5 Modal popup bug fixes
 46. v1.4.4 Fixed compatibility issues with modal styling and also changed the product feed tab to require input before initial loading
 45. v1.4.3 Added more help notes and distinguished distributors that are product feed only
 44. v1.4.1 Changes for initial view when customer has no key, and also fixed a modal Bug.
