@@ -3578,7 +3578,7 @@ class g_ffl_Cockpit_Admin
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
                         var log_grid = new gridjs.Grid({
                             columns: [
-                                {name: 'Timestamp', width: '160px', formatter: (cell) => `${new Date(cell).toLocaleString()}`}, 
+                                {name: 'Timestamp', width: '185px', formatter: (cell) => `${new Date(cell).toLocaleString()}`}, 
                                 {name: "Message"}
                             ],
                             resizable: true,
