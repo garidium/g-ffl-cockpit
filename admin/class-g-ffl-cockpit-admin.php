@@ -394,13 +394,7 @@ class g_ffl_Cockpit_Admin
                                     alert("Problem retrieving options.");
                                 }
                             }
-                            // Function to remove all event listeners
-                            function removeAllEventListeners(element) {
-                                const newElement = element.cloneNode(true);
-                                element.parentNode.replaceChild(newElement, element);
-                                return newElement;
-                            }
-
+                          
                             function openModal(modalId, selectedItemsId) {
                                 const modal = document.getElementById(modalId);
                                 const modal_options = document.getElementById(modalId + "List");
@@ -953,6 +947,10 @@ class g_ffl_Cockpit_Admin
                                 padding: 5px;
                                 width: 100%;
                             }
+                            .validator_view:empty {
+                                height: 0;
+                                padding: 0; /* Optionally, you can also remove padding if there's no content */
+                            }
                             .card {
                                 width: 220px;
                                 margin-bottom: 10px;
@@ -1320,6 +1318,8 @@ class g_ffl_Cockpit_Admin
                                 display: flex;
                                 flex-wrap: wrap;
                                 gap: 5px;
+                                overflow-y: auto;
+                                max-height:750px;
                             }
                             .price-based-margin-table {
                                 width: 100%;
@@ -1441,6 +1441,14 @@ class g_ffl_Cockpit_Admin
                                 text-align: center;
                             }
 
+                            #delete_gunbroker_listings_button {
+                                margin-top:50px;
+                                background-color: red;
+                                display: block;
+                                margin: 0 auto;
+                                color: white; /* Ensures text is readable */
+                            }
+
                             .selected-items {
                                 flex-grow: 1;
                             }
@@ -1477,6 +1485,12 @@ class g_ffl_Cockpit_Admin
                                 0% { transform: rotate(0deg); }
                                 100% { transform: rotate(360deg); }
                             }
+                           
+                            .operand_selected {
+                                font-weight: bold;
+                                text-decoration: underline;
+                            }
+  
 
                             .cockpit-watermark {
                                 position: absolute;
@@ -2014,6 +2028,16 @@ class g_ffl_Cockpit_Admin
                                                             
                                                             const restrictions = ["product_class","category","brand","sku","upc"];
                                                             const include_excludes = ["include","exclude"];
+                                                        
+                                                            restrictions.forEach(restriction => {
+                                                                if (config.product_restrictions[restriction] && config.product_restrictions[restriction]['include_operand']){
+                                                                    toggleOperandOption(`product_restrictions-${restriction}`, config.product_restrictions[restriction].include_operand);
+                                                                }else{
+                                                                    toggleOperandOption(`product_restrictions-${restriction}`, "AND");
+                                                                }
+                                                            });
+                                                            
+
                                                             restrictions.forEach(restriction => {
                                                                 include_excludes.forEach(include_exclude => {
                                                                     if (config.product_restrictions[restriction][include_exclude]){
@@ -2049,6 +2073,24 @@ class g_ffl_Cockpit_Admin
                                                             toggleTargetSelectContainer();
                                                         }
 
+                                                        function toggleOperandOption(restriction_id, option, setConfig = false) {
+                                                            //alert(restriction_id);
+                                                            document.getElementById(restriction_id + '-and-option').classList.remove('operand_selected');
+                                                            document.getElementById(restriction_id + '-or-option').classList.remove('operand_selected');
+                                                            
+                                                            if (option === 'AND') {
+                                                                document.getElementById(restriction_id + '-and-option').classList.add('operand_selected');
+                                                            } else if (option === 'OR') {
+                                                                document.getElementById(restriction_id + '-or-option').classList.add('operand_selected');
+                                                            }
+
+                                                            if (setConfig){
+                                                                const cc = editor.get();
+                                                                setConfigValue(cc, `${restriction_id}-include_operand`, option);
+                                                                editor.set(cc);
+                                                            }
+                                                        }
+                                                  
                                                         function update_distributor_active(distid, distributor){
                                                             dist_active = document.getElementById(distid + "-active").checked;
                                                             config = editor.get();
@@ -2061,6 +2103,28 @@ class g_ffl_Cockpit_Admin
                                                             config = editor.get();
                                                             config.targets[target].active = target_active;
                                                             editor.set(config);
+                                                        }
+
+                                                        function remove_all_cockpit_gunbroker_listings(){
+                                                            if (confirm("This will delete all gunbroker listings generated by FFL Cockpit. Do you wish to proceed?")){
+                                                                document.getElementById("delete_gunbroker_listings_button").disabled = true;
+                                                                document.getElementById('delete_gunbroker_listings_button').innerText = 'Request Sent';
+                                                                fetch("https://ffl-api.garidium.com", {
+                                                                        method: "POST",
+                                                                        headers: {
+                                                                            "Accept": "application/json",
+                                                                            "Content-Type": "application/json",
+                                                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                                                        },
+                                                                        body: JSON.stringify({"action": "remove_all_gunbroker_listings", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"}})
+                                                                    })
+                                                                    .then(response=>response.json())
+                                                                    .then(data=>{ 
+                                                                        alert("Your request for removal of all FFL Cockpit Generated Gunbroker Listings has been submitted. This can take up to an hour if you have many listings. If you do not wish to have FFL Cockpit re-list the product, then you must disable Gunbroker and hit Save.");
+                                                                        document.getElementById("delete_gunbroker_listings_button").disabled = false; 
+                                                                        document.getElementById('delete_gunbroker_listings_button').innerText = 'Delete all Cokpit-generated Gunbroker Listings';     
+                                                                    });
+                                                            }
                                                         }
 
                                                         function addDistributorForm(distributor = "", config = {}) {
@@ -2245,15 +2309,16 @@ class g_ffl_Cockpit_Admin
                                                                     modalBody.append(`
                                                                         <div class="textarea-wrapper">
                                                                         <label for="${field.config_key}">${field.label}:</label>
-                                                                            <textarea id="${field.config_key}" name="${field.config_key}" class="modal-tinymce" data-autosave="true"></textarea>
+                                                                            <textarea style="height:150px;" id="${field.config_key}" name="${field.config_key}" class="modal-tinymce" data-autosave="true"></textarea>
                                                                         </div>
                                                                     `);
-
+                                                                    
                                                                     tinymce.remove(`#${field.config_key}`);
                                                                     tinymce.init({
                                                                         selector: `#${field.config_key}`,
                                                                         plugins: 'code link lists image',
-                                                                        toolbar: 'code link image | bold italic backcolor forecolor | numlist bullist',
+                                                                        //toolbar: 'code link image | bold italic backcolor forecolor | alignleft aligncenter | numlist bullist',
+                                                                        toolbar: 'bold italic backcolor forecolor | alignleft aligncenter | numlist bullist',
                                                                         license_key: 'gpl',
                                                                         menubar: false,
                                                                         branding: false,
@@ -2277,8 +2342,7 @@ class g_ffl_Cockpit_Admin
                                                                                 mceeditor.setContent(getConfigValue(cc, field.config_key));
                                                                             });
                                                                         }
-                                                                    });
-
+                                                                    });                                                 
 
                                                                 } else if (field.type == "boolean") {
                                                                     modalBody.append(`<div class="form-group">
@@ -2317,6 +2381,12 @@ class g_ffl_Cockpit_Admin
                                                                     <div id="product-restrictions-container"></div>
                                                             `);
 
+                                                            if (['gunbroker'].includes(target)) {
+                                                                modalBody.append(`
+                                                                    <button class="btn btn-primary" style="margin-top:50px;" id="delete_gunbroker_listings_button" onclick="remove_all_cockpit_gunbroker_listings()">Delete all FFL Cockpit-Generated Gunbroker Listings</button>
+                                                                `);
+                                                            }
+
                                                             // automatically open product restrictions for certain targets
                                                             if (['wikiarms', 'gun.deals', 'ammoseek'].includes(target)) {
                                                                 document.getElementById('pr_header').click();
@@ -2354,12 +2424,15 @@ class g_ffl_Cockpit_Admin
                                                                         launcher_exclude = `promptAndAddItems(this, '${restriction.field}', 'targets-${target}-product_restrictions-${restriction.field}-exclude')`;
                                                                     }
                                                                     includeDiv.innerHTML = `
-                                                                        <label for="product_class">Include:</label>
+                                                                        <label for="product_class">Include - <span style="font-size:9pt !important;">
+                                                                            <span id="targets-${target}-product_restrictions-${restriction.field}-and-option" onclick="toggleOperandOption('targets-${target}-product_restrictions-${restriction.field}', 'AND', true)">AND</span> | 
+                                                                            <span id="targets-${target}-product_restrictions-${restriction.field}-or-option" onclick="toggleOperandOption('targets-${target}-product_restrictions-${restriction.field}', 'OR', true)">OR</span></span>:
+                                                                        </label>
                                                                         <div class="field-container">
                                                                             <div class="selected-items" id="targets-${target}-product_restrictions-${restriction.field}-include"></div>
                                                                             <div class="add-item-container">
                                                                                 <span class="add-item" onclick="${launcher_include}">Select</span>&nbsp;|&nbsp;
-                                                                        <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('targets-${target}-product_restrictions-${restriction.field}-include'))">Remove All</span>
+                                                                                <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('targets-${target}-product_restrictions-${restriction.field}-include'))">Remove All</span>
                                                                             </div>
                                                                         </div>`;
                                                                     container.appendChild(includeDiv);
@@ -2380,19 +2453,21 @@ class g_ffl_Cockpit_Admin
                                                                     product_restrictions_container.appendChild(section);
 
                                                                     // Now load the data with existing values
-                                                                    const restrictions_types = ["product_class","category","brand","sku","upc"];
-                                                                    const include_excludes = ["include","exclude"];
                                                                     var config = editor.get();
-                                                                    restrictions_types.forEach(restriction_type => {
-                                                                        include_excludes.forEach(include_exclude => {
-                                                                            const selectedFilterContainer = document.getElementById(`targets-${target}-product_restrictions-${restriction_type}-${include_exclude}`);
-                                                                            if (selectedFilterContainer != null) {
-                                                                                selectedFilterContainer.replaceChildren();
-                                                                                if (config.targets?.[target]?.product_restrictions?.[restriction_type]?.[include_exclude]) {
-                                                                                    addSelectedItemsToContainer(selectedFilterContainer, config.targets[target].product_restrictions[restriction_type][include_exclude]);
-                                                                                }
+                                                                    if (config.targets[target].product_restrictions[restriction.field] && config.targets[target].product_restrictions[restriction.field]['include_operand']){
+                                                                        toggleOperandOption(`targets-${target}-product_restrictions-${restriction.field}`, config.targets[target].product_restrictions[restriction.field].include_operand);
+                                                                    }else{
+                                                                        toggleOperandOption(`targets-${target}-product_restrictions-${restriction.field}`, "AND");
+                                                                    }
+                                                                    const include_excludes = ["include","exclude"];
+                                                                    include_excludes.forEach(include_exclude => {
+                                                                        const selectedFilterContainer = document.getElementById(`targets-${target}-product_restrictions-${restriction.field}-${include_exclude}`);
+                                                                        if (selectedFilterContainer != null) {
+                                                                            selectedFilterContainer.replaceChildren();
+                                                                            if (config.targets?.[target]?.product_restrictions?.[restriction.field]?.[include_exclude]) {
+                                                                                addSelectedItemsToContainer(selectedFilterContainer, config.targets[target].product_restrictions[restriction.field][include_exclude]);
                                                                             }
-                                                                        });
+                                                                        }
                                                                     });
                                                                 });
                                                             } else if (['gun.deals', 'wikiarms', 'ammoseek'].includes(target)) {
@@ -2471,7 +2546,6 @@ class g_ffl_Cockpit_Admin
                                                             setupAutoSave();
                                                             $('#detailsModal').modal('show');
                                                         }
-
 
                                                         function viewDistributorDetails(distributor, distributorId) {
                                                             const distributorDetails = JSON.parse(distributorsSchema[distributor].ui_field_schema);
@@ -2606,12 +2680,15 @@ class g_ffl_Cockpit_Admin
                                                                     launcher_exclude = `promptAndAddItems(this, '${restriction.field}', 'distributors-${distributor}-product_restrictions-${restriction.field}-exclude')`;
                                                                 }
                                                                 includeDiv.innerHTML = `
-                                                                    <label for="product_class">Include:</label>
+                                                                    <label for="product_class">Include - <span style="font-size:9pt !important;">
+                                                                        <span id="distributors-${distributor}-product_restrictions-${restriction.field}-and-option" onclick="toggleOperandOption('distributors-${distributor}-product_restrictions-${restriction.field}', 'AND', true)">AND</span> | 
+                                                                        <span id="distributors-${distributor}-product_restrictions-${restriction.field}-or-option" onclick="toggleOperandOption('distributors-${distributor}-product_restrictions-${restriction.field}', 'OR', true)">OR</span></span>:
+                                                                    </label>
                                                                     <div class="field-container">
                                                                         <div class="selected-items" id="distributors-${distributor}-product_restrictions-${restriction.field}-include"></div>
                                                                         <div class="add-item-container">
                                                                             <span class="add-item" onclick="${launcher_include}">Select</span>&nbsp;|&nbsp;
-                                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('distributors-${distributor}-product_restrictions-${restriction.field}-include'))">Remove All</span>
+                                                                            <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('distributors-${distributor}-product_restrictions-${restriction.field}-include'))">Remove All</span>
                                                                         </div>
                                                                     </div>`;
                                                                 container.appendChild(includeDiv);
@@ -2624,7 +2701,7 @@ class g_ffl_Cockpit_Admin
                                                                         <div class="selected-items" id="distributors-${distributor}-product_restrictions-${restriction.field}-exclude"></div>
                                                                         <div class="add-item-container">
                                                                             <span class="add-item" onclick="${launcher_exclude}">Select</span>&nbsp;|&nbsp;
-                                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('distributors-${distributor}-product_restrictions-${restriction.field}-exclude'))">Remove All</span>
+                                                                            <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('distributors-${distributor}-product_restrictions-${restriction.field}-exclude'))">Remove All</span>
                                                                         </div>
                                                                     </div>`;
                                                                 container.appendChild(excludeDiv);
@@ -2632,24 +2709,27 @@ class g_ffl_Cockpit_Admin
                                                                 product_restrictions_container.appendChild(section);
 
                                                                 // Now load the data with existing values
-                                                                const restrictions_types = ["product_class","category","brand","sku","upc"];
-                                                                const include_excludes = ["include","exclude"];
                                                                 var config = editor.get();
-                                                                restrictions_types.forEach(restriction_type => {
-                                                                    include_excludes.forEach(include_exclude => {
-                                                                        const selectedFilterContainer = document.getElementById(`distributors-${distributor}-product_restrictions-${restriction_type}-${include_exclude}`);
-                                                                        if (selectedFilterContainer != null) {
-                                                                            selectedFilterContainer.replaceChildren();
-                                                                            if (config.distributors?.[distributor]?.product_restrictions?.[restriction_type]?.[include_exclude]) {
-                                                                                addSelectedItemsToContainer(selectedFilterContainer, config.distributors[distributor].product_restrictions[restriction_type][include_exclude]);
-                                                                            }
+                                                                if (config.distributors[distributor].product_restrictions[restriction.field] && config.distributors[distributor].product_restrictions[restriction.field]['include_operand']){
+                                                                    toggleOperandOption(`distributors-${distributor}-product_restrictions-${restriction.field}`, config.distributors[distributor].product_restrictions[restriction.field].include_operand);
+                                                                }else{
+                                                                    toggleOperandOption(`distributors-${distributor}-product_restrictions-${restriction.field}`, "AND");
+                                                                }
+                                                                
+                                                                const include_excludes = ["include","exclude"];
+                                                                include_excludes.forEach(include_exclude => {
+                                                                    const selectedFilterContainer = document.getElementById(`distributors-${distributor}-product_restrictions-${restriction.field}-${include_exclude}`);
+                                                                    if (selectedFilterContainer != null) {
+                                                                        selectedFilterContainer.replaceChildren();
+                                                                        if (config.distributors?.[distributor]?.product_restrictions?.[restriction.field]?.[include_exclude]) {
+                                                                            addSelectedItemsToContainer(selectedFilterContainer, config.distributors[distributor].product_restrictions[restriction.field][include_exclude]);
                                                                         }
-                                                                    });
+                                                                    }
                                                                 });
+                                                                
                                                             });
                                                             
                                                             setupAutoSave();
-                                                        
                                                             $('#detailsModal').modal('show');
                                                         }
 
@@ -2722,7 +2802,7 @@ class g_ffl_Cockpit_Admin
                                                         {"field": "sku", "modal": "prompt", "name": "SKU", "select_text": "Add SKU"},
                                                         {"field": "upc", "modal": "prompt", "name": "UPC", "select_text": "Add UPC"} 
                                                     ];
-                                                    
+
                                                     restrictions.forEach(restriction => {
                                                         const section = document.createElement('div');
                                                         section.className = 'restriction-section';
@@ -2744,8 +2824,12 @@ class g_ffl_Cockpit_Admin
                                                             launcher_include = `promptAndAddItems(this, '${restriction.field}', 'product_restrictions-${restriction.field}-include')`;
                                                             launcher_exclude = `promptAndAddItems(this, '${restriction.field}', 'product_restrictions-${restriction.field}-exclude')`;
                                                         }
+                                                        
                                                         includeDiv.innerHTML = `
-                                                            <label for="product_class"><span style="color:red">**</span>Include:</label>
+                                                            <label for="product_class"><span style="color:red">**</span>Include - <span style="font-size:9pt !important;">
+                                                                <span id="product_restrictions-${restriction.field}-and-option" onclick="toggleOperandOption('product_restrictions-${restriction.field}', 'AND', true)">AND</span> | 
+                                                                <span id="product_restrictions-${restriction.field}-or-option" onclick="toggleOperandOption('product_restrictions-${restriction.field}', 'OR', true)">OR</span></span>:
+                                                            </label>
                                                             <div class="field-container">
                                                                 <div class="selected-items" id="product_restrictions-${restriction.field}-include"></div>
                                                                 <div class="add-item-container">
@@ -2767,7 +2851,6 @@ class g_ffl_Cockpit_Admin
                                                                 </div>
                                                             </div>`;
                                                         container.appendChild(excludeDiv);
-
                                                         section.appendChild(container);
                                                         product_restrictions_container.appendChild(section);
                                                     });
