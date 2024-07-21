@@ -3180,7 +3180,7 @@ class g_ffl_Cockpit_Admin
             </div>
             <div id="product_feed" class="tabcontent">
                 <!-- The Modal -->
-                <div id="productDetailsModal" class="cockpit-modal">
+                <div id="productDetailsModal" class="modal">
                     <!-- Modal content -->
                     <div class="cockpit-modal-content modal-content">
                         <span id="productDetailImageModalCloser" class="close">&times;</span>
