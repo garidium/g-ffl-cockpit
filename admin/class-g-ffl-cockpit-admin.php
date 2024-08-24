@@ -603,6 +603,8 @@ class g_ffl_Cockpit_Admin
                                     margin_name = prompt(`Enter your custom margin group name (ex: Firearms, Ammunition):`);
                                     if (margin_name == null){
                                         return;
+                                    }else{
+                                        margin_name = margin_name.replace("-", " ");
                                     }
                                     var config = editor.get();
                                     config.pricing.margin[margin_name] = {
@@ -1603,7 +1605,7 @@ class g_ffl_Cockpit_Admin
                                                 <div class="loader" style="border: 8px solid #f3f3f3;border-top: 8px solid #3498db;border-radius: 50%;width: 50px;height: 50px;animation: spin 1s linear infinite;"></div>
                                             </div>
                                             <div class="tab-pane fade" id="pricing" role="tabpanel" aria-labelledby="pricing-tab">
-                                            <div class="helperDialog"><strong>Pricing/Margin settings</strong> allow you to fine-tune list prices of your product on your site. There are core pricing assumptions, and custom margin groups you can setup to price specific types of products accordingly. <strong>Important:</strong> Margin settings in percentage should be entered in their decimal format. (Examples: 25% = 0.25, 2.49% = 0.0249...etc)</div>
+                                            <div class="helperDialog"><strong>Pricing/Margin settings</strong> allow you to fine-tune list prices of your product on your site. There are core pricing assumptions, and custom margin groups you can setup to price specific types of products accordingly. <strong>Important:</strong> Margin settings in percentage should be entered in their decimal format. (Examples: 25% = 0.25, 2.49% = 0.0249...etc). <span style="color:red;font-weight:bold;">Pricing changes will not appear immediately and can take an hour or longer to apply, depending on the number of products affected and the performance of your site.</span></div>
                                             <div class="pricing-tab-container">
                                                     <!-- Pricing Form Content -->
                                                     <div class="pricing-assumptions-form-container core-pricing-container">
@@ -1645,9 +1647,9 @@ class g_ffl_Cockpit_Admin
                                                             <label for="pricing-sales_tax_assumption">Sales Tax Assumption:</label>
                                                             <input type="number" id="pricing-sales_tax_assumption" name="pricing-sales_tax_assumption" min="0" max="0.99" step="0.01"  data-autosave="true">
                                                         </div>
-                                                        <div class="helperDialog"><strong>Sell at MAP</strong> prices all products at the MAP price, overriding margin settings if there is a MAP on the product. When deactivated, products are priced at MAP only if the margin-based list price falls below MAP.</div>
+                                                        <div class="helperDialog"><strong>"Ignore Margin when setting MAP"</strong> will set prices to their MAP (if one exists) ignoring your margin settings. When deactivated MAP is applied only when the margin-based calculated list price falls below MAP.</div>
                                                         <div class="pricing-assumptions-form-row">
-                                                            <label for="sell_at_map">Sell at MAP:</label>
+                                                            <label for="sell_at_map">Ignore&nbsp;Margin&nbsp;when&nbsp;setting&nbsp;MAP:</label>
                                                             <label style="align:left;width:50px;" class="toggle-switch">
                                                                 <input type="checkbox" id="pricing-sell_at_map" name="pricing-sell_at_map" data-autosave="true">
                                                                 <span class="slider"></span>

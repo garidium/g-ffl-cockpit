@@ -204,7 +204,8 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
                 echo '<td class="center"><input type="radio" id="' . esc_attr($option['distid']) . '" name="custom_product_option" value="' . esc_attr($option['warehouse_id']) . '" data-sku="' . esc_attr($option['sku']) . '" data-price="' . esc_attr($option['price']) . '" data-shipping-class="' . esc_attr($option['shipping_class']) . '"' . ($is_default ? ' checked' : '') . '></td>';
                 echo '<td>Warehouse ' . esc_html($option['warehouse_id']) . '</td>';
                 echo '<td class="center">' . esc_html($option['qty']) . '</td>';
-                echo '<td>$' . esc_html(number_format($option['price'], 2)) . '<br><span class="warehouse_shipping_costs">' . ($option['shipping_cost'] == 0 ? 'Free Shipping Available' : '+ $' . esc_html(number_format($option['shipping_cost'], 2)) . ' shipping') . '</span></td>';
+                //echo '<td>$' . esc_html(number_format($option['price'], 2)) . '<br><span class="warehouse_shipping_costs">' . ($option['shipping_cost'] == 0 ? 'Free Shipping Available' : '+ $' . esc_html(number_format($option['shipping_cost'], 2)) . ' shipping') . '</span></td>';
+                echo '<td>$' . esc_html(number_format($option['price'], 2)) . '</td>';
                 echo '</tr>';
                 $row_index++;
             }

@@ -136,8 +136,12 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                                 load_order_grid(data.fulfillment_orders); 
                                 if (!data.status){
                                     var message = "Order Creation Failed";
-                                    message += "\nError: " + data.error;
+                                    if (data.Error != null && data.Error != undefined){
+                                        message += "\nError: " + data.Error;
+                                    }
                                     alert(message);
+                                }else{
+                                    alert("Order has been sent, refresh the page to reload fulfillment status.");
                                 }
                                 document.getElementById("create_order_button").disabled = false;
                                 document.getElementById("ship_to_store_order_button").disabled = false;
@@ -246,89 +250,206 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                 return "";
             }
 
-            function load_fulfillment_options_grid(fulfillment_options){
+            function load_fulfillment_options_grid(data) {
+                if (data.order == null || data.order == "undefined"){
+                    alert("There was a Problem retreiving Order Data, please refresh and try again. Contact support at support@garidium.com if this error persists.");
+                    return;
+                }
+                var fulfillment_options = data.fulfillment_options;
+                var order_details = JSON.parse(data.order);
+                var distributor_orders = data.fulfillment_orders;
                 let table = document.createElement("table");
-                let thead = document.createElement("thead");
-                let tbody = document.createElement("tbody");
                 table.style.cssText = "width:100%;border-collapse: collapse;";
-
-                table.appendChild(thead);
-                table.appendChild(tbody);
 
                 // Adding the entire table to the body tag
                 document.getElementById("product_fulfillment_table").appendChild(table);
+
                 let columns = ["Dist", "Name", "SKU", "UPC", "Qty Avail", "Cost", "Ship", "Total", "Qty", "Order"];
                 let fields = ["distid", "name", "distsku", "upc", "qty_on_hand", "unit_price", "shipping_cost", "total_cost"];
-                let header_row = document.createElement("tr");     
-                for (var i = 0; i < columns.length; i++) {
-                    heading = document.createElement("th");
-                    heading.innerHTML = columns[i];
-                    heading.style.cssText = "background:#eeeeee;color:#6b7280;text-align:left;border: 1px solid #e5e7eb;";
-                    header_row.append(heading);
-                }
-                thead.appendChild(header_row);
 
-                // now go through the fulfillment options
-                if (fulfillment_options != null && fulfillment_options != "undefined"){
+                // Parse fulfillment options if needed
+                if (fulfillment_options != null && fulfillment_options != "undefined") {
                     fulfillment_options = JSON.parse(fulfillment_options);
                 }
-                if (fulfillment_options == null || fulfillment_options.length == 0){
-                    let row = document.createElement("tr");
-                    let col = document.createElement("td");
-                    col.colSpan = columns.length;
-                    col.innerHTML = "No Fulfillment Options Available";
-                    col.style.cssText = "font-style:italic;color:#bbbbbb;text-align:center;";
-                    row.appendChild(col);
-                    tbody.appendChild(row);
-                }else{
-                    for (var i = 0; i < fulfillment_options.length; i++) {
-                        let row = document.createElement("tr");
-                        let row_key = fulfillment_options[i].distid + "|" + fulfillment_options[i].distsku + "|" + fulfillment_options[i].upc + "|" + fulfillment_options[i].ffl_req;
-                        row.id = row_key
-                        for (var c = 0; c < fields.length; c++) {
+
+                // Parse distributor orders if needed
+                if (distributor_orders != null && distributor_orders != "undefined") {
+                    distributor_orders = JSON.parse(distributor_orders);
+                }
+
+                // Iterate over each line_item in order_details
+                for (let item of order_details.line_items) {
+                    let quantity = item.quantity;
+                    let line_item_sku = item.order_line_item_sku;
+
+                    let matchingOptions = []
+                    // Create a new tbody for the new UPC group
+                    let tbody = document.createElement("tbody");
+                    table.appendChild(tbody);
+                    let fulfilledQty = 0;
+                    let fulfillmentStatus = "No";
+                    let currentUPC = "Not Found";
+                    let statusColor = "#ffffff"; 
+                    let item_fulfilled = false;
+                    let item_has_fulfillment_options = false;
+
+                    if (fulfillment_options != null && fulfillment_options != "undefined") {
+                        // Find the first fulfillment option that matches the SKU to get the UPC
+                        let matchingOption = fulfillment_options.find(option => option.order_line_item_sku === item.sku);
+                        currentUPC = matchingOption ? matchingOption.upc : null;
+
+                        // Check if there are any matching fulfillment options for this UPC
+                        matchingOptions = fulfillment_options.filter(option => option.upc === currentUPC);
+
+                        // Sort matching options by total_cost in ascending order
+                        matchingOptions.sort((a, b) => a.total_cost - b.total_cost);
+
+                        if (matchingOptions.length > 0) {
+                            item_has_fulfillment_options = true;
+                        }
+
+                        // Check if the UPC is fulfilled
+                        var needs_validation = false;
+                        for (let order of distributor_orders) {
+                            let distOrderItems = JSON.parse(order.dist_order_items);
+                            for (let distItem of distOrderItems) {
+                                if (distItem.upc === currentUPC) {
+                                    if (order.order_status.includes("Pending") || order.order_status.includes("Not Fulfilled") || order.order_status.includes("Partially Fulfilled")){
+                                        needs_validation = true;
+                                    }else{
+                                        fulfilledQty += distItem.qty;
+                                        if (fulfilledQty == quantity){
+                                            item_fulfilled = true;
+                                        }
+                                    }   
+                                }
+                            }
+                        }
+
+                        if (needs_validation && !item_fulfilled){
+                            fulfillmentStatus = "Validate with Distributor";
+                            statusColor = "yellow"; 
+                        }else{
+                            if (fulfilledQty == 0) {
+                                fulfillmentStatus = "No";
+                                statusColor = "red"; 
+                            } else if (fulfilledQty >= quantity) {
+                                fulfillmentStatus = "Yes";
+                                statusColor = "#00ff00"; 
+                            } else if (fulfilledQty > 0 && fulfilledQty < quantity) {
+                                fulfillmentStatus = "Partially";
+                                let statusColor = "orange"; 
+                            }   
+                        }
+                    }
+                    // Add a single product information header row with darker background
+                    let product_info_row = document.createElement("tr");
+                    let product_info_cell = document.createElement("td");
+                    product_info_cell.colSpan = columns.length;
+                    
+                    if (item_has_fulfillment_options){
+                        product_info_cell.innerHTML = `
+                            <strong>Line Item SKU:</strong> ${item.sku==null?"Not Found":item.sku} &nbsp; | &nbsp;
+                            <strong>UPC:</strong> ${currentUPC} &nbsp; | &nbsp;
+                            <strong>Requested:</strong> ${quantity} &nbsp; | &nbsp;
+                            <strong>Fulfilled:</strong> ${fulfilledQty} &nbsp; | &nbsp;
+                            <strong>Line Item Fulfilled:</strong> <span style="color:${statusColor}">${fulfillmentStatus}</span>
+                        `;
+                    }else{
+                        product_info_cell.innerHTML = `
+                            <strong>Line Item SKU:</strong> ${item.sku==null?"Not Found":item.sku} &nbsp; | &nbsp;
+                            <strong>UPC:</strong> ${currentUPC} &nbsp; | &nbsp;
+                            <strong>Requested:</strong> Unkown | &nbsp;
+                            <strong>Fulfilled:</strong> Unkown &nbsp; | &nbsp;
+                            <strong>Line Item Fulfilled:</strong> <span style="color:yellow">Review existing Distributor Orders</span>
+                        `;
+                    }
+
+                    product_info_cell.style.cssText = "padding: 5px; background-color: #4a4a4a; color: #ffffff; border: 1px solid #e5e7eb;";
+                    product_info_row.appendChild(product_info_cell);
+                    tbody.appendChild(product_info_row);
+
+                    // Add the colored line underneath the product information
+                    let status_line_row = document.createElement("tr");
+                    let status_line_cell = document.createElement("td");
+                    status_line_cell.colSpan = columns.length;
+                    status_line_cell.style.cssText = `height: 3px; background-color: ${statusColor};`;
+                    status_line_row.appendChild(status_line_cell);
+                    tbody.appendChild(status_line_row);
+
+                    // Create and append a new header row for the new UPC group
+                    let header_row = document.createElement("tr");
+                    for (var j = 0; j < columns.length; j++) {
+                        let heading = document.createElement("th");
+                        heading.innerHTML = columns[j];
+                        heading.style.cssText = "background:#eeeeee;color:#6b7280;text-align:left;border: 1px solid #e5e7eb;";
+                        header_row.append(heading);
+                    }
+                    tbody.appendChild(header_row);
+                    
+                    if (matchingOptions.length > 0) {
+                        item_has_fulfillment_options = true;
+                        // Iterate over the matching fulfillment options
+                        for (var i = 0; i < matchingOptions.length; i++) {
+                            let row = document.createElement("tr");
+                            let row_key = matchingOptions[i].distid + "|" + matchingOptions[i].distsku + "|" + matchingOptions[i].upc + "|" + matchingOptions[i].ffl_req;
+                            row.id = row_key;
+                            for (var c = 0; c < fields.length; c++) {
+                                let col = document.createElement("td");
+                                if (fields[c] == "distid") {
+                                    col.innerHTML = "<img width=\"40\" src=\"" + get_distributor_logo(matchingOptions[i][fields[c]]) + "\"/>";
+                                    col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
+                                } else if (fields[c] == "unit_price" || fields[c] == "shipping_cost" || fields[c] == "total_cost") {
+                                    col.innerHTML = "$" + matchingOptions[i][fields[c]].toFixed(2);
+                                    col.style.cssText = "width:70px;text-align:left;border: 1px solid #e5e7eb;";
+                                } else if (fields[c] == "qty_on_hand") {
+                                    col.innerHTML = matchingOptions[i][fields[c]];
+                                    col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
+                                } else {
+                                    col.innerHTML = matchingOptions[i][fields[c]];
+                                    col.style.cssText = "text-align:left;border: 1px solid #e5e7eb;";
+                                }
+                                row.appendChild(col);
+                            }
+
+                            // Add quantity box
+                            let qty_col = document.createElement("td");
+                            qty_col.innerHTML = "<input style=\"padding:5px;width:47px;height:25px;\" id=\"qty_" + row_key + "\" type=\"number\" min=\"1\" value=\"" + quantity + "\">";
+                            qty_col.style.cssText = "width:50px;text-align:left;border: 1px solid #e5e7eb;";
+                            row.appendChild(qty_col);
+
+                            // Add selection box
                             let col = document.createElement("td");
-                            if (fields[c] == "distid"){
-                                col.innerHTML = "<img width=\"40\" src=\"" + get_distributor_logo(fulfillment_options[i][fields[c]]) + "\"/>";
+                            if (matchingOptions[i].qty_on_hand > 0 && matchingOptions[i].cockpit_fulfillable) {
+                                col.innerHTML = "<input id=\"check_" + row_key + "\" type=\"checkbox\" value=\"" + row_key + "\">";
+                                col.addEventListener("click", function(e) {
+                                    let row = document.getElementById(row_key);
+                                    let checkbox = document.getElementById("check_" + row_key);
+                                    if (checkbox.checked) {
+                                        row.style.cssText = "background:#e8f8e6;";
+                                        document.getElementById("qty_" + row_key).style.background = "#cddfca";
+                                    } else {
+                                        row.style.cssText = "";
+                                        document.getElementById("qty_" + row_key).style.background = "#ffffff";
+                                    }
+                                    showHideOrderButton();
+                                }, false);
                                 col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
-                            }else if (fields[c] == "unit_price" || fields[c] == "shipping_cost" || fields[c] == "total_cost"){
-                                col.innerHTML = "$" + fulfillment_options[i][fields[c]].toFixed(2);
-                                col.style.cssText = "width:70px;text-align:left;border: 1px solid #e5e7eb;";
-                            }else if (fields[c] == "qty_on_hand"){
-                                col.innerHTML = fulfillment_options[i][fields[c]];
+                            } else {
+                                col.innerHTML = "<span>--</span>";
                                 col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
-                            }else{
-                                col.innerHTML = fulfillment_options[i][fields[c]];
-                                col.style.cssText = "text-align:left;border: 1px solid #e5e7eb;";
                             }
                             row.appendChild(col);
-                        }
-                        // add quantity box
-                        let qty_col = document.createElement("td");
-                        qty_col.innerHTML = "<input style=\"padding:5px;width:47px;height:25px;\" id=\"qty_" + row_key + "\" type=\"number\" min=\"1\" value=\"1\">";
-                        qty_col.style.cssText = "width:50px;text-align:left;border: 1px solid #e5e7eb;";
-                        row.appendChild(qty_col);
 
-                        // add selection box
+                            tbody.appendChild(row);
+                        }
+                    } else {
+                        // If no matching fulfillment options, show a "No Fulfillment Options Available" row
+                        let row = document.createElement("tr");
                         let col = document.createElement("td");
-                        if (fulfillment_options[i].qty_on_hand > 0 && fulfillment_options[i].cockpit_fulfillable){
-                            col.innerHTML = "<input id=\"check_" + row_key + "\" type=\"checkbox\" value=\"" + row_key + "\">";
-                            col.addEventListener("click", function(e) {
-                                let row = document.getElementById(row_key);
-                                let checkbox = document.getElementById("check_" + row_key);
-                                if (checkbox.checked){
-                                    row.style.cssText = "background:#e8f8e6;";
-                                    document.getElementById("qty_" + row_key).style.background = "#cddfca";
-                                }else{
-                                    row.style.cssText = "";
-                                    document.getElementById("qty_" + row_key).style.background = "#ffffff";
-                                }
-                                showHideOrderButton();
-                            }, false);
-                            col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
-                        }else{
-                            col.innerHTML = "<span>--</span>";
-                            col.style.cssText = "text-align:center;border: 1px solid #e5e7eb;";
-                        }    
+                        col.colSpan = columns.length;
+                        col.innerHTML = "No Fulfillment Options Available";
+                        col.style.cssText = "font-style:italic;color:#bbbbbb;text-align:center;border: 1px solid #e5e7eb;";
                         row.appendChild(col);
                         tbody.appendChild(row);
                     }
@@ -466,7 +587,7 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                 if ("status" in data){
                     document.getElementById("fulfillment_status").innerHTML = "Status: <span style=\"font-weight:bold;\">" + data.status + "</span>";
                 }
-                load_fulfillment_options_grid(data.fulfillment_options);
+                load_fulfillment_options_grid(data);
                 load_order_grid(data.fulfillment_orders); 
                 document.getElementById("fulfillment_options_overlay").style.display="none";
             });
