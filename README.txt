@@ -5,7 +5,7 @@ Donate link: https://garidium.com/product/g-ffl-cockpit/
 Requires at least: 5.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.4.8
+Stable tag: 1.4.9
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+51. v1.4.9 Added the ability to filter categories in the admin recategorization panel
 50. v1.4.8 Reformatted Fulfillment Options table to help improve manual ordering processes and show a more complete status of the fulfillment
 49. v1.4.7 Bug fix for modal popup on product feed tab.
 48. v1.4.6 Added ability to adjust logic (AND/OR) on Product Restriction Includes.
