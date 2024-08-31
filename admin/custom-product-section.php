@@ -26,6 +26,7 @@
 $warehouse_option_websites = array(
     'https://firearmsdirectclub.ffl-charlie.com',
     'https://firearmsdirectclub.com',
+    'https://firearmsdirectclub.com/home',
     'http://localhost:8000',
     // Add more URLs as needed
 );
@@ -116,7 +117,7 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
     
         // Check for errors
         if (is_wp_error($response)) {
-            echo 'Error retrieving warehouse options';
+            echo 'Error retrieving Vendor options';
             return;
         }
         
@@ -173,12 +174,12 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
 
         // Display the options in a table with custom styles
         echo '<div class="custom-product-options">';
-        echo '<h4>Select a Warehouse Option:</h4>';
+        echo '<h4>Select a Vendor Option:</h4>';
         echo '<table>';
         echo '<thead>';
         echo '<tr>';
         echo '<th>Select</th>';
-        echo '<th>Warehouse</th>';
+        echo '<th>Vendor</th>';
         echo '<th>Stock</th>';
         echo '<th>Price</th>';
         echo '</tr>';
@@ -187,9 +188,9 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
 
         if (empty($data) || array_key_exists('Error', $data)) {
             if (array_key_exists('Error', $data)) {
-                $errorMessage = 'No warehouse options available ' . $data['Error'];
+                $errorMessage = 'No vendor options available ' . $data['Error'];
             } else {
-                $errorMessage = 'No warehouse options available';
+                $errorMessage = 'No vendor options available';
             }
             echo '<tr><td colspan="4" class="center">' . htmlspecialchars($errorMessage) . '</td></tr>';
         } else {
@@ -202,7 +203,7 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
                 }
                 echo '<tr>';
                 echo '<td class="center"><input type="radio" id="' . esc_attr($option['distid']) . '" name="custom_product_option" value="' . esc_attr($option['warehouse_id']) . '" data-sku="' . esc_attr($option['sku']) . '" data-price="' . esc_attr($option['price']) . '" data-shipping-class="' . esc_attr($option['shipping_class']) . '"' . ($is_default ? ' checked' : '') . '></td>';
-                echo '<td>Warehouse ' . esc_html($option['warehouse_id']) . '</td>';
+                echo '<td>Vendor ' . esc_html($option['warehouse_id']) . '</td>';
                 echo '<td class="center">' . esc_html($option['qty']) . '</td>';
                 //echo '<td>$' . esc_html(number_format($option['price'], 2)) . '<br><span class="warehouse_shipping_costs">' . ($option['shipping_cost'] == 0 ? 'Free Shipping Available' : '+ $' . esc_html(number_format($option['shipping_cost'], 2)) . ' shipping') . '</span></td>';
                 echo '<td>$' . esc_html(number_format($option['price'], 2)) . '</td>';
@@ -367,7 +368,6 @@ function custom_product_section_tab($tabs) {
     return $tabs;
 }
 
-// Callback function to display content of the custom section
 function custom_product_section_content() {
     global $product;
 
@@ -376,21 +376,22 @@ function custom_product_section_content() {
     $product_id = $product->get_id();
     $gFFLCockpitKey = get_option('g_ffl_cockpit_key');
 
-    // Add a dropdown
-    echo '<span style="color:red;font-style:italic;">The "Admin" section will only appear to logged in admin users of your site. Your customer will not see the "Admin" section.</span><br><b>Product Category Change:</b> This will update the product category on your site AND the product category this product is associated to for <u>All Cockpit Fed Sites</u>. So please make sure you are making changes that help everyone. <u>Thank you</u> for your contribution, Gary<br><br>';
-    echo '<select style="width:250px !important;"id="ffl-cockpit-categories"></select>';
-    echo '<button id="ffl-cockpit-recategorize-button">Apply Category Update</button>';
+    // Add a radio button list with a search input inside a scrollable div
+    echo '<span style="color:red;font-style:italic;">The "Admin" section will only appear to logged-in admin users of your site. Your customer will not see the "Admin" section.</span><br><b>Product Category Change:</b> This will update the product category on your site AND the product category this product is associated with for <u>All Cockpit Fed Sites</u>. So please make sure you are making changes that help everyone. <u>Thank you</u> for your contribution, Gary<br><br>';
+    echo '<input type="text" id="ffl-cockpit-category-search" placeholder="Search categories..." style="width:350px; margin-bottom: 10px;"><br>';
+    echo '<div id="ffl-cockpit-category-list" style="width:350px; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>';
+    echo '<button id="ffl-cockpit-recategorize-button" style="width: 350px; margin-top: 10px;">Apply Category Update</button>';
     echo '
     <script>
         jQuery(document).ready(function ($) {
-            // Add your JavaScript/jQuery code here
             $("#ffl-cockpit-recategorize-button").on("click", function () {
-                var category_id = document.getElementById("ffl-cockpit-categories").value;
-                if (category_id == 0){
+                var selected = document.querySelector(\'input[name="ffl-cockpit-category"]:checked\');
+                if (!selected) {
                     alert("You must select a valid category");
                     return;
                 }
-                
+                var category_id = selected.value;
+
                 document.getElementById("ffl-cockpit-recategorize-button").disabled = true;
                 document.getElementById("ffl-cockpit-recategorize-button").innerText = "Updating Category...";
                 var product_id = "'.esc_attr($product_id).'";
@@ -405,18 +406,18 @@ function custom_product_section_content() {
                     },
                     body: JSON.stringify({"action": "update_product_category", "data": {"product_id": product_id, "category_id": category_id , "upc": upc , "api_key": "'.esc_attr($gFFLCockpitKey).'"}})
                 })
-                .then(response=>response.json())
-                .then(data=>{ 
+                .then(response => response.json())
+                .then(data => { 
                     document.getElementById("ffl-cockpit-recategorize-button").disabled = false;
                     document.getElementById("ffl-cockpit-recategorize-button").innerText = "Apply Category Update";
                 
                     if (data.success){
                         location.reload();
-                    }else{
+                    } else {
                         alert("There was a problem in recategorization");
                     }
                 });
-                });
+            });
 
             fetch("https://ffl-api.garidium.com", {
                 method: "POST",
@@ -427,26 +428,40 @@ function custom_product_section_content() {
                 },
                 body: JSON.stringify({"action": "get_category_list", "data": {"api_key": "'.esc_attr($gFFLCockpitKey).'"}})
             })
-            .then(response=>response.json())
-            .then(data=>{ 
-                // Get the dropdown element
-                const dropdown = document.getElementById("ffl-cockpit-categories");
-                if (data!=null && data.categories.length > 0){
-                    // Loop through the data and create a category option for each item
-                    const option = document.createElement("option");
-                    option.value = 0;
-                    option.text = "Select a category...";
-                    dropdown.appendChild(option);
-                
+            .then(response => response.json())
+            .then(data => { 
+                // Get the container element
+                const container = document.getElementById("ffl-cockpit-category-list");
+                if (data != null && data.categories.length > 0){
+                    // Loop through the data and create a radio button for each item
                     data.categories.forEach(item => {
-                        const option = document.createElement("option");
-                        option.value = item.id;
-                        option.text = item.name;
-                        dropdown.appendChild(option);
+                        const label = document.createElement("label");
+                        label.style.display = "block";
+                        label.style.marginBottom = "5px";
+
+                        const radio = document.createElement("input");
+                        radio.type = "radio";
+                        radio.name = "ffl-cockpit-category";
+                        radio.value = item.id;
+                        radio.style.marginRight = "10px";
+
+                        label.appendChild(radio);
+                        label.appendChild(document.createTextNode(item.name));
+
+                        container.appendChild(label);
                     });
                 }
+
+                // Add event listener for search input
+                document.getElementById("ffl-cockpit-category-search").addEventListener("input", function() {
+                    const filter = this.value.toLowerCase();
+                    const labels = container.getElementsByTagName("label");
+                    for (let i = 0; i < labels.length; i++) {
+                        const text = labels[i].textContent.toLowerCase();
+                        labels[i].style.display = text.includes(filter) ? "block" : "none";
+                    }
+                });
             });
         });
     </script>';
-
 }
