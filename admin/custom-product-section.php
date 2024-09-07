@@ -378,9 +378,9 @@ function custom_product_section_content() {
 
     // Add a radio button list with a search input inside a scrollable div
     echo '<span style="color:red;font-style:italic;">The "Admin" section will only appear to logged-in admin users of your site. Your customer will not see the "Admin" section.</span><br><b>Product Category Change:</b> This will update the product category on your site AND the product category this product is associated with for <u>All Cockpit Fed Sites</u>. So please make sure you are making changes that help everyone. <u>Thank you</u> for your contribution, Gary<br><br>';
-    echo '<input type="text" id="ffl-cockpit-category-search" placeholder="Search categories..." style="width:350px; margin-bottom: 10px;"><br>';
-    echo '<div id="ffl-cockpit-category-list" style="width:350px; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>';
-    echo '<button id="ffl-cockpit-recategorize-button" style="width: 350px; margin-top: 10px;">Apply Category Update</button>';
+    echo '<input type="text" id="ffl-cockpit-category-search" placeholder="Search categories..." style="width:450px; margin-bottom: 10px;"><br>';
+    echo '<div id="ffl-cockpit-category-list" style="width:450px; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>';
+    echo '<button id="ffl-cockpit-recategorize-button" style="width: 450px; margin-top: 10px;">Apply Category Update</button>';
     echo '
     <script>
         jQuery(document).ready(function ($) {
@@ -446,7 +446,11 @@ function custom_product_section_content() {
                         radio.style.marginRight = "10px";
 
                         label.appendChild(radio);
-                        label.appendChild(document.createTextNode(item.name));
+                        var cat_label = item.name;
+                        if (item.parent != null){
+                            cat_label+=" (" + item.parent + ")"
+                        }
+                        label.appendChild(document.createTextNode(cat_label));
 
                         container.appendChild(label);
                     });
