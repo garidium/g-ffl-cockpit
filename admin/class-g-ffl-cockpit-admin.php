@@ -3217,7 +3217,7 @@ class g_ffl_Cockpit_Admin
                         <button style="margin-left:5px;" class="btn btn-primary" onclick="loadGrid()">Search</button>
                     </div>
                     <div id="product_feed_table"></div>
-                    <div style="padding:5px;margin-top:50px;"><button id="download_inventory_button" class="button alt" data-marker-id="">Download Inventory</button></div>
+                    <div style="padding:5px;margin-top:50px;"><button id="download_inventory_button" class="button alt" data-marker-id="">Download Catalog</button></div>
                     <script>
                         const window_height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) * 0.8;
                         function get_distributor_logo(code){
@@ -3350,20 +3350,20 @@ class g_ffl_Cockpit_Admin
                         document.getElementById("download_inventory_button").addEventListener("click", function(){
                             document.getElementById("download_inventory_button").disabled = true;
                             document.getElementById('download_inventory_button').innerText = 'Please Wait...';
-                            fetch("https://ffl-api.garidium.com/download", {
+                            fetch("https://ffl-api.garidium.com", {
                                 method: "POST",
                                 headers: {
                                 "Accept": "application/json",
                                 "Content-Type": "application/json",
                                 "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
                                 },
-                                body: JSON.stringify({"action": "download_inventory"})
+                                body: JSON.stringify({"action": "create_catalog_extract", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"}})
                             })
                             .then(response=>response.json())
                             .then(data=>{ 
-                                window.open(data);  
-                                document.getElementById("download_inventory_button").disabled = false; 
-                                document.getElementById('download_inventory_button').innerText = 'Download Inventory';     
+                                alert("Your request has been submitted. You will be emailed a link to download the Catalog once it has been generated. This may take a few minutes.")  
+                                //document.getElementById("download_inventory_button").disabled = false; 
+                                document.getElementById('download_inventory_button').innerText = 'Your Catalog Extract will be emailed in a few minutes';     
                             });
                         });
                     </script>
