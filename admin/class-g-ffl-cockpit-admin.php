@@ -2347,10 +2347,19 @@ class g_ffl_Cockpit_Admin
                                                                     });                                                 
 
                                                                 } else if (field.type == "boolean") {
+                                                                    var toggle_checked = getConfigValue(cc, field.config_key);
+                                                                    if (toggle_checked == undefined){
+                                                                        if (field.default){
+                                                                            toggle_checked = field.default;
+                                                                        }else{
+                                                                            toggle_checked = false;
+                                                                        }
+                                                                    }
+
                                                                     modalBody.append(`<div class="form-group">
                                                                                         <label for="${field.config_key}">${field.label}</label>
                                                                                         <label class="toggle-switch">
-                                                                                            <input type="checkbox" id="${field.config_key}" name="${field.config_key}" ${(field.default && field.default == true) || getConfigValue(cc, field.config_key) == true ? 'checked' : ''} data-autosave="true">
+                                                                                            <input type="checkbox" id="${field.config_key}" name="${field.config_key}" ${toggle_checked ? 'checked' : ''} data-autosave="true">
                                                                                             <span class="slider"></span>
                                                                                         </label>
                                                                                     </div>`);
