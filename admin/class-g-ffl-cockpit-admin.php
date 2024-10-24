@@ -2405,14 +2405,21 @@ class g_ffl_Cockpit_Admin
                                                            
                                                             const product_restrictions_container = document.getElementById('product-restrictions-container');
                                                             
-                                                            if (['gunbroker', 'woo'].includes(target)) {
-                                                                const restrictions = [
+                                                            if (['gunbroker', 'woo', 'liberty_gun_trader'].includes(target)) {
+                                                                
+                                                                let restrictions = [
                                                                     {"field": "product_class", "modal": "productClassModal", "name": "Product Classes", "select_text": "Select Product Classes"},
                                                                     {"field": "category", "modal": "categoryModal", "name": "Categories", "select_text": "Select Categories"},
                                                                     {"field": "brand", "modal": "brandModal", "name": "Brands", "select_text": "Select Brands"},
                                                                     {"field": "sku", "modal": "prompt", "name": "SKU", "select_text": "Add SKU"},
                                                                     {"field": "upc", "modal": "prompt", "name": "UPC", "select_text": "Add UPC"} 
                                                                 ];
+
+                                                                // Remove "product_class" if the target is "liberty_gun_trader"
+                                                                if (target === 'liberty_gun_trader') {
+                                                                    restrictions = restrictions.filter(restriction => restriction.field !== 'product_class');
+                                                                }
+
                                                                 restrictions.forEach(restriction => {
                                                                     const section = document.createElement('div');
                                                                     section.className = 'restriction-section';
