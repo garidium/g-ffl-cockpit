@@ -145,7 +145,7 @@ class g_ffl_Cockpit_Admin
             }
         </style>
         <div class="wrap">
-            <img src="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png');?>">
+            <img src="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.svg');?>">
             <br><br>
             <!-- Tab links -->
             <div class="tab" id="cockpit_main_tab_control">
@@ -2287,6 +2287,36 @@ class g_ffl_Cockpit_Admin
                                                             const modalBody = $('#modal-body');
                                                             modalBody.empty();
                                                             cc = editor.get();
+
+                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora'].includes(target)) {
+                                                                var feed_url = `https://garidium.s3.us-east-1.amazonaws.com/feeds/${gFFLCockpitKey.slice(0, 4)}-${gFFLCockpitKey.slice(-4)}/${target.replace(".","")}/feed.xml`;
+
+                                                                modalBody.append(`
+                                                                    <div style="line-height: 1.25;padding:5px;margin-bottom:20px;">
+                                                                        When you signup with ${displayName}, you will be asked for a Product Feed URL. This will be 
+                                                                        <a target="_blank" href="${feed_url}">${feed_url}</a>
+                                                                        <i class="fa fa-copy copy-icon" style="cursor: pointer; margin-left: 2px;" title="Copy Feed URL to clipboard"></i>
+                                                                    </div>`);
+
+                                                                if (target == "armsagora") {
+                                                                    modalBody.append(`
+                                                                    <div style="line-height: 1.25;padding:5px;margin-bottom:20px;">
+                                                                        Armsagora has a signup page for FFL Cockpit Subscribers: <a target="_blank" href="https://www.armsagora.com/fflcockpit?feed_url=${feed_url}">Click Here to Signup</a> 
+                                                                    </div>`);
+                                                                }
+                                                                modalBody.append(`<hr>`);
+
+                                                                // Add event listener using delegation
+                                                                modalBody.on('click', '.copy-icon', function () {
+                                                                    // Use the pre-defined `feed_url` variable directly
+                                                                    navigator.clipboard.writeText(feed_url).then(() => {
+                                                                        alert('Feed URL copied to clipboard!');
+                                                                    }).catch(err => {
+                                                                        console.error('Failed to copy: ', err);
+                                                                        alert('Failed to copy the URL. Please try again.');
+                                                                    });
+                                                                });
+                                                            }
                                                             
                                                             for (let key in targetDetails) {
                                                                 const field = targetDetails[key];
@@ -2371,7 +2401,7 @@ class g_ffl_Cockpit_Admin
                                                                 }
                                                             }
 
-                                                            if (['wikiarms', 'gun.deals', 'ammoseek'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora'].includes(target)) {
                                                                 modalBody.append(`
                                                                 <div class="helperDialog">
                                                                     Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${target} within each of their product groups.  
@@ -2399,7 +2429,7 @@ class g_ffl_Cockpit_Admin
                                                             }
 
                                                             // automatically open product restrictions for certain targets
-                                                            if (['wikiarms', 'gun.deals', 'ammoseek'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora'].includes(target)) {
                                                                 document.getElementById('pr_header').click();
                                                             }
                                                            
@@ -2488,11 +2518,12 @@ class g_ffl_Cockpit_Admin
                                                                         }
                                                                     });
                                                                 });
-                                                            } else if (['gun.deals', 'wikiarms', 'ammoseek'].includes(target)) {
+                                                            } else if (['gun.deals', 'wikiarms', 'ammoseek','armsagora'].includes(target)) {
                                                                 var rss_field_categories = {
                                                                     "wikiarms": ["guns","brass","powder","bullets","primers","magazines","ammunition","reloading_misc"],
                                                                     "ammoseek": ["guns","brass","powder","bullets","primers","magazines","ammunition"],
-                                                                    "gun.deals": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"]
+                                                                    "gun.deals": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"],
+                                                                    "armsagora": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"]
                                                                 }
                                                                 const restrictions = [
                                                                     {"field": "category", "modal": "categoryModal", "name": "Categories", "select_text": "Select Categories"},
@@ -2935,7 +2966,7 @@ class g_ffl_Cockpit_Admin
                                             async function initialize() {
                                                 var tschema = await get_target_schema();
                                                 if (tschema == null || gFFLCockpitKey == null || gFFLCockpitKey == undefined || gFFLCockpitKey.length < 40){
-                                                    document.getElementById('configuration').innerHTML='<b>There was a problem retreiving your FFL Cockpit configuration</b>. If you have not purchased a key for FFL Cockpit, you can do so here: <a target=_blank href="https://garidium.com/product/ffl-cockpit-checkout-bundle/">Purchase FFL Cockpit Key</a>. If you have a key, and believe you entered it properly below, please contact support@garidium.com for assistance. This error can also appear if there was a temporary system outage. In that case please check back later.';
+                                                    document.getElementById('configuration').innerHTML='<b>There was a problem retreiving your FFL Cockpit configuration</b>. If you have not purchased a key for FFL Cockpit, you can do so here: <a target=_blank href="https://fflcockpit.com">Subscribe to FFL Cockpit</a>. If you have a key, and believe you entered it properly below, please contact support@garidium.com for assistance. This error can also appear if there was a temporary system outage. In that case please check back later.';
                                                     document.getElementById('configuration').style.background = "#e7bec5";
                                                     document.getElementById('configuration').style.margin = "20px";
                                                     document.getElementById('configuration').style.border = "solid black 2px";
@@ -3120,7 +3151,7 @@ class g_ffl_Cockpit_Admin
                                 <th scope="row">Plugin Logo URL:</th>
                                 <td>
                                     <input type="text" style="width: 500px;" name="g_ffl_cockpit_plugin_logo_url"
-                                            value="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.png');?>"/>
+                                            value="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.svg');?>"/>
                                 </td>
                             </tr>
                         </table>
@@ -3740,7 +3771,7 @@ class g_ffl_Cockpit_Admin
                     }
                 </script>
                 <div class="postbox" style="padding: 10px;margin-top: 10px;overflow-x:scroll;">
-                    <div style="padding:10px;">If you have any questions about FFL Cockpit configuration, send an email to support@garidium.com detailing your questions. We'll get back as soon as we can. Include your name and your website URL so we can look up your configuration. Also, make to review our <a target=_blank href="https://garidium.com/category/help-center/">Help Center</a> for tips on using Cockpit.</div>
+                    <div style="padding:10px;">If you have any questions about FFL Cockpit configuration, send an email to support@garidium.com detailing your questions. We'll get back as soon as we can. Include your name and your website URL so we can look up your configuration. Also, make to review our <a target=_blank href="https://fflcockpit.com/help-center/">Help Center</a> for tips on using FFL Cockpit.</div>
                     <div class="video_grid" id="training_videos"></div>
                 </div>
             </div>    

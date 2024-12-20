@@ -1,11 +1,11 @@
 === g-FFL Cockpit ===
 Contributors: garidium
 Tags: FFL, fulfillment, distributor feed, zanders, davidsons, lipseys, 2nd amendment, chatanooga, cssi, rsr, WooCommerce, FFL gun dealers, gun dealer
-Donate link: https://garidium.com/product/g-ffl-cockpit/
+Donate link: https://fflcockpit.com
 Requires at least: 5.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.4.14
+Stable tag: 1.4.15
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,10 +35,10 @@ While the plugin is free to download and install, it does require you to purchas
 2. Ability to create fulfillment orders
 
 == To purchase a key, visit the g-FFL Cockpit product page: ==
-[g-FFL Cockpit Product Page](https://garidium.com/g-ffl-cockpit/) 
+[g-FFL Cockpit Product Page](https://fflcockpit.com) 
 
 ==Please review our Terms and Conditions: ==
-[Terms and Conditions](https://garidium.com/terms_of_sale/)
+[Terms and Conditions](https://fflcockpit.com/terms_of_sale/)
 
 
 == Installation ==
@@ -64,6 +64,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+56. v1.4.15 Added new Target capability (Armsagora), plus added in Feed URLs
 55. v1.4.14 Added new Target capability
 54. v1.4.13 Minor bug resolved with default toggle setting
 53. v1.4.11 Update Product Catalog Extract to Run and Email Extract, eliminating time-outs

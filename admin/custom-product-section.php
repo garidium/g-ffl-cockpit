@@ -26,14 +26,14 @@
 $warehouse_option_websites = array(
     'https://firearmsdirectclub.ffl-charlie.com',
     'https://firearmsdirectclub.com',
-    'https://firearmsdirectclub.com/home',
-    'http://localhost:8000',
+    'https://firearmsdirectclub.com/home'
+    //,'http://localhost:8000'
     // Add more URLs as needed
 );
 
 // Function to check if the product has the '_automated_listing' metadata set
-function is_cockpit_listing($product_id) {
-    return get_post_meta($product_id, 'automated_listing', 'True') ? true : false;
+function is_automated_listing($product_id) {
+    return get_post_meta($product_id, 'automated_listing') ? true : false;
 }
 
 // Get the current website URL
@@ -55,7 +55,7 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
     function add_custom_product_options() {
         global $product;
 
-        if (!is_cockpit_listing($product->get_id())){
+        if (!is_automated_listing($product->get_id())){
             return;
         }
 
@@ -252,7 +252,7 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
     // Add selected option as metadata to the cart item
     function add_custom_option_to_cart_item( $cart_item_data, $product_id ) {
 
-        if (!is_cockpit_listing($product_id)){
+        if (!is_automated_listing($product_id)){
             return $cart_item_data;
         }
 
@@ -291,7 +291,7 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
     // Update cart item price and shipping class
     function update_cart_item_price_shipping_class($cart_item) {
         $product_id = $cart_item['product_id'];
-        if (!is_cockpit_listing($product_id)){
+        if (!is_automated_listing($product_id)){
             return $cart_item;
         }
         if (isset($cart_item['custom_product_option_sku']) && isset($cart_item['custom_product_option_price']) && isset($cart_item['custom_product_option_shipping_class'])) {
@@ -307,12 +307,12 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
     // Display the custom option in the cart
     function display_custom_option_in_cart( $item_data, $cart_item ) {
         $product_id = $cart_item['product_id'];
-        if (!is_cockpit_listing($product_id)){
+        if (!is_automated_listing($product_id)){
             return $item_data;
         }
         if ( isset( $cart_item['custom_product_option'] ) ) {
             $item_data[] = array(
-                'key'   => __( 'Warehouse', 'custom-product-options' ),
+                'key'   => __( 'Vendor', 'custom-product-options' ),
                 'value' => wc_clean( $cart_item['custom_product_option'] ),
             );
         }
@@ -324,12 +324,12 @@ if (in_array($current_site_url, $warehouse_option_websites)) {
     // Save custom option to order item meta
     function save_custom_option_to_order_item_meta( $item, $cart_item_key, $values, $order ) {
         $product_id = $item->get_product_id(); // Get the product ID from order item
-        if (!is_cockpit_listing($product_id)){
+        if (!is_automated_listing($product_id)){
             return;
         }
         if ( isset( $values['custom_product_option'] ) ) {
             // Add the custom product options as meta data
-            $item->add_meta_data( __( 'Warehouse', 'custom-product-options' ), $values['custom_product_option'], true);
+            $item->add_meta_data( __( 'Vendor', 'custom-product-options' ), $values['custom_product_option'], true);
             $item->add_meta_data( __( '_SKU', 'custom-product-options' ), $values['custom_product_option_sku'], true);
             $item->add_meta_data( __( '_Price', 'custom-product-options' ), $values['custom_product_option_price'], true);
            
@@ -355,7 +355,7 @@ function custom_product_section_tab($tabs) {
     global $product;
     // Check if the current user is an admin
     if (current_user_can('administrator')) {
-        if (is_cockpit_listing($product->get_id())){
+        if (is_automated_listing($product->get_id())){
             // Add a new tab with the title 'Custom Section'
             $tabs['custom_section'] = array(
                 'title'    => __('Admin', 'textdomain'),
@@ -468,4 +468,66 @@ function custom_product_section_content() {
             });
         });
     </script>';
+}
+
+add_action('woocommerce_duplicate_product', 'handle_product_duplication_metadata', 10, 2);
+function handle_product_duplication_metadata($duplicated_product_id, $original_product) {
+    // Ensure the duplicated product ID is valid
+    if (!is_int($duplicated_product_id) || !$duplicated_product_id) {
+        return;
+    }
+
+    // Retrieve the original product ID from the stdClass object
+    $original_product_id = isset($original_product->ID) ? $original_product->ID : null;
+
+    // If the original product ID is not available, exit
+    if (!$original_product_id) {
+        return;
+    }
+
+    // Check if the original product has the 'automated_listing' meta key
+    $automated_listing_meta = get_post_meta($original_product_id, 'automated_listing', true);
+
+    // If the 'automated_listing' meta key does not exist, exit
+    if (empty($automated_listing_meta)) {
+        return;
+    }
+
+    // Load the duplicated product object
+    $duplicated_product = wc_get_product($duplicated_product_id);
+
+    // Ensure the product object is valid
+    if (!$duplicated_product) {
+        return;
+    }
+
+    // Remove the 'automated_listing' meta key from the duplicated product
+    delete_post_meta($duplicated_product_id, 'automated_listing');
+
+    // Get the current user
+    $current_user = wp_get_current_user();
+
+    // Add metadata to identify the product as a duplicate
+    update_post_meta($duplicated_product_id, '_is_duplicate', true);
+
+    // Add metadata to capture who duplicated the product
+    update_post_meta($duplicated_product_id, '_duplicated_by', $current_user->user_login);
+
+    // Add metadata to capture when the product was duplicated
+    update_post_meta($duplicated_product_id, '_duplicated_at', current_time('mysql'));
+
+    // Add metadata to reference the original product ID
+    update_post_meta($duplicated_product_id, '_original_product_id', $original_product_id);
+
+    // Get the UPC attribute value
+    $upc = $duplicated_product->get_attribute('upc');
+
+    // Check if UPC exists and construct the new SKU
+    if (!empty($upc)) {
+        $new_sku = 'ISD|' . $upc;
+        $duplicated_product->set_sku($new_sku); // Set the new SKU
+        $duplicated_product->save(); // Save the updated product
+    } else {
+        error_log('UPC attribute is missing for product ID: ' . $duplicated_product_id);
+    }
 }
