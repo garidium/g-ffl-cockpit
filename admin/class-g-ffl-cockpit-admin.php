@@ -112,7 +112,7 @@ class g_ffl_Cockpit_Admin
 
     public function ffl_load_menu()
     {
-        $custom_plugin_name = (get_option('g_ffl_cockpit_plugin_name') != ''? get_option('g_ffl_cockpit_plugin_name') : 'g-FFL Cockpit');
+        $custom_plugin_name = (get_option('g_ffl_cockpit_plugin_name') != ''? get_option('g_ffl_cockpit_plugin_name') : 'FFL Cockpit');
         add_menu_page('g-FFL Cockpit Settings Page', $custom_plugin_name, 'manage_options', 'g-ffl-cockpit-settings', array($this, 'g_ffl_cockpit_settings_page'), 'dashicons-database-import', 70);
         add_action('admin_init', array($this, 'register_g_ffl_cockpit_settings'));
     }
@@ -1492,7 +1492,13 @@ class g_ffl_Cockpit_Admin
                                 font-weight: bold;
                                 text-decoration: underline;
                             }
-  
+                            
+                            .grid_cell_label{
+                                color:#165e7e;
+                                font-style: italic;
+                                width: 40%;
+                                text-align:right;
+                            }
 
                             .cockpit-watermark {
                                 position: absolute;
@@ -2404,12 +2410,17 @@ class g_ffl_Cockpit_Admin
                                                             if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora'].includes(target)) {
                                                                 modalBody.append(`
                                                                 <div class="helperDialog">
-                                                                    Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${target} within each of their product groups.  
+                                                                    Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${displayName} within each of their product groups.  
+                                                                </div>`);
+                                                            }else if (['liberty_gun_trader'].includes(target)) {
+                                                                modalBody.append(`
+                                                                <div class="helperDialog">
+                                                                    Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${displayName}, which has a product limit. You must put in at least one include filter for products to be listed.
                                                                 </div>`);
                                                             }else{
                                                                 modalBody.append(`
                                                                 <div class="helperDialog">
-                                                                    Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${target}. By default all products will be listed based on your global product restriction settings, so this is an optional configuration if you need to only show certain products on ${target}.
+                                                                    Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${displayName}. By default all products will be listed based on your global product restriction settings, so this is an optional configuration if you need to only show certain products on ${displayName}.
                                                                 </div>`);
                                                             }
                                                             
@@ -3289,110 +3300,256 @@ class g_ffl_Cockpit_Admin
                         }
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
                         let productGrid;
+
+
+                        
+
+
+
+
+
+
+
+
+
+
+
+
+
                         function loadGrid() {
-                            const keyword = document.getElementById('cokcpit-product-search-input').value;
-                            if (keyword.length<3){
-                                alert("Enter a Search Term with at least 3 characters.");
-                                return;
-                            }
-                            if (productGrid) {
-                                productGrid.updateConfig({
-                                    server: {
-                                        url: `https://ffl-api.garidium.com/product?action=get_filtered_catalog&search=${keyword}`,
-                                        method: 'GET',
-                                        headers: {
-                                            "Accept": "application/json",
-                                            "Content-Type": "application/json",
-                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
-                                        },
-                                        then: data => JSON.parse(data).products.map(product => [
-                                            product.distid, 
-                                            product.distsku,
-                                            JSON.parse(product.images), 
-                                            product.name,
-                                            product.upc, 
-                                            product.mfg_name,
-                                            product.mpn,
-                                            product.qty_on_hand, 
-                                            product.unit_price,  
-                                            product.shipping_cost,
-                                            product.total_cost,
-                                            product.map_price
-                                        ]),
-                                        total: data => JSON.parse(data).count
-                                    }
-                                }).forceRender();
-                            } else {
-                                productGrid = new gridjs.Grid({
-                                    columns: [
-                                        {name: 'Dist', width: '60px', formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[0].data)}">`)},
-                                        {name: 'SKU'}, 
-                                        {sort: false, name: 'Product Image', formatter: (_, row) => gridjs.html(`<a style="cursor:pointer;" onclick="load_product_data('${row.cells[3].data.replaceAll("\"","&quot;") + "','" + row.cells[0].data + "','" + row.cells[1].data + "','" + (row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}')"><img style="max-height:40px;max-width:100px;height:auto;width:auto;" src="${(row.cells[2].data.length>0?row.cells[2].data[0]['src']:"")}"></a>`)},
-                                        {name: 'Name', width: '200px'}, 
-                                        {name: "UPC"},
-                                        {name: "MFG"},
-                                        {name: "MPN"},
-                                        {name: "Qty", width: '55px'},
-                                        {name: 'Cost', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
-                                        {name: 'Ship', width: '60px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
-                                        {name: 'Total', width: '80px', formatter: (cell) => `$${cell.toFixed(2)}`}, 
-                                        {name: 'MAP', width: '80px', formatter: (cell) => `${cell!=null?"$" + cell.toFixed(2):""}`}
-                                    ],
-                                    sort: {
-                                        multiColumn: false,
-                                        server: {
-                                            url: (prev, columns) => {
-                                                if (!columns.length) return prev;
-                                                const col = columns[0];
-                                                const dir = col.direction === 1 ? 'asc' : 'desc';
-                                                let colName = ['distid', 'distsku', 'distsku', 'name', 'upc', 'mfg_name', 'mpn', 'qty_on_hand', 'unit_price', 'shipping_cost', 'total_cost', 'map_price'][col.index];
-                                                return `${prev}&order_column=${colName}&order_direction=${dir}`;
-                                            }
-                                        }
-                                    },
-                                    resizable: true,
-                                    pagination: {
-                                        limit: 100,
-                                        server: {
-                                            url: (prev, page, limit) => `${prev}&limit=${limit}&offset=${page * limit}`
-                                        }
-                                    },
-                                    fixedHeader: true,
-                                    style: {
-                                        td: {
-                                            'padding': '3px'
-                                        },
-                                        th: {
-                                            'padding': '3px'
-                                        }
-                                    },
-                                    server: {
-                                        url: `https://ffl-api.garidium.com/product?action=get_filtered_catalog&search=${keyword}`,
-                                        method: 'GET',
-                                        headers: {
-                                            "Accept": "application/json",
-                                            "Content-Type": "application/json",
-                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
-                                        },
-                                        then: data => JSON.parse(data).products.map(product => [
-                                            product.distid, 
-                                            product.distsku,
-                                            JSON.parse(product.images), 
-                                            product.name,
-                                            product.upc, 
-                                            product.mfg_name,
-                                            product.mpn,
-                                            product.qty_on_hand, 
-                                            product.unit_price,  
-                                            product.shipping_cost,
-                                            product.total_cost,
-                                            product.map_price
-                                        ]),
-                                        total: data => JSON.parse(data).count
-                                    } 
-                                }).render(document.getElementById('product_feed_table'));
-                            }
-                        }
+    const keyword = document.getElementById('cokcpit-product-search-input').value;
+    if (keyword.length < 3) {
+        alert("Enter a Search Term with at least 3 characters.");
+        return;
+    }
+    if (productGrid) {
+        productGrid.updateConfig({
+            server: {
+                url: `https://ffl-api.garidium.com/product?action=get_filtered_catalog&search=${keyword}`,
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                },
+                then: data => {
+                    const parsedData = JSON.parse(data);
+                    console.log("Server Response:", parsedData);
+                    return parsedData.products.map(product => [
+                        product.distid,
+                        product.distsku,
+                        JSON.parse(product.images || '[]'),
+                        product.name,
+                        product.mfg_name,
+                        product.upc,
+                        product.mpn,
+                        product.qty_on_hand || 0,
+                        product.unit_price || 0,
+                        product.shipping_cost || 0,
+                        product.total_cost || 0,
+                        product.map_price || 0,
+                        product.msrp,
+                        product.product_class,
+                        product.product_class_description,
+                        product.item_gb_cat_name,
+                        product.drop_ship_flg
+                    ]);
+                },
+                total: data => JSON.parse(data).count
+            }
+        }).forceRender();
+    } else {
+        productGrid = new gridjs.Grid({
+            columns: [
+                {
+                    sort: false,
+                    name: 'Dist',
+                    width: '60px',
+                    formatter: (_, row) => gridjs.html(`<img align="center" width="50px" src="${get_distributor_logo(row.cells[0]?.data)}">`)
+                },
+                {
+                    name: 'Product Summary',
+                    sort: false,
+                    formatter: (_, row) => gridjs.html(`
+                        <div>
+                            <table>
+                                <tr>
+                                    <td style="width:150px;">
+                                        <a style="align:center;cursor:pointer;" onclick="load_product_data('${row.cells[3]?.data.replaceAll("\"","&quot;") + "','" + row.cells[0]?.data + "','" + row.cells[1]?.data + "','" + (row.cells[2]?.data.length > 0 ? row.cells[2].data[0]['src'] : "")}')"><img style="max-height:80px;max-width:150px;height:auto;width:auto;" src="${(row.cells[2]?.data.length > 0 ? row.cells[2].data[0]['src'] : "")}"></a>
+                                    </td>
+                                    <td>
+                                        <strong>${row.cells[4]?.data || 'Unknown'}</strong>${row.cells[16].data === 1 ? `<i class="fas fa-truck" title="This item is dropshippable" style="color: gray; font-size: 12px; vertical-align: middle; margin-left: 5px;"></i>`: ''}<br>
+                                        ${row.cells[3]?.data || 'Unknown'}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    `)
+                },  
+                            
+                {
+                    name: 'Product Info',
+                    width: '300px',
+                    sort: false,
+                    formatter: (_, row) => gridjs.html(`
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td class="grid_cell_label">UPC:</td>
+                                <td><strong>${row.cells[5]?.data || 'N/A'}</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="grid_cell_label">SKU:</td>
+                                <td>${row.cells[1]?.data || 'N/A'}</td>
+                            </tr>
+                            <tr>
+                                <td class="grid_cell_label">MPN:</td>
+                                <td>${row.cells[6]?.data || 'N/A'}</td>
+                            </tr>
+                            <tr>
+                                <td class="grid_cell_label">Class:</td>
+                                <td>${row.cells[14]?.data || 'N/A'} (${row.cells[13]?.data || ''})</td>
+                            </tr>
+                            <tr>
+                                <td class="grid_cell_label">Category:</td>
+                                <td>${row.cells[15]?.data || 'N/A'}</td>
+                            </tr>
+                        </table>
+                    `)
+                },
+                {
+                    name: 'Pricing Data',
+                    width: '210px',
+                    sort: false,
+                    formatter: (_, row) => gridjs.html(`
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td class="grid_cell_label">Cost:</td>
+                            <td>${row.cells[8]?.data ? `$${row.cells[8].data.toFixed(2)}` : '--'}</td>
+                        </tr>
+                        <tr>
+                            <td class="grid_cell_label">Shipping:</td>
+                            <td>${row.cells[9]?.data ? `$${row.cells[9].data.toFixed(2)}` : 'Free'}</td>
+                        </tr>
+                        <tr>
+                            <td class="grid_cell_label">Total Cost:</td>
+                            <td><strong>${row.cells[10]?.data ? `$${row.cells[10].data.toFixed(2)}` : '--'}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="grid_cell_label">MSRP:</td>
+                            <td>${row.cells[12]?.data ? `$${row.cells[12].data.toFixed(2)}` : '--'}</td>
+                        </tr>
+                        <tr>
+                            <td class="grid_cell_label">MAP:</td>
+                            <td>${row.cells[11]?.data ? `$${row.cells[11].data.toFixed(2)}` : '--'}</td>
+                        </tr>
+                    </table>
+                    `)
+                },
+                {
+                    name: 'Availability',
+                    width: '100px',
+                    sort: false,
+                    formatter: (_, row) => gridjs.html(`
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td class="grid_cell_label">Qty:</td>
+                            <td><strong>${row.cells[7]?.data ? `${row.cells[7].data}` : '0'}</strong></td>
+                        </tr>
+                    </table>
+                    `)
+                },
+                {name: "Qty2", hidden: true},
+                {name: "Image", hidden: true},
+                {name: "unit_price", hidden: true},
+                {name: "shipping_cost", hidden: true},
+                {name: "total_cost", hidden: true},
+                {name: "map_price", hidden: true},
+                {name: "msrp", hidden: true},
+                {name: "product_class", hidden: true},
+                {name: "category", hidden: true},
+                {name: "product_class_description", hidden: true},
+                {name: "item_gb_cat_name", hidden: true},
+                {name: "drop_ship_flag", hidden: true}
+            ],
+            sort: {
+                multiColumn: false,
+                server: {
+                    url: (prev, columns) => {
+                        if (!columns.length) return prev;
+                        const col = columns[0];
+                        const dir = col.direction === 1 ? 'asc' : 'desc';
+                        let colName = [
+                            'distid', 'distsku', 'images', 'name', 
+                            'mfg_name', 'upc', 'mpn', 'qty_on_hand', 
+                            'unit_price', 'shipping_cost', 'total_cost', 'map_price'
+                        ][col.index];
+                        return `${prev}&order_column=${colName}&order_direction=${dir}`;
+                    }
+                }
+            },
+            resizable: true,
+            pagination: {
+                limit: 100,
+                server: {
+                    url: (prev, page, limit) => `${prev}&limit=${limit}&offset=${page * limit}`
+                }
+            },
+            fixedHeader: true,
+            style: {
+                td: {
+                    'padding': '3px',
+                    'word-break': 'break-word'
+                },
+                th: {
+                    'padding': '3px',
+                    'word-break': 'break-word'
+                }
+            },
+            server: {
+                url: `https://ffl-api.garidium.com/product?action=get_filtered_catalog&search=${keyword}`,
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                },
+                then: data => JSON.parse(data).products.map(product => [
+                    product.distid,
+                    product.distsku,
+                    JSON.parse(product.images || '[]'),
+                    product.name,
+                    product.mfg_name,
+                    product.upc,
+                    product.mpn,
+                    product.qty_on_hand || 0,
+                    product.unit_price || 0,
+                    product.shipping_cost || 0,
+                    product.total_cost || 0,
+                    product.map_price || 0,
+                    product.msrp,
+                    product.product_class,
+                    product.product_class_description,
+                    product.item_gb_cat_name,
+                    product.drop_ship_flg
+                ]),
+                total: data => JSON.parse(data).count
+            }
+        }).render(document.getElementById('product_feed_table'));
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                         document.getElementById("download_inventory_button").addEventListener("click", function(){
                             document.getElementById("download_inventory_button").disabled = true;
