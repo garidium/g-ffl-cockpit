@@ -5,7 +5,7 @@ Donate link: https://fflcockpit.com
 Requires at least: 5.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.4.16
+Stable tag: 1.4.17
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+58. v1.4.17 Further improvement of Product Search Tab
 57. v1.4.16 Updated product feed tab to add more info, search on more items, and be more mobile friendly
 56. v1.4.15 Added new Target capability (Armsagora), plus added in Feed URLs
 55. v1.4.14 Added new Target capability
