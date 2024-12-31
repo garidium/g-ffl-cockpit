@@ -1528,6 +1528,42 @@ class g_ffl_Cockpit_Admin
                                 min-width: 1000px;
                             }
                         
+    
+                            .category_change_modal {
+                            position: fixed;
+                            z-index: 1000;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background-color: rgba(0, 0, 0, 0.4);
+                            display: none; /* Ensure flexbox is applied */
+                            justify-content: center !important; /* Center horizontally */
+                            align-items: center !important; /* Center vertically */
+                        }
+
+                        .category_change_modal_content {
+                            background-color: #fefefe;
+                            padding: 20px;
+                            border: 1px solid #888;
+                            width: 500px;
+                            max-width: 90%; /* Responsiveness */
+                            max-height: 90%; /* Ensure content fits on smaller screens */
+                            overflow-y: auto; /* Add scrolling if content overflows */
+                            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                            border-radius: 5px;
+                            position: relative;
+                        }
+
+                        .category_change_modal_close {
+                            position: absolute;
+                            top: 10px;
+                            right: 20px;
+                            color: #aaa;
+                            font-size: 28px;
+                            font-weight: bold;
+                            cursor: pointer;
+                        }
 
                         </style>
 
@@ -2092,7 +2128,6 @@ class g_ffl_Cockpit_Admin
                                                         }
 
                                                         function toggleOperandOption(restriction_id, option, setConfig = false) {
-                                                            //alert(restriction_id);
                                                             document.getElementById(restriction_id + '-and-option').classList.remove('operand_selected');
                                                             document.getElementById(restriction_id + '-or-option').classList.remove('operand_selected');
                                                             
@@ -3328,6 +3363,94 @@ class g_ffl_Cockpit_Admin
                             }
                             return "";
                         }
+
+                        function openCategoryChangeModal(upc, site_product_id, distsku, distid) {
+                            const modal = document.getElementById('categoryChangeModal');
+                            modal.style.display = 'flex';
+
+                            // Fetch category list and populate modal
+                            fetch("https://ffl-api.garidium.com", {
+                                method: "POST",
+                                headers: {
+                                    "Accept": "application/json",
+                                    "Content-Type": "application/json",
+                                    "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                },
+                                body: JSON.stringify({ "action": "get_category_list", "data": { "api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>" } })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                const container = document.getElementById('categoryList');
+                                container.innerHTML = ""; // Clear previous content
+                                if (data.categories.length > 0) {
+                                    data.categories.forEach(item => {
+                                        const label = document.createElement("label");
+                                        label.style.display = "block";
+                                        label.style.marginBottom = "5px";
+
+                                        const radio = document.createElement("input");
+                                        radio.type = "radio";
+                                        radio.name = "category";
+                                        radio.value = item.id;
+                                        radio.style.marginRight = "10px";
+
+                                        label.appendChild(radio);
+                                        label.appendChild(document.createTextNode(item.name + (item.parent ? ` (${item.parent})` : "")));
+                                        container.appendChild(label);
+                                    });
+                                    document.getElementById("categoryChangeModalSearch").dispatchEvent(new Event("input", { bubbles: true }));
+                                }
+                            });
+
+                            // Update category button logic
+                            document.getElementById('updateCategoryButton').onclick = function () {
+                                const selected = document.querySelector('input[name="category"]:checked');
+                                if (!selected) {
+                                    alert("You must select a valid category");
+                                    return;
+                                }
+
+                                document.getElementById("updateCategoryButton").disabled = true;
+                                document.getElementById('updateCategoryButton').innerText = 'Please Wait...';
+                            
+                                fetch("https://ffl-api.garidium.com", {
+                                    method: "POST",
+                                    headers: {
+                                        "Accept": "application/json",
+                                        "Content-Type": "application/json",
+                                        "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                                    },
+                                    body: JSON.stringify({
+                                        "action": "update_product_category",
+                                        "data": {
+                                            "product_id": site_product_id,
+                                            "category_id": selected.value,
+                                            "upc": upc,
+                                            "api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"
+                                        }
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        closeCategoryChangeModal();
+                                        document.getElementById(distid + "_" + upc + "_category").innerHTML='Pending Change';
+                                    } else {
+                                        alert("There was a problem updating the category");
+                                    }
+                                });
+                            };
+                            document.getElementById("updateCategoryButton").disabled = false;
+                            document.getElementById('updateCategoryButton').innerText = 'Apply Category Update';
+                            //document.getElementById('categoryChangeModalSearch').value = "";
+
+                        }
+
+                        function closeCategoryChangeModal() {
+                            const modal = document.getElementById('categoryChangeModal');
+                            modal.style.display = 'none';
+                        }
+
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
                         let productGrid;
                         function loadGrid() {
@@ -3370,7 +3493,8 @@ class g_ffl_Cockpit_Admin
                                                 product.item_gb_cat_name,
                                                 product.drop_ship_flg,
                                                 product.product_url,
-                                                product.permalink
+                                                product.permalink,
+                                                product.site_product_id
                                             ]);
                                         },
                                         total: data => JSON.parse(data).count
@@ -3394,7 +3518,11 @@ class g_ffl_Cockpit_Admin
                                                     <table>
                                                         <tr>
                                                             <td style="width:150px;">
-                                                                <a style="align:center;cursor:pointer;" onclick="load_product_data('${row.cells[3]?.data.replaceAll("\"","&quot;").replaceAll("''","&quot;") + "','" + row.cells[0]?.data + "','" + row.cells[1]?.data + "','" + (row.cells[2]?.data.length > 0 ? row.cells[2].data[0]['src'] : "")}')"><img style="max-height:80px;max-width:150px;height:auto;width:auto;" src="${(row.cells[2]?.data.length > 0 ? row.cells[2].data[0]['src'] : "")}"></a>
+                                                                <a style="align:center;cursor:pointer;" 
+                                                                onclick="load_product_data('${row.cells[3]?.data.replaceAll("'", "\\'").replaceAll('\"','&quot;')}', '${row.cells[0]?.data}', '${row.cells[1]?.data}', '${row.cells[2]?.data.length > 0 ? row.cells[2].data[0]['src'] : ""}')">
+                                                                    <img style="max-height:80px;max-width:150px;height:auto;width:auto;" 
+                                                                        src="${row.cells[2]?.data.length > 0 ? row.cells[2].data[0]['src'] : ""}">
+                                                                </a>
                                                             </td>
                                                             <td style="min-width:250px;">
                                                                 <strong>${row.cells[4]?.data || 'Unknown'}</strong>${row.cells[16].data === 1 ? `<i class="fas fa-truck" title="This item is dropshippable" style="color: gray; font-size: 12px; vertical-align: middle; margin-left: 5px;"></i>`: ''}<br>
@@ -3431,7 +3559,12 @@ class g_ffl_Cockpit_Admin
                                                     </tr>
                                                     <tr>
                                                         <td class="grid_cell_label">Category:</td>
-                                                        <td>${row.cells[15]?.data || 'N/A'}</td>
+                                                        <td>
+                                                            <span id="${row.cells[0].data}_${row.cells[5].data}_category">${row.cells[15]?.data || '<span style="color:red;">Uncategorized</span>'}</span>
+                                                            <i class="fas fa-edit" style="cursor: pointer; margin-left: 5px; color: #BBBBBB;" 
+                                                                title="Edit Category"
+                                                                onclick="openCategoryChangeModal('${row.cells[5]?.data}', '${row.cells[19]?.data}', '${row.cells[1]?.data}', '${row.cells[0]?.data}')"></i>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                             `)
@@ -3491,7 +3624,9 @@ class g_ffl_Cockpit_Admin
                                         {name: "item_gb_cat_name", hidden: true},
                                         {name: "drop_ship_flag", hidden: true},
                                         {name: "product_url", hidden: true},
-                                        {name: "permalink", hidden: true}
+                                        {name: "permalink", hidden: true},
+                                        {name: "site_product_id", hidden: true}
+
                                     ],
                                     sort: {
                                         multiColumn: false,
@@ -3554,7 +3689,8 @@ class g_ffl_Cockpit_Admin
                                             product.item_gb_cat_name,
                                             product.drop_ship_flg,
                                             product.product_url,
-                                            product.permalink
+                                            product.permalink,
+                                            product.site_product_id
                                         ]),
                                         total: data => JSON.parse(data).count
                                     }
@@ -3967,6 +4103,30 @@ class g_ffl_Cockpit_Admin
                 </tr>
             </table>
         </div>
+        <div id="categoryChangeModal" class="category_change_modal">
+            <div class="category_change_modal_content">
+                <span class="category_change_modal_close" onclick="closeCategoryChangeModal()">&times;</span>
+                <div>
+                    <b>Product Category Change:</b>
+                    <p><span style="color:red;font-weight:bold;">PLEASE READ BEFORE DOING ANYTHING</span> This will update the product category on your site AND the product category this product is associated with for <u><span style="color:red;">All Cockpit Fed Sites</span></u>. So <span style="color:red;">please make sure you are making changes that help everyone</span>. We track all changes made and who made the changes. <b>Changes are not immediate, and may take up to an hour to apply</b>.<u>Thank you</u> for your contribution, Gary.</p>
+                    <input type="text" id="categoryChangeModalSearch" placeholder="Search categories..." style="width:450px; margin-bottom: 10px;"><br>
+                    <div id="categoryList" style="width:450px; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
+                    <button id="updateCategoryButton" style="width: 450px; margin-top: 10px;">Apply Category Update</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            // Add event listener for search input
+            document.getElementById("categoryChangeModalSearch").addEventListener("input", function() {
+                    const filter = this.value.toLowerCase();
+                    const labels = document.getElementById('categoryList').getElementsByTagName("label");
+                    for (let i = 0; i < labels.length; i++) {
+                        const text = labels[i].textContent.toLowerCase();
+                        labels[i].style.display = text.includes(filter) ? "block" : "none";
+                    }
+                });
+        </script>
+
 
     <?php }
 }
