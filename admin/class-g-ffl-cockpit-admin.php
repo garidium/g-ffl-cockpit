@@ -3454,7 +3454,7 @@ class g_ffl_Cockpit_Admin
                         // https://unpkg.com/browse/gridjs@5.1.0/dist/
                         let productGrid;
                         function loadGrid() {
-                            const keyword = document.getElementById('cockpit-product-search-input').value;
+                            const keyword = encodeURIComponent(document.getElementById('cockpit-product-search-input').value);
                             const ignore_product_restrictions = document.getElementById('ignore-product-restrictions-toggle').checked?"on":"off";
 
                             if (keyword.length < 3) {
