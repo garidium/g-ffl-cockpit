@@ -864,7 +864,7 @@ class g_ffl_Cockpit_Admin
                             function savePriceBasedMargin() {
                                 const modal = document.getElementById('priceBasedMarginModal');
                                 const selectedItemsId = modal.getAttribute('data-selected-items-id');
-                                const tableBody = document.querySelector(`#${selectedItemsId} tbody`);
+                                const tableBody = document.querySelector(`#${CSS.escape(selectedItemsId)} tbody`);
                                 const minPrice = isNaN(parseFloat(document.getElementById('min_price').value)) ? 0 : parseFloat(document.getElementById('min_price').value);
                                 const maxPrice = isNaN(parseFloat(document.getElementById('max_price').value)) ? 0 : parseFloat(document.getElementById('max_price').value);
                                 const marginDollar = isNaN(parseFloat(document.getElementById('margin_dollar').value)) ? 0 : parseFloat(document.getElementById('margin_dollar').value);
@@ -2867,11 +2867,12 @@ class g_ffl_Cockpit_Admin
                                                         <div class="helperDialog">
                                                             This section allows you to configure the products you would like included on your site.
                                                             <uL style="list-style-type: disc;">
-                                                                <li>All products from Distributors are included by default. If you do nothing below, all products we be included. We do not suggest that, and instead be selective about the product listed. Use either the product class selections or the categories to select the items you want to "include". We suggest using categories, so you can be more selective.</li>
-                                                                <li><span style="color:red;"><b>**Important:</b> If you add items to the "include" sections, those items selected will be the <u>ONLY</u> product listed on your site.</span> For example, If you add a single UPC to the includes, your site will only have that single product listed.</li>
-                                                                <li>If you have items in the "include" section, there is no need to have items in the "exclude" section, since only those items in the "include" will be included.</li>
-                                                                <li>Reach out to support@garidium.com if you have any questions.</li>
+                                                                <li>All products from Distributors are included by default. If you have no filters (includes or excludes), all products will flow through to your site. We do not suggest that, and instead you should be selective about the product listed. Use either the product class selections or the categories to select the items you want to "include". We suggest using categories, so you can be more selective.</li>
+                                                                <li><span style="color:red;"><b>**Important:</b> If you add items to the "include" sections, those items selected will be the <u>ONLY</u> product listed on your site. The includes are evaluated together using the "AND | OR" options selected.</span></li>
+                                                                <li>If you have items in the "include" section, there is no need to have items in the "exclude" section of the same group, since only those items in the "include" will be included.</li>
+                                                                <li>If you have any questions, watch the video below. If you still have questions, contact us at support@garidium.com</li>
                                                             </ul>
+                                                            <iframe width="530" height="300" src="https://www.youtube.com/embed/p9INHMI-47w?si=xF3-lW3qcK_hW3TL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                                                         </div>
                                                         <div class="restriction-section">
                                                             <div class="restriction-header"><strong>Cost-based Restrictions</strong></div>
