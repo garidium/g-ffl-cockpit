@@ -1584,6 +1584,24 @@ class g_ffl_Cockpit_Admin
                             opacity: 0.9; /* Slight transparency for a worn look */
                         }
 
+                        .cockpit-distributor-ribbon-incomplete {
+                            position: absolute;
+                            top: 7px; /* Maintain original vertical position */
+                            right: 7px; /* Maintain original horizontal position */
+                            padding: 1px 2px; /* Add padding for spacing */
+                            background-color: yellow; /* Green background */
+                            color: black;
+                            text-align: center;
+                            font-size: 7px; /* Adjust font size as needed */
+                            font-weight: bold;
+                            z-index: 1;
+                            border: 2px solid #fff; /* White border to simulate stamp edge */
+                            border-radius: 2px; /* Slight rounding for stamp corners */
+                            box-shadow: 0 0 0 1px yellow, /* Outer green border */
+                                        0 1px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+                            letter-spacing: 1px; /* Spacing between letters */
+                            opacity: 0.9; /* Slight transparency for a worn look */
+                        }
 
 
                         </style>
@@ -1973,38 +1991,37 @@ class g_ffl_Cockpit_Admin
                                                         let targetSchema = null;
                                                         let validatedDistributors = null;
                                                         
-                                                        function is_validated_distributor(distid) {
+
+                                                        function getDistributorStatus(distid) {
                                                             if (validatedDistributors != null) {
-                                                                const distids = validatedDistributors.map(distributor => distributor.distid); // Extract distid values
-                                                                if (distids.includes(distid)) {
-                                                                    return true;
-                                                                }
+                                                                // Use the find() method to locate the distributor object with the matching distid
+                                                                const distributor = validatedDistributors.find(distributor => distributor.distid === distid);
+                                                                // If the distributor is found, return its status; otherwise, return 'not found' or another appropriate value
+                                                                return distributor ? distributor.status : 'not found';
                                                             }
-                                                            return false;
+                                                            // Return 'not found' or another appropriate value if validatedDistributors is null
+                                                            return 'not valid';
                                                         }
 
-                                                        async function get_validated_distributors() {
-                                                            if (validatedDistributors == null) {
-                                                                try {
-                                                                    const response = await fetch("https://ffl-api.garidium.com", {
-                                                                        method: "POST",
-                                                                        headers: {
-                                                                            "Accept": "application/json",
-                                                                            "Content-Type": "application/json",
-                                                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
-                                                                        },
-                                                                        body: JSON.stringify({ "action": "get_validated_distributors", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"}})
-                                                                    });
-
-                                                                    const data = await response.json();
-                                                                    //alert
-                                                                    validatedDistributors = data;
-                                                                } catch (error) {
-                                                                    console.error('Error fetching validated distributors:', error);
-                                                                    return null; // Return null or handle the error as needed
-                                                                }
+                                                        async function reset_validated_distributors() {
+                                                            validatedDistributors = null;
+                                                            //alert("Getting validated distributors");
+                                                            try {
+                                                                const response = await fetch("https://ffl-api.garidium.com", {
+                                                                    method: "POST",
+                                                                    headers: {
+                                                                        "Accept": "application/json",
+                                                                        "Content-Type": "application/json",
+                                                                        "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
+                                                                    },
+                                                                    body: JSON.stringify({ "action": "get_validated_distributors", "data": {"api_key": document.getElementById('g_ffl_cockpit_key').value}})
+                                                                });
+                                                                const data = await response.json();
+                                                                validatedDistributors = data;
+                                                            } catch (error) {
+                                                                console.error('Error fetching validated distributors:', error);
+                                                                return null; // Return null or handle the error as needed
                                                             }
-                                                            
                                                             return validatedDistributors;
                                                         }
 
@@ -2243,7 +2260,8 @@ class g_ffl_Cockpit_Admin
                                                                 let formHtml = `<div class="distcards">
                                                                                     <div class="card mt-2" id="${distid}">
                                                                                         <div class="card-header">
-                                                                                            ${is_validated_distributor(distid) ? '<div class="cockpit-distributor-ribbon">Validated</div>' : ''}
+                                                                                            ${getDistributorStatus(distid) == "validated" ? '<div class="cockpit-distributor-ribbon">Validated</div>' : ''}
+                                                                                            ${getDistributorStatus(distid) == "incomplete" ? '<div class="cockpit-distributor-ribbon-incomplete">Incomplete</div>' : ''}
                                                                                             <div class="distid_image_area">
                                                                                                 <img src="https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_${distid}.png" alt="${distributor} logo">
                                                                                             </div>
@@ -3090,7 +3108,7 @@ class g_ffl_Cockpit_Admin
                                                 }
 
                                                 await get_distributors_schema();
-                                                await get_validated_distributors();
+                                                await reset_validated_distributors();
 
                                                 fetch("https://ffl-api.garidium.com", {
                                                     method: "POST",
@@ -3307,7 +3325,7 @@ class g_ffl_Cockpit_Admin
                                                     "Content-Type": "application/json",
                                                     "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
                                                     },
-                                                    body: JSON.stringify({"action": "validate_cockpit_configuration", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"}})
+                                                    body: JSON.stringify({"action": "validate_cockpit_configuration", "data": {"api_key": document.getElementById('g_ffl_cockpit_key').value}})
                                                 })
                                                 .then(response=>response.json())
                                                 .then(data=>{ 
@@ -4157,7 +4175,7 @@ class g_ffl_Cockpit_Admin
                     <td align="right">
                         <div id="g-ffl-admin-buttons" align="right" style="margin:20px;display:none;">
                             <b>Admin Functions:&nbsp;</b>
-                            <a class="button alt" onclick="document.getElementById('configuration').style.border='solid red 3px';initialCockpitConfiguration = null;get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, true);document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';document.getElementById('save_cockpit_configuration_button').style.display='none';">Load Config</a>
+                            <a class="button alt" onclick="handleLoadConfigClick();">Load Config</a>
                             <a class="button alt" onclick="setConfig(document.getElementById('g_ffl_cockpit_key').value)?refreshEditor():alert('Save Failed');">Save</a>
                             <span style="padding:10px;color:red;display:none;" id="admin_current_editing_key"></span>
                         </div>
@@ -4187,6 +4205,20 @@ class g_ffl_Cockpit_Admin
                         labels[i].style.display = text.includes(filter) ? "block" : "none";
                     }
                 });
+
+                async function handleLoadConfigClick() {
+                try {
+                    document.getElementById('configuration').style.border='solid red 3px';
+                    initialCockpitConfiguration = null;
+                    await reset_validated_distributors();
+                    get_and_set_cockpit_configuration(document.getElementById('g_ffl_cockpit_key').value, true);
+                    document.getElementById('admin_current_editing_key').innerHTML = 'Editing: ' + document.getElementById('g_ffl_cockpit_key').value;document.getElementById('admin_current_editing_key').style.display='';
+                    document.getElementById('save_cockpit_configuration_button').style.display='none';
+                } catch (error) {
+                    console.error('Error during Load Config process:', error);
+                }
+            }
+
         </script>
 
 
