@@ -1565,6 +1565,27 @@ class g_ffl_Cockpit_Admin
                             cursor: pointer;
                         }
 
+                        .cockpit-distributor-ribbon {
+                            position: absolute;
+                            top: 7px; /* Maintain original vertical position */
+                            right: 7px; /* Maintain original horizontal position */
+                            padding: 1px 2px; /* Add padding for spacing */
+                            background-color: #b5ffd2; /* Green background */
+                            color: black;
+                            text-align: center;
+                            font-size: 7px; /* Adjust font size as needed */
+                            font-weight: bold;
+                            z-index: 1;
+                            border: 2px solid #fff; /* White border to simulate stamp edge */
+                            border-radius: 2px; /* Slight rounding for stamp corners */
+                            box-shadow: 0 0 0 1px #b5ffd2, /* Outer green border */
+                                        0 1px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+                            letter-spacing: 1px; /* Spacing between letters */
+                            opacity: 0.9; /* Slight transparency for a worn look */
+                        }
+
+
+
                         </style>
 
                         <!-- Modal -->
@@ -1950,7 +1971,43 @@ class g_ffl_Cockpit_Admin
                                                         let initialCockpitConfiguration = null;
                                                         let distributorsSchema = null;
                                                         let targetSchema = null;
+                                                        let validatedDistributors = null;
                                                         
+                                                        function is_validated_distributor(distid) {
+                                                            if (validatedDistributors != null) {
+                                                                const distids = validatedDistributors.map(distributor => distributor.distid); // Extract distid values
+                                                                if (distids.includes(distid)) {
+                                                                    return true;
+                                                                }
+                                                            }
+                                                            return false;
+                                                        }
+
+                                                        async function get_validated_distributors() {
+                                                            if (validatedDistributors == null) {
+                                                                try {
+                                                                    const response = await fetch("https://ffl-api.garidium.com", {
+                                                                        method: "POST",
+                                                                        headers: {
+                                                                            "Accept": "application/json",
+                                                                            "Content-Type": "application/json",
+                                                                            "x-api-key": "<?php echo esc_attr($gFFLCockpitKey);?>"
+                                                                        },
+                                                                        body: JSON.stringify({ "action": "get_validated_distributors", "data": {"api_key": "<?php echo esc_attr($gFFLCockpitKey); ?>"}})
+                                                                    });
+
+                                                                    const data = await response.json();
+                                                                    //alert
+                                                                    validatedDistributors = data;
+                                                                } catch (error) {
+                                                                    console.error('Error fetching validated distributors:', error);
+                                                                    return null; // Return null or handle the error as needed
+                                                                }
+                                                            }
+                                                            
+                                                            return validatedDistributors;
+                                                        }
+
                                                         async function get_distributors_schema() {
                                                             if (distributorsSchema == null) {
                                                                 try {
@@ -2186,6 +2243,7 @@ class g_ffl_Cockpit_Admin
                                                                 let formHtml = `<div class="distcards">
                                                                                     <div class="card mt-2" id="${distid}">
                                                                                         <div class="card-header">
+                                                                                            ${is_validated_distributor(distid) ? '<div class="cockpit-distributor-ribbon">Validated</div>' : ''}
                                                                                             <div class="distid_image_area">
                                                                                                 <img src="https://garidium.s3.amazonaws.com/ffl-api/plugin/images/distributor_logo_${distid}.png" alt="${distributor} logo">
                                                                                             </div>
@@ -3032,6 +3090,8 @@ class g_ffl_Cockpit_Admin
                                                 }
 
                                                 await get_distributors_schema();
+                                                await get_validated_distributors();
+
                                                 fetch("https://ffl-api.garidium.com", {
                                                     method: "POST",
                                                     headers: {
@@ -3342,6 +3402,7 @@ class g_ffl_Cockpit_Admin
                         <div id="product_feed_table"></div>
                     </div>
                     <div style="padding:5px;margin-top:50px;"><button id="download_inventory_button" class="button alt" data-marker-id="">Download Catalog</button></div>
+                    <div style="width:99%;text-align:center;font-style:italic;border:solid gray 1px;background: #eeeeee;padding:10px;margin-top:20px;"><span style="font-weight:bold;color:red;">**</span>Product Search and Download will only include products from your Validated Distributors. Run Validate Configuration on the Configuration tab to validate Distributors.</div>
                     <script>
                         const window_height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) * 0.8;
                         function get_distributor_logo(code){
