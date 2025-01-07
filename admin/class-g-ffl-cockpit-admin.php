@@ -4250,7 +4250,7 @@ class g_ffl_Cockpit_Admin
                 </tr>
             </table>
         </div>
-        <div id="categoryChangeModal" class="category_change_modal">
+        <div id="categoryChangeModal" class="category_change_modal" style="display:none;">
             <div class="category_change_modal_content">
                 <span class="category_change_modal_close" onclick="closeCategoryChangeModal()">&times;</span>
                 <div>
