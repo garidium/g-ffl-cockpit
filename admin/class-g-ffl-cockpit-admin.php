@@ -283,24 +283,62 @@ class g_ffl_Cockpit_Admin
                                 editor.set(cc);
                             }
 
-                          
-                            function filterOptions(searchTerm, modalListId) {
+                            function filterOptions(searchTerm, modalListId, modifier = null) {
                                 const filter = searchTerm.toLowerCase();
                                 const modalList = document.getElementById(modalListId);
                                 const containers = Array.from(modalList.getElementsByClassName('checkbox-option'));
 
                                 const matches = [];
+                                const modifierMatches = [];
                                 const nonMatches = [];
 
-                                // Separate matches and non-matches
+                                // Separate matches based on search term and modifier
                                 containers.forEach(container => {
                                     const label = container.getElementsByTagName('label')[0];
                                     const txtValue = label.textContent || label.innerText;
-                                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                                        matches.push(container);
+
+                                    // Check if the item matches the search term
+                                    if (filter.length == 0 && modifier && container['attributes'][modifier].value === "1") {
+                                        // Add the "Dropship Restricted" label if not already added
+                                        if (!container.querySelector('.dropship-label')) {
+                                            const dropshipLabel = document.createElement('span');
+                                            dropshipLabel.textContent = "Dropship Restricted";
+                                            dropshipLabel.className = "dropship-label";
+                                            dropshipLabel.style.color = "red"; // Optional: Make the label red for emphasis
+                                            dropshipLabel.style.marginLeft = "auto";
+                                            dropshipLabel.style.fontSize = "0.9em"; // Optional: Adjust font size
+                                            dropshipLabel.style.display = "inline-block";
+                                            dropshipLabel.style.float = "right"; // Align to the right
+                                            container.appendChild(dropshipLabel);
+                                        }
+                                        modifierMatches.push(container); // Items with the modifier
+                                    } else if (filter.length > 0 && txtValue.toLowerCase().indexOf(filter) > -1) {
+                                        // Check if the item has the modifier
+                                        matches.push(container); // Items matching the search term but not the modifier
                                     } else {
-                                        nonMatches.push(container);
+                                        nonMatches.push(container); // Items not matching the search term
                                     }
+                                });
+
+                                // Sort non-matches alphabetically by their label text
+                                matches.sort((a, b) => {
+                                    const labelA = a.getElementsByTagName('label')[0].textContent.trim().toLowerCase();
+                                    const labelB = b.getElementsByTagName('label')[0].textContent.trim().toLowerCase();
+                                    return labelA.localeCompare(labelB);
+                                });
+                                
+                                if (filter.length == 0 && modifier){
+                                    modifierMatches.sort((a, b) => {
+                                        const labelA = a.getElementsByTagName('label')[0].textContent.trim().toLowerCase();
+                                        const labelB = b.getElementsByTagName('label')[0].textContent.trim().toLowerCase();
+                                        return labelA.localeCompare(labelB);
+                                    });
+                                 }
+
+                                nonMatches.sort((a, b) => {
+                                    const labelA = a.getElementsByTagName('label')[0].textContent.trim().toLowerCase();
+                                    const labelB = b.getElementsByTagName('label')[0].textContent.trim().toLowerCase();
+                                    return labelA.localeCompare(labelB);
                                 });
 
                                 // Clear the modal list
@@ -308,14 +346,20 @@ class g_ffl_Cockpit_Admin
                                     modalList.removeChild(modalList.firstChild);
                                 }
 
-                                // Append matches first
+                                // Append modifier matches first
+                                modifierMatches.forEach(container => {
+                                    modalList.appendChild(container);
+                                    container.style.display = ""; // Ensure matches are displayed
+                                });
+
+                                // Append other matches
                                 matches.forEach(container => {
                                     modalList.appendChild(container);
                                     container.style.display = ""; // Ensure matches are displayed
                                 });
 
                                 // Add a separator line if there are matches and non-matches
-                                if (matches.length > 0 && nonMatches.length > 0) {
+                                if ((modifierMatches.length > 0 || matches.length > 0) && nonMatches.length > 0) {
                                     const separator = document.createElement('hr');
                                     separator.style.borderTop = "2px solid black"; // Set the thickness of the separator
                                     modalList.appendChild(separator);
@@ -326,13 +370,19 @@ class g_ffl_Cockpit_Admin
                                     modalList.appendChild(container);
                                     container.style.display = ""; // Ensure non-matches are displayed
                                 });
+
+                                // Scroll to the top of the modal list
                                 modalList.scrollTop = 0;
                             }
+
+
+
 
                             async function load_modal_check_option(modal, action, selectedItemsContainerId) {
                                 var element_name = "categories";
                                 var element_id = "name";
                                 var element_description = "name";
+                                var modifier = null;
                                 if (action == "get_product_classes") {
                                     element_name = "product_classes";
                                     element_id = "product_class";
@@ -341,6 +391,7 @@ class g_ffl_Cockpit_Admin
                                     element_name = "manufacturers";
                                     element_id = "name";
                                     element_description = "name";
+                                    modifier = "dropship_restricted";
                                 } else if (action == "get_category_list") {
                                     element_name = "categories";
                                     element_id = "name";
@@ -359,7 +410,6 @@ class g_ffl_Cockpit_Admin
                                 const selectedItemsContainer = document.getElementById(selectedItemsContainerId);
                                 const selectedItems = Array.from(selectedItemsContainer.getElementsByClassName('selected-item')).map(item => item.querySelector('span').textContent);
                                 
-
                                 const data = await response.json();
                                 try {
                                     if (data != null && data[element_name].length > 0) {
@@ -384,9 +434,11 @@ class g_ffl_Cockpit_Admin
                             
                                             const container = document.createElement("div");
                                             container.classList.add("checkbox-option");
+                                            if (modifier) {
+                                                container.setAttribute(modifier, item[modifier]);
+                                            }
                                             container.appendChild(checkbox);
                                             container.appendChild(label);
-
                                             modal.appendChild(container);
                                         }
                                     }
@@ -438,16 +490,31 @@ class g_ffl_Cockpit_Admin
                                     // Append the static text and link to the container
                                     container.appendChild(staticText);
                                     container.appendChild(link);
+
+                                    // If searchType is "brand", add the Dropship Restricted link
+                                    if (searchType === "brand") {
+                                        // Add pipe symbol
+                                        const pipe = document.createTextNode(' | ');
+                                        container.appendChild(pipe);
+
+                                        // Dropship Restricted link
+                                        const dslink = document.createElement('a');
+                                        dslink.id = 'brandDropShipRestrictedFilter';
+                                        dslink.href = '#'; // Prevent default anchor behavior
+                                        dslink.textContent = 'Brands with Dropship Restrictions';
+                                        dslink.style.textDecoration = 'underline'; // Style to look like a link
+                                        dslink.style.color = 'blue'; // Optional: Color to look like a link
+
+                                        dslink.addEventListener('click', function(event) {
+                                            event.preventDefault(); // Prevent default anchor behavior
+                                            filterOptions('', searchType + 'ModalList', 'dropship_restricted'); // Pass the modifier to prioritize these items
+                                        });
+
+                                        container.appendChild(dslink);
+                                    }
                                   
                                     // Append input element to the div
                                     div.appendChild(container);
-
-                                    // Attach keyup event to the input element
-                                    /*
-                                    input.onkeyup = function() {
-                                        filterOptions(searchType + 'SearchInput', searchType + 'ModalList');
-                                    };
-                                    */
                                     searchDiv.appendChild(div);
                                 }
 
