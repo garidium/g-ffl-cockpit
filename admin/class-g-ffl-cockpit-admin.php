@@ -144,9 +144,79 @@ class g_ffl_Cockpit_Admin
                 min-height: 500px;
             }
         </style>
+        <script>
+            function load_site_performance_score(api_key) {
+                const indicator = document.getElementById("performance-indicator");
+                const text = document.getElementById("performance-score");
+                const text2 = document.getElementById("performance-text");
+
+                fetch("https://ffl-api.garidium.com", {
+                    method: "POST",
+                    headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "x-api-key": "<?php echo esc_attr($gFFLCockpitKey); ?>",
+                    },
+                    body: JSON.stringify({"action": "get_site_performance_score", "data": {"api_key": document.getElementById('g_ffl_cockpit_key').value}})
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    let score = 0;
+                    if (data != null){
+                        score = Math.floor(data.performance_score); 
+                    }
+
+                    // Assume the API returns a JSON object with a 'score' field
+                    let color = "#ccc";
+                    text.style.color = 'black';
+                    if (score > 0){
+                        if (score < 70) {
+                            color = "#e28080";
+                            text.style.color = 'white';
+                            text2.textContent = "Critical";
+                        } else if (score >= 70 && score <= 80) {
+                            color = "#ffceb5";
+                            text2.textContent = "Needs Attention";
+                        } else if (score > 80 && score < 95) {
+                            color = "#e8ffb5";
+                            text2.textContent = "Acceptable";
+                        } else if (score >= 95) {
+                            color = "#b5ffd2";
+                            text2.textContent = "Optimal";
+                        }
+                    }
+
+                    // Update the indicator styles
+                    indicator.style.backgroundColor = `${color}`;
+                    indicator.style.border = `2px solid #828181`;
+                    text2.style=`color: black;text-decoration: underline; text-decoration-color: ${color}`;
+                    if (score == 0){
+                        text.textContent = "--";
+                        text2.textContent = "No Data";
+                    } else {
+                        text.textContent = score;
+                    }
+                    
+                })
+                .catch((error) => {
+                    console.error("Error fetching performance score:", error);
+                    indicator.style.backgroundColor = "grey";
+                    text.textContent = "--";
+                });
+            }
+        </script>
+
         <div class="wrap">
-            <img src="<?php echo esc_attr(get_option('g_ffl_cockpit_plugin_logo_url') != '' ? get_option('g_ffl_cockpit_plugin_logo_url') : plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.svg');?>">
-            <br><br>
+            <div style="margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; width: 99%;">
+                <img src="<?php echo esc_attr(plugin_dir_url(__FILE__) . 'images/ffl-cockpit-logo.svg');?>" style="max-height: 50px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div id="performance-indicator" style="position: relative; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: #ccc; font-size: 16px; font-weight: bold; color: #fff;">
+                        <span id="performance-score">--</span>
+                    </div>
+                    <span style="font-size: 16px; font-weight: bold;line-height: 0.9;">FFL Cockpit Site Performance Score - <span id="performance-text"></span><br><span style="line-height: 0.9;font-weight:normal;font-size: 12px;font-style:italic;">This 0-100 score indicates how effectively your website and host are managing<br>product synchronization. For more details, check the Logs tab.</span></span>
+                </div>
+            </div>
+
             <!-- Tab links -->
             <div class="tab" id="cockpit_main_tab_control">
                 <button class="tablinks" onclick="openTab(event, 'configuration')" id="defaultOpen">Configuration</button>
@@ -2487,7 +2557,7 @@ class g_ffl_Cockpit_Admin
 
                                                                 modalBody.append(`
                                                                     <div style="line-height: 1.25;padding:5px;margin-bottom:20px;">
-                                                                        When you signup with ${displayName}, you will be asked for a Product Feed URL. This will be 
+                                                                        When you signup with ${displayName}, you will be asked for a Product Feed URL. The target must be activated to create the product feed. The Product Feed URL will be: 
                                                                         <a target="_blank" href="${feed_url}">${feed_url}</a>
                                                                         <i class="fa fa-copy copy-icon" style="cursor: pointer; margin-left: 2px;" title="Copy Feed URL to clipboard"></i>
                                                                     </div>`);
@@ -3145,6 +3215,11 @@ class g_ffl_Cockpit_Admin
                                                             console.log(">Loaded Fancy Editor");
                                                             setupAutoSave();
                                                             console.log(">AutoSave Setup");
+                                                            try {
+                                                                load_site_performance_score(api_key);
+                                                            } catch (error) {
+                                                                console.log("Site Performance Update Failed");
+                                                            }
                                                         } catch (error) {
                                                             alert("No configuration found for this key, setting to default.");
                                                         }
