@@ -457,6 +457,10 @@ class g_ffl_Cockpit_Admin
                                     element_name = "product_classes";
                                     element_id = "product_class";
                                     element_description = "description";
+                                }else if (action == "get_distributors") {
+                                    element_name = "distributors";
+                                    element_id = "distid";
+                                    element_description = "dist_name";
                                 }else if (action == "get_manufacturer_list") {
                                     element_name = "manufacturers";
                                     element_id = "name";
@@ -496,7 +500,7 @@ class g_ffl_Cockpit_Admin
 
                                             const label = document.createElement("label");
                                             label.htmlFor = `checkbox_${element_id}_${item[element_id]}`;
-                                            if (action == "get_product_classes"){
+                                            if (action == "get_product_classes" || action == "get_distributors"){
                                                 label.textContent = item[element_description] + " (" + item[element_id] + ")";
                                             } else {
                                                 label.textContent = item[element_description];
@@ -533,6 +537,8 @@ class g_ffl_Cockpit_Admin
                                         searchType = "category";
                                     } else if (modalId.startsWith("ignoreMap")){
                                         searchType = "ignoreMapBrand";
+                                    } else if (modalId.startsWith("distributor")){
+                                        searchType = "distributor";
                                     }
                                     const container = document.createElement('span');
                                     container.style = 'margin-left:20px;';
@@ -595,6 +601,8 @@ class g_ffl_Cockpit_Admin
                                         api_function = "get_manufacturer_list";
                                     }else if (modalId == "categoryModal"){
                                         api_function = "get_category_list";
+                                    }else if (modalId == "distributorModal"){
+                                        api_function = "get_distributors";
                                     }
                                     load_modal_check_option(modal_options, api_function, selectedItemsId)
                                 }
@@ -735,23 +743,28 @@ class g_ffl_Cockpit_Admin
                                 editor.set(config);
                             }
 
-                            function addMarginGroup(margin_name=null, margin_config=null, is_new=false) {
-                                if (is_new && margin_name == null){
+                            function addMarginGroup(margin_name=null, margin_config=null, is_new=false, parent=null) {
+                                if (is_new && margin_name == null) {
                                     margin_name = prompt(`Enter your custom margin group name (ex: Firearms, Ammunition):`);
-                                    if (margin_name == null){
+                                    if (margin_name == null) {
                                         return;
-                                    }else{
-                                        margin_name = margin_name.replace("-", " ");
+                                    } else {
+                                        margin_name = margin_name.replace(/[^a-zA-Z0-9-\s]/g, "").replace(/[-\s]/g, "_");
                                     }
                                     var config = editor.get();
-                                    config.pricing.margin[margin_name] = {
-                                        "margin_dollar": config.pricing.margin.default.margin_dollar,
-                                        "margin_percentage": config.pricing.margin.default.margin_percentage,
-                                        "product_class": [],
-                                        "sku": [],
-                                        "category": [],
-                                        "upc": [],
-                                        "brand": []
+                                    if (parent != null){
+                                        config.pricing.margin[margin_name] = JSON.parse(JSON.stringify(config.pricing.margin[parent]));
+                                    }else{
+                                        config.pricing.margin[margin_name] = {
+                                            "margin_dollar": config.pricing.margin.default.margin_dollar,
+                                            "margin_percentage": config.pricing.margin.default.margin_percentage,
+                                            "product_class": [],
+                                            "distributor": [],
+                                            "sku": [],
+                                            "category": [],
+                                            "upc": [],
+                                            "brand": []
+                                        };
                                     }
                                     editor.set(config);
                                     config = editor.get();
@@ -767,7 +780,8 @@ class g_ffl_Cockpit_Admin
                                         <div style="cursor:pointer;" class="accordion-header" onclick="toggleAccordion('${groupId}', this)">
                                             <i class="fas fa-plus accordion-toggle-icon"></i>${margin_name}
                                         </div>
-                                        <i class="fas fa-trash-alt remove-link" title="Remove Item" onclick="removeMarginGroup(this, '${margin_name}')"></i>
+                                        <i class="fas fa-copy copy-link" title="Duplicate Margin Group" style="margin-left: auto; margin-right: 8px;" onclick="addMarginGroup(null,null, true, '${margin_name}')"></i>
+                                        <i class="fas fa-trash-alt remove-link" title="Delete Margin Group" onclick="removeMarginGroup(this, '${margin_name}')"></i>
                                     </div>
                                     <div class="accordion-content" id="${groupId}">
                                         <div class="helperDialog">Use the available filters below to specify which products to apply your custom margin</div>
@@ -798,6 +812,16 @@ class g_ffl_Cockpit_Admin
                                                 <div class="add-item-container">
                                                     <span class="add-item" onclick="openModal('brandModal', 'pricing-margin-${margin_name}-brand')">Select</span>&nbsp;|&nbsp;
                                                     <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('pricing-margin-${margin_name}-brand'))">Remove All</span>
+                                                </div>  
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <label for="distributor">Distributor:</label>
+                                            <div class="field-container">
+                                                <div class="selected-items" id="pricing-margin-${margin_name}-distributor"></div>
+                                                <div class="add-item-container">
+                                                    <span class="add-item" onclick="openModal('distributorModal', 'pricing-margin-${margin_name}-distributor')">Select</span>&nbsp;|&nbsp;
+                                                    <span class="add-item" onclick="removeAllConfigArrayItems(document.getElementById('pricing-margin-${margin_name}-distributor'))">Remove All</span>
                                                 </div>  
                                             </div>
                                         </div>
@@ -858,6 +882,7 @@ class g_ffl_Cockpit_Admin
                                         {"name": "product_class", "selectedItemsContainer": "pricing-margin-" + margin_name + "-product_class"},
                                         {"name": "brand", "selectedItemsContainer": "pricing-margin-" + margin_name + "-brand"},
                                         {"name": "category", "selectedItemsContainer": "pricing-margin-" + margin_name + "-category"},
+                                        {"name": "distributor", "selectedItemsContainer": "pricing-margin-" + margin_name + "-distributor"},
                                         {"name": "sku", "selectedItemsContainer": "pricing-margin-" + margin_name + "-sku"},
                                         {"name": "upc", "selectedItemsContainer": "pricing-margin-" + margin_name + "-upc"}
                                     ];
@@ -1795,6 +1820,16 @@ class g_ffl_Cockpit_Admin
                                             </div>
                                         </div>
 
+                                        <div id="distributorModal" class="modal">
+                                            <div class="cockpit-modal-content modal-content">
+                                                <span class="close" onclick="closeModal('distributorModal')">&times;</span>
+                                                <span class="modalHeader">Select Distributors</span>
+                                                <div id="distributorModalSearchDiv"></div>
+                                                <div class="modalPopupContent" id="distributorModalList"></div>
+                                                <button style="margin-top:50px;" class="btn btn-primary" onclick="saveSelections('distributorModal', 'distributor')">Apply</button>
+                                            </div>
+                                        </div>
+
                                         <div id="productClassModal" class="modal">
                                             <div class="cockpit-modal-content modal-content">
                                                 <span class="close" onclick="closeModal('productClassModal')">&times;</span>
@@ -2552,7 +2587,7 @@ class g_ffl_Cockpit_Admin
                                                             modalBody.empty();
                                                             cc = editor.get();
 
-                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora', 'gunfeed'].includes(target)) {
                                                                 var feed_url = `https://garidium.s3.us-east-1.amazonaws.com/feeds/${gFFLCockpitKey.slice(0, 4)}-${gFFLCockpitKey.slice(-4)}/${target.replace(".","")}/feed.xml`;
 
                                                                 modalBody.append(`
@@ -2665,7 +2700,7 @@ class g_ffl_Cockpit_Admin
                                                                 }
                                                             }
 
-                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora', 'gunfeed'].includes(target)) {
                                                                 modalBody.append(`
                                                                 <div class="helperDialog">
                                                                     Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${displayName} within each of their product groups.  
@@ -2698,7 +2733,7 @@ class g_ffl_Cockpit_Admin
                                                             }
 
                                                             // automatically open product restrictions for certain targets
-                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora', 'gunfeed'].includes(target)) {
                                                                 document.getElementById('pr_header').click();
                                                             }
                                                            
@@ -2787,12 +2822,13 @@ class g_ffl_Cockpit_Admin
                                                                         }
                                                                     });
                                                                 });
-                                                            } else if (['gun.deals', 'wikiarms', 'ammoseek','armsagora'].includes(target)) {
+                                                            } else if (['gun.deals', 'wikiarms', 'ammoseek','armsagora', 'gunfeed'].includes(target)) {
                                                                 var rss_field_categories = {
                                                                     "wikiarms": ["guns","brass","powder","bullets","primers","magazines","ammunition","reloading_misc"],
                                                                     "ammoseek": ["guns","brass","powder","bullets","primers","magazines","ammunition"],
                                                                     "gun.deals": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"],
-                                                                    "armsagora": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"]
+                                                                    "armsagora": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"],
+                                                                    "gunfeed": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"]
                                                                 }
                                                                 const restrictions = [
                                                                     {"field": "category", "modal": "categoryModal", "name": "Categories", "select_text": "Select Categories"},
