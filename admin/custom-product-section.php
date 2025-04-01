@@ -24,12 +24,30 @@
 
  // List of websites where the function should run
 $warehouse_option_websites = array(
-    'https://firearmsdirectclub.ffl-charlie.com',
-    'https://firearmsdirectclub.com',
-    'https://firearmsdirectclub.com/home'
+    'https://XXXfirearmsdirectclub.ffl-charlie.com',
+    'https://XXXfirearmsdirectclub.com',
+    'https://XXXfirearmsdirectclub.com/home'
     //,'http://localhost:8000'
     // Add more URLs as needed
 );
+/*
+add_action('woocommerce_product_options_general_product_data', 'fflcockpit_add_lock_name_desc_checkbox');
+
+function fflcockpit_add_lock_name_desc_checkbox() {
+    woocommerce_wp_checkbox([
+        'id' => 'fflc_seo_lock',
+        'label' => __('FFL Cockpit SEO Lock', 'fflcockpit'),
+        'description' => __('Prevents FFL Cockpit from updating the name, description and images.'),
+    ]);
+}
+
+add_action('woocommerce_process_product_meta', 'fflcockpit_save_lock_name_desc_checkbox');
+
+function fflcockpit_save_lock_name_desc_checkbox($post_id) {
+    $lock = isset($_POST['fflc_seo_lock']) ? 'yes' : 'no';
+    update_post_meta($post_id, 'fflc_seo_lock', $lock);
+}
+*/
 
 // Function to check if the product has the '_automated_listing' metadata set
 function is_automated_listing($product_id) {

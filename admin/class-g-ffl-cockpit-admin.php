@@ -1129,6 +1129,7 @@ class g_ffl_Cockpit_Admin
                                 flex-wrap: wrap;
                                 justify-content: center; /* Center elements horizontally */
                                 align-content: center; /* Center elements vertically within the container */
+                                width: 225px;
                             }
                             
                             .targetcards {
@@ -1138,6 +1139,7 @@ class g_ffl_Cockpit_Admin
                                 gap: 10px;
                                 justify-content: center; /* Center elements horizontally */
                                 align-content: center; /* Center elements vertically within the container */
+                                width: 225px;
                             }
 
                             .card-header {

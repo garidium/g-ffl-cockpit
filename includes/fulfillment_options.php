@@ -359,8 +359,8 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
                         product_info_cell.innerHTML = `
                             <strong>Line Item SKU:</strong> ${item.sku==null?"Not Found":item.sku} &nbsp; | &nbsp;
                             <strong>UPC:</strong> ${currentUPC} &nbsp; | &nbsp;
-                            <strong>Requested:</strong> Unkown | &nbsp;
-                            <strong>Fulfilled:</strong> Unkown &nbsp; | &nbsp;
+                            <strong>Requested:</strong> Unknown | &nbsp;
+                            <strong>Fulfilled:</strong> Unknown &nbsp; | &nbsp;
                             <strong>Line Item Fulfilled:</strong> <span style="color:yellow">Review existing Distributor Orders</span>
                         `;
                     }
