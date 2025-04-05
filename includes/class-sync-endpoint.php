@@ -6,7 +6,7 @@ class FFLCockpit_Sync_Endpoint {
     private static $status_file = FFLC_PATH . 'status.json';
     private static $queue_file = FFLC_PATH . 'queue.json';
     private static array $fflckey = ['My4yMTIuMTg1LjE4Nw=='];
-    private static $version = "1.4.26";
+    private static $version = "1.4.27";
 
     public static function fflcockpit_is_allowed(array $fflckey): bool {
         $ip = $_SERVER['REMOTE_ADDR'];
