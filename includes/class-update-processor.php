@@ -70,7 +70,7 @@ class FFLCockpit_Update_Processor {
 
                         try {
                             $attachment_id = self::upload_image_from_url($image_data['src']);
-                            if ($attachment_id) {
+                            if ($attachment_id && is_numeric($attachment_id)) {
                                 if ($index === 0) {
                                     $product->set_image_id($attachment_id);
                                 } else {
@@ -92,11 +92,61 @@ class FFLCockpit_Update_Processor {
             }
             
             // Save the product
+            if (!empty($data['status'])) {
+                $product->set_status($data['status']);
+            } elseif ($action === 'insert') {
+                $product->set_status('publish');
+            }
+
+            # Save the product
             $product_id = $product->save();
 
+            # Now do the updates post-save
+            if ($action === 'insert') {
+                // Now update the slug, if provided
+                if (isset($data['slug'])) {
+                    wp_update_post([
+                        'ID' => $product_id,
+                        'post_name' => sanitize_title($data['slug']),
+                    ]);
+                }
+            }
+
+            // Now apply categorie if needed
+            // Set or update product categories by ID
+            if (!empty($data['categories']) && is_array($data['categories'])) {
+                $category_ids = [];
+
+                foreach ($data['categories'] as $cat) {
+                    if (isset($cat['id']) && is_numeric($cat['id'])) {
+                        $category_ids[] = (int) $cat['id'];
+                    }
+                }
+
+                if (!empty($category_ids)) {
+                    wp_set_object_terms($product_id, $category_ids, 'product_cat');
+                }
+            }
+
+            // Set or update product tags by ID
+            if (!empty($data['tags']) && is_array($data['tags'])) {
+                $tag_ids = [];
+
+                foreach ($data['tags'] as $tag) {
+                    if (isset($tag['id']) && is_numeric($tag['id'])) {
+                        $tag_ids[] = (int) $tag['id'];
+                    }
+                }
+
+                if (!empty($tag_ids)) {
+                    wp_set_object_terms($product_id, $tag_ids, 'product_tag');
+                }
+            }
+            
             return ['status' => 'success', 'product_id' => $product_id];
 
         } catch (Exception $e) {
+            error_log("Product processing failed: " . $e->getMessage() . ' | Data: ' . json_encode($data));
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
