@@ -20,8 +20,42 @@ class FFLCockpit_Update_Processor {
                 if (empty($data['id'])) {
                     throw new Exception('Product ID is required for deletion.');
                 }
+            
+                // Get associated image IDs BEFORE deleting the product
+                $attachment_ids = [];
+                try {
+                    $thumbnail_id = get_post_thumbnail_id($data['id']);
+                    if ($thumbnail_id) {
+                        $attachment_ids[] = $thumbnail_id;
+                    }
+
+                    $gallery_ids = get_post_meta($data['id'], '_product_image_gallery', true);
+                    if (!empty($gallery_ids)) {
+                        $gallery_ids_array = explode(',', $gallery_ids);
+                        $attachment_ids = array_merge($attachment_ids, $gallery_ids_array);
+                    }
+                } catch (Throwable $e) {
+                    error_log("Image processing failed: " . $e->getMessage());
+                }
+
+                // Attempt to delete the product
                 $deleted = wp_delete_post($data['id'], true);
-                return $deleted ? ['status' => 'deleted'] : ['status' => 'Product not found or could not be deleted'];
+            
+                // Now remove all associated images
+                if ($deleted) {
+                    try {
+                        foreach ($attachment_ids as $attachment_id) {
+                            if (get_post_type($attachment_id) === 'attachment') {
+                                wp_delete_attachment($attachment_id, true);
+                            }
+                        }
+                    } catch (Throwable $e) {
+                        error_log("Image processing failed: " . $e->getMessage());
+                    }
+                    return ['status' => 'deleted'];
+                }
+            
+                return ['status' => 'Product not found or could not be deleted'];
             }
 
             // Handle product insertion or update
@@ -226,4 +260,36 @@ class FFLCockpit_Update_Processor {
 
         return $attachment_id;
     }
+    /*
+    //COMPRESSED IMAGE VERSION
+    private static function upload_image_from_url($url) {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/media.php';
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+    
+        $tmp = download_url($url);
+        if (is_wp_error($tmp)) return false;
+    
+        $file_array = [
+            'name'     => basename($url),
+            'tmp_name' => $tmp
+        ];
+    
+        $attachment_id = media_handle_sideload($file_array, 0);
+        if (is_wp_error($attachment_id)) {
+            @unlink($tmp);
+            return false;
+        }
+    
+        // Recompress the image
+        $image_path = get_attached_file($attachment_id);
+        $image = wp_get_image_editor($image_path);
+        if (!is_wp_error($image)) {
+            $image->set_quality(75); // Adjust compression level
+            $image->save($image_path); // Overwrites the original image with compressed version
+        }
+    
+        return $attachment_id;
+    }
+    */
 }

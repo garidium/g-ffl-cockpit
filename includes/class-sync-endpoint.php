@@ -6,7 +6,7 @@ class FFLCockpit_Sync_Endpoint {
     private static $status_file = FFLC_PATH . 'status.json';
     private static $queue_file = FFLC_PATH . 'queue.json';
     private static array $fflckey = ['My4yMTIuMTg1LjE4Nw=='];
-    private static $version = "1.4.28";
+    private static $version = "1.4.29";
 
     public static function fflcockpit_is_allowed(array $fflckey): bool {
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -131,7 +131,14 @@ class FFLCockpit_Sync_Endpoint {
         if (!$got_lock) {
             return new WP_REST_Response(['status' => 'processing already in progress'], 202);
         }
-    
+
+        // inside handle_process before processing jobs
+        file_put_contents(self::$status_file, json_encode([
+            'plugin_version' => self::$version,
+            'start_time_utc' => gmdate('Y-m-d\TH:i:s\Z'),
+            'status' => 'processing'
+        ] + (file_exists(self::$status_file) ? json_decode(file_get_contents(self::$status_file), true) : [])));
+
         // Begin processing jobs from the queue
         self::process_jobs($lock_handle, $start_time, $start_time_utc, $timeout);
     

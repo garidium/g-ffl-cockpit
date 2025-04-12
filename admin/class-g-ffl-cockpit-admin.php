@@ -628,6 +628,10 @@ class g_ffl_Cockpit_Admin
                                 selectedItemsContainer.innerHTML = '';
 
                                 const checkboxes = modal.querySelectorAll('input[type="checkbox"]:checked');
+                                
+                                // First remove all items
+                                removeAllConfigArrayItems(selectedItemsContainer, true);
+                                
                                 checkboxes.forEach(checkbox => {
 
                                     // add item to configuration
@@ -692,8 +696,8 @@ class g_ffl_Cockpit_Admin
                             }
                             
                
-                            function removeAllConfigArrayItems(container) {
-                                if (confirm("Are you sure that you want to remove all items from this selection?")){
+                            function removeAllConfigArrayItems(container, skipPrompt = false) {
+                                if (skipPrompt || confirm("Are you sure that you want to remove all items from this selection?")){
                                     let config = editor.get();
                                     var configItemsArray = getConfigValue(config, container.id);
 
