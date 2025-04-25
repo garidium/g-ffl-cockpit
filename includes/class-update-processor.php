@@ -222,10 +222,11 @@ class FFLCockpit_Update_Processor {
         $product_attributes = [];
 
         foreach ($attributes as $attr) {
-            if (empty($attr['name']) || empty($attr['options'])) continue;
+            if (empty($attr['id']) || empty($attr['slug']) || empty($attr['options'])) continue;
 
             $attribute = new WC_Product_Attribute();
-            $attribute->set_name($attr['name']);
+            $attribute->set_id($attr['id']);
+            $attribute->set_name($attr['slug']);
             $attribute->set_options($attr['options']);
             $attribute->set_visible(!empty($attr['visible']));
             $attribute->set_variation(!empty($attr['variation']));

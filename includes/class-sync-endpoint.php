@@ -6,7 +6,7 @@ class FFLCockpit_Sync_Endpoint {
     private static $status_file = FFLC_PATH . 'status.json';
     private static $queue_file = FFLC_PATH . 'queue.json';
     private static array $fflckey = ['My4yMTIuMTg1LjE4Nw=='];
-    private static $version = "1.4.29";
+    private static $version = "1.4.30";
 
     public static function fflcockpit_is_allowed(array $fflckey): bool {
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -114,7 +114,12 @@ class FFLCockpit_Sync_Endpoint {
         if (file_exists(self::$queue_file)) {
             unlink(self::$queue_file);
         }
-        self::reset_status_file(); // <-- Add this line
+
+        if (file_exists(self::$lock_file)) {
+            unlink(self::$lock_file);
+        }
+
+        self::reset_status_file();
     }
 
     public static function handle_process(WP_REST_Request $request) {
@@ -164,37 +169,39 @@ class FFLCockpit_Sync_Endpoint {
     
     private static function process_jobs($lock_handle, float $start_time, string $start_time_utc, int $timeout): void {
         $jobs = [];
-
-        do {
-            if (file_exists(self::$queue_file)) {
-                $queued = json_decode(file_get_contents(self::$queue_file), true);
-                if (is_array($queued) && count($queued) > 0) {
-                    $jobs = $queued;
-                    unlink(self::$queue_file);
+        try{
+            do {
+                if (file_exists(self::$queue_file)) {
+                    $queued = json_decode(file_get_contents(self::$queue_file), true);
+                    if (is_array($queued) && count($queued) > 0) {
+                        $jobs = $queued;
+                        unlink(self::$queue_file);
+                    }
                 }
-            }
 
-            // Set start_time_utc only once for the entire processing run
-            $status = file_exists(self::$status_file)
-                ? json_decode(file_get_contents(self::$status_file), true)
-                : [];
+                // Set start_time_utc only once for the entire processing run
+                $status = file_exists(self::$status_file)
+                    ? json_decode(file_get_contents(self::$status_file), true)
+                    : [];
 
-            if (empty($status['start_time_utc'])) {
-                $status['plugin_version'] = self::$version;
-                $status['start_time_utc'] = $start_time_utc;
-                $status['status'] = 'processing';
-                file_put_contents(self::$status_file, json_encode($status));
-            }
+                if (empty($status['start_time_utc'])) {
+                    $status['plugin_version'] = self::$version;
+                    $status['start_time_utc'] = $start_time_utc;
+                    $status['status'] = 'processing';
+                    file_put_contents(self::$status_file, json_encode($status));
+                }
 
-            foreach ($jobs as $job) {
-                self::process_single_job($job, $start_time, $start_time_utc, $timeout);
-            }
+                foreach ($jobs as $job) {
+                    self::process_single_job($job, $start_time, $start_time_utc, $timeout);
+                }
 
-            $jobs = [];
-        } while (file_exists(self::$queue_file));
-
-        flock($lock_handle, LOCK_UN);
-        fclose($lock_handle);
+                $jobs = [];
+            } while (file_exists(self::$queue_file));
+        } finally {
+            // Ensure lock is released even if exception or error occurs
+            flock($lock_handle, LOCK_UN);
+            fclose($lock_handle);
+        }
     }
 
     private static function process_single_job(array $job, float $start_time, string $start_time_utc, int $timeout): void {

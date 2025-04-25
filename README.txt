@@ -3,9 +3,9 @@ Contributors: garidium
 Tags: FFL, fulfillment, distributor feed, zanders, davidsons, lipseys, 2nd amendment, chatanooga, cssi, rsr, WooCommerce, FFL gun dealers, gun dealer
 Donate link: https://fflcockpit.com
 Requires at least: 5.0
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.0
-Stable tag: 1.4.29
+Stable tag: 1.4.30
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+70. v1.4.30 Rearranged configuration tab and fixed bug with attribute loading via onsite queue updater
 69. v1.4.29 More Bug fixes and performance enhancements
 68. v1.4.28 Bug fixes and performance enhancements
 67. v1.4.26 Minor styling bug with distributor and targets cards appearing as a single column

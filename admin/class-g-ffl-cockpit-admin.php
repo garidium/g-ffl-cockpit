@@ -1853,10 +1853,10 @@ class g_ffl_Cockpit_Admin
                                                 <a class="nav-link" id="product-restrictions-tab" data-toggle="tab" href="#product-restrictions" role="tab" aria-controls="product-restrictions" aria-selected="false">Product Restrictions</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" id="targets-tab" data-toggle="tab" href="#targets" role="tab" aria-controls="targets" aria-selected="false">Targets</a>
+                                                <a class="nav-link" id="pricing-tab" data-toggle="tab" href="#pricing" role="tab" aria-controls="pricing" aria-selected="true">Pricing</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" id="pricing-tab" data-toggle="tab" href="#pricing" role="tab" aria-controls="pricing" aria-selected="true">Pricing</a>
+                                                <a class="nav-link" id="targets-tab" data-toggle="tab" href="#targets" role="tab" aria-controls="targets" aria-selected="false">Targets</a>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link" id="notifications-config-tab" data-toggle="tab" href="#notifications-config" role="tab" aria-controls="notifications-config" aria-selected="false">Notifications</a>
