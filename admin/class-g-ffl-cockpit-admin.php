@@ -858,7 +858,7 @@ class g_ffl_Cockpit_Admin
                                             <input class="field-number" type="number" name="margin_dollar" id="pricing-margin-${margin_name}-margin_dollar" value="${margin_config ? margin_config.margin_dollar : ''}" data-autosave="true">
                                         </div>
                                         <div class="form-row">
-                                            <label for="price_based_margin">Price Based Margin:</label>
+                                            <label for="price_based_margin">Cost Based Margin:</label>
                                             <div class="field-container">
                                                 <table class="price-based-margin-table" id="price-based-margin-table-${groupId}">
                                                     <thead>
@@ -873,7 +873,7 @@ class g_ffl_Cockpit_Admin
                                                     <tbody></tbody>
                                                 </table>
                                                 <div class="add-item-container">
-                                                    <span class="add-item" onclick="openModal('priceBasedMarginModal', 'price-based-margin-table-${groupId}')">Add Price Based Margin</span>
+                                                    <span class="add-item" onclick="openModal('priceBasedMarginModal', 'price-based-margin-table-${groupId}')">Add Cost Based Margin</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1935,7 +1935,7 @@ class g_ffl_Cockpit_Admin
                                                             </div>
                                                         </div>
                                                         <div class="form-row">
-                                                            <label for="price-based-margin-table-default">Price Based Margin:</label>
+                                                            <label for="price-based-margin-table-default">Cost Based Margin:</label>
                                                             <div class="field-container">
                                                                 <table class="price-based-margin-table" id="price-based-margin-table-group-default">
                                                                     <thead>
@@ -1950,7 +1950,7 @@ class g_ffl_Cockpit_Admin
                                                                     <tbody></tbody>
                                                                 </table>
                                                                 <div class="add-item-container">
-                                                                    <span class="add-item" onclick="openModal('priceBasedMarginModal', 'price-based-margin-table-group-default')">Add Price Based Margin</span>
+                                                                    <span class="add-item" onclick="openModal('priceBasedMarginModal', 'price-based-margin-table-group-default')">Add Cost Based Margin</span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1965,7 +1965,7 @@ class g_ffl_Cockpit_Admin
                                                         <div id="priceBasedMarginModal" class="modal">
                                                             <div class="cockpit-modal-content modal-content">
                                                                 <span class="close" onclick="closeModal('priceBasedMarginModal')">&times;</span>
-                                                                <span class="modalHeader">Add Price Based Margin</span>
+                                                                <span class="modalHeader">Add Cost Based Margin</span>
                                                                 <div>
                                                                     <label for="min_price">Min Price ($):</label>
                                                                     <input type="number" id="min_price" value="0">
@@ -1991,7 +1991,7 @@ class g_ffl_Cockpit_Admin
 
                                             <div class="tab-pane fade" id="targets" role="tabpanel" aria-labelledby="targets-tab">
                                                 <!-- Targets Form Content -->
-                                                <div class="helperDialog"><strong>Targets</strong> are representing where you want your product to be listed. We support listing product on your site (WooCommerce), we support feeding aggregators like WikiArms, AmmoSeek, and Gun.Deals. These aggregators require you subscribe with them and pay a monthly fee to list products. We also support feeding product (distributor-based only, no local inventory) to Gunbroker. Add the Targets you wish to use, and only add those you are subscribed to. The toggle in each card below represents whether or not the feed is activated.</div>
+                                                <div class="helperDialog"><strong>Targets</strong> are representing where you want your product to be listed. We support listing product on your site (WooCommerce), we support feeding aggregators like WikiArms, AmmoSeek, and Gun.deals. These aggregators require you subscribe with them and pay a monthly fee to list products. We also support feeding product (distributor-based only, no local inventory) to Gunbroker. Add the Targets you wish to use, and only add those you are subscribed to. The toggle in each card below represents whether or not the feed is activated.</div>
                                                 <div>
                                                     <div class="row" id="targets-container">
                                                         <!-- Existing targets will be loaded here -->
@@ -2106,7 +2106,7 @@ class g_ffl_Cockpit_Admin
                                             <div class="tab-pane fade" id="store-config" role="tabpanel" aria-labelledby="store-tab">
                                                 <!-- Store Config Form Content -->
                                                 <!-- Pricing Form Content -->
-                                                <div class="helperDialog"><strong>Store/Location Information</strong>Your FFL number and store information is needed for certain distributors to place a "ship-to-store" order. Ship-to-Store orders are usually required when there may be a drop-ship restriction on a brand, and you have to have the item shipped locatlly before reshipping the product out to your customer. </div>
+                                                <div class="helperDialog"><strong>Store/Location Information</strong>Your FFL number and store information is needed for certain distributors to place a "ship-to-store" order. Ship-to-Store orders are usually required when there may be a drop-ship restriction on a brand, and you have to have the item shipped locally before reshipping the product out to your customer. </div>
                                                 <div style="margin:10px;" class="pricing-assumptions-form-container">
                                                     <div class="pricing-assumptions-form-header">Store/Location Information</div>
                                                     <div class="pricing-assumptions-form-row">
@@ -2593,7 +2593,7 @@ class g_ffl_Cockpit_Admin
                                                             modalBody.empty();
                                                             cc = editor.get();
 
-                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora', 'gunfeed'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals','gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed'].includes(target)) {
                                                                 var feed_url = `https://garidium.s3.us-east-1.amazonaws.com/feeds/${gFFLCockpitKey.slice(0, 4)}-${gFFLCockpitKey.slice(-4)}/${target.replace(".","")}/feed.xml`;
 
                                                                 modalBody.append(`
@@ -2706,7 +2706,7 @@ class g_ffl_Cockpit_Admin
                                                                 }
                                                             }
 
-                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora', 'gunfeed'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed'].includes(target)) {
                                                                 modalBody.append(`
                                                                 <div class="helperDialog">
                                                                     Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${displayName} within each of their product groups.  
@@ -2739,7 +2739,7 @@ class g_ffl_Cockpit_Admin
                                                             }
 
                                                             // automatically open product restrictions for certain targets
-                                                            if (['wikiarms', 'gun.deals', 'ammoseek', 'armsagora', 'gunfeed'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed'].includes(target)) {
                                                                 document.getElementById('pr_header').click();
                                                             }
                                                            
@@ -2828,11 +2828,13 @@ class g_ffl_Cockpit_Admin
                                                                         }
                                                                     });
                                                                 });
-                                                            } else if (['gun.deals', 'wikiarms', 'ammoseek','armsagora', 'gunfeed'].includes(target)) {
+                                                            } else if (['gun.deals', 'gunammo.deals', 'wikiarms', 'ammobrowser', 'ammoseek','armsagora', 'gunfeed'].includes(target)) {
                                                                 var rss_field_categories = {
                                                                     "wikiarms": ["guns","brass","powder","bullets","primers","magazines","ammunition","reloading_misc"],
                                                                     "ammoseek": ["guns","brass","powder","bullets","primers","magazines","ammunition"],
+                                                                    "ammobrowser": ["guns","brass","powder","bullets","primers","magazines","ammunition"],
                                                                     "gun.deals": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"],
+                                                                    "gunammo.deals": ["guns","parts", "ammunition","reloading","other"],
                                                                     "armsagora": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"],
                                                                     "gunfeed": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"]
                                                                 }
@@ -3220,7 +3222,7 @@ class g_ffl_Cockpit_Admin
                                             
                                             <div class="tab-pane fade" id="classic-configurator" role="tabpanel" aria-labelledby="classic-configurator-tab">
                                                 <!-- Advanced Configuration Content -->
-                                                <div class="helperDialog"><strong>Advanced Configuration</strong> is where the magic happens. All changes you make with the fancy UI (User Interface) in the other tabs, ultimately change what's set in here. If your brave, you can decide to only use the Advanced Tab. Feel free to swittch the mode to Text as well to enter the wonderful word of JSON editing. This configuration panel includes some options not available in other tabs. It will also highlight any errors that may exist within your current configuration.</div>
+                                                <div class="helperDialog"><strong>Advanced Configuration</strong> is where the magic happens. All changes you make with the fancy UI (User Interface) in the other tabs, ultimately change what's set in here. If your brave, you can decide to only use the Advanced Tab. Feel free to switch the mode to Text as well to enter the wonderful word of JSON editing. This configuration panel includes some options not available in other tabs. It will also highlight any errors that may exist within your current configuration.</div>
                                                 <div id="jsoneditor" style="width: 100%; height: 500px;margin-top:20px;"></div>
                                             </div>
                                         </div>

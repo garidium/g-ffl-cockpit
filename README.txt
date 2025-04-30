@@ -5,7 +5,7 @@ Donate link: https://fflcockpit.com
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.0
-Stable tag: 1.4.30
+Stable tag: 1.4.31
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,7 +18,7 @@ It was built to support our businesses, and we know it will help yours. Please c
 2. We currently support over a dozen distributors and counting..
 3. Fulfillment automation, to automate Drop-shipping Workflow 
 4. Fulfillment automation includes monitoring distributors for shipping updates, and notifying both you and your customer.
-5. This plugin also supports feeding product to Gunbroker, Gun.Deals, WikiArms, and AmmoSeek
+5. This plugin also supports feeding product to AmmoSeek, Gunbroker, Gun.deals, WikiArms, Armsagora, AmmoBrowser, and GunAmmo.deals
 6. Inventory and Listings are then updated every 20-minutes to ensure quantity and pricing are updated continuously.
 7. Easily set pricing and listing options, along with configuring the inclusion/exclusion of specific items.
 8. Keep your customers updated on the order status with configurable email templates
@@ -64,6 +64,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+71. v1.4.31 Added GunAmmo.deals and AmmoBrowser support in Targets
 70. v1.4.30 Rearranged configuration tab and fixed bug with attribute loading via onsite queue updater
 69. v1.4.29 More Bug fixes and performance enhancements
 68. v1.4.28 Bug fixes and performance enhancements
