@@ -2593,12 +2593,16 @@ class g_ffl_Cockpit_Admin
                                                             modalBody.empty();
                                                             cc = editor.get();
 
-                                                            if (['wikiarms', 'gun.deals','gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals','gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed', 'gunmade'].includes(target)) {
                                                                 var feed_url = `https://garidium.s3.us-east-1.amazonaws.com/feeds/${gFFLCockpitKey.slice(0, 4)}-${gFFLCockpitKey.slice(-4)}/${target.replace(".","")}/feed.xml`;
+
+                                                                if (target == "gunmade") {
+                                                                    feed_url = `https://garidium.s3.us-east-1.amazonaws.com/feeds/${gFFLCockpitKey.slice(0, 4)}-${gFFLCockpitKey.slice(-4)}/${target.replace(".","")}/feed.json.gz`;
+                                                                }
 
                                                                 modalBody.append(`
                                                                     <div style="line-height: 1.25;padding:5px;margin-bottom:20px;">
-                                                                        When you signup with ${displayName}, you will be asked for a Product Feed URL. The target must be activated to create the product feed. The Product Feed URL will be: 
+                                                                        When you signup with ${displayName}, you will be asked for a Product Feed URL. <span style="font-weight:bold;color:red;">${displayName} must be activated to create the product feed, do not provide this URL until you can click on it and download a file.</span> The Product Feed URL will be: 
                                                                         <a target="_blank" href="${feed_url}">${feed_url}</a>
                                                                         <i class="fa fa-copy copy-icon" style="cursor: pointer; margin-left: 2px;" title="Copy Feed URL to clipboard"></i>
                                                                     </div>`);
@@ -2609,7 +2613,14 @@ class g_ffl_Cockpit_Admin
                                                                         Armsagora has a signup page for FFL Cockpit Subscribers: <a target="_blank" href="https://www.armsagora.com/fflcockpit?feed_url=${feed_url}">Click Here to Signup</a> 
                                                                     </div>`);
                                                                 }
-                                                                modalBody.append(`<hr>`);
+                                                                if (target == "gunmade") {
+                                                                    modalBody.append(`
+                                                                    <div style="line-height: 1.25;padding:5px;margin-bottom:20px;">
+                                                                        Find out more about GunMade product feed setup: <a target="_blank" href="https://www.gunmade.com/solutions/dealers/">Click Here to Signup</a> 
+                                                                    </div>`);
+                                                                }
+
+                                                                //modalBody.append(`<hr>`);
 
                                                                 // Add event listener using delegation
                                                                 modalBody.on('click', '.copy-icon', function () {
@@ -2706,7 +2717,7 @@ class g_ffl_Cockpit_Admin
                                                                 }
                                                             }
 
-                                                            if (['wikiarms', 'gun.deals', 'gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed', 'gunmade'].includes(target)) {
                                                                 modalBody.append(`
                                                                 <div class="helperDialog">
                                                                     Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${displayName} within each of their product groups.  
@@ -2739,13 +2750,13 @@ class g_ffl_Cockpit_Admin
                                                             }
 
                                                             // automatically open product restrictions for certain targets
-                                                            if (['wikiarms', 'gun.deals', 'gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed', 'gunmade'].includes(target)) {
                                                                 document.getElementById('pr_header').click();
                                                             }
                                                            
                                                             const product_restrictions_container = document.getElementById('product-restrictions-container');
                                                             
-                                                            if (['gunbroker', 'woo', 'liberty_gun_trader'].includes(target)) {
+                                                            if (['gunbroker', 'woo', 'odoo', 'bigcommerce', 'liberty_gun_trader'].includes(target)) {
                                                                 
                                                                 let restrictions = [
                                                                     {"field": "product_class", "modal": "productClassModal", "name": "Product Classes", "select_text": "Select Product Classes"},
@@ -2828,13 +2839,14 @@ class g_ffl_Cockpit_Admin
                                                                         }
                                                                     });
                                                                 });
-                                                            } else if (['gun.deals', 'gunammo.deals', 'wikiarms', 'ammobrowser', 'ammoseek','armsagora', 'gunfeed'].includes(target)) {
+                                                            } else if (['gun.deals', 'gunammo.deals', 'wikiarms', 'ammobrowser', 'ammoseek','armsagora', 'gunfeed', 'gunmade'].includes(target)) {
                                                                 var rss_field_categories = {
                                                                     "wikiarms": ["guns","brass","powder","bullets","primers","magazines","ammunition","reloading_misc"],
                                                                     "ammoseek": ["guns","brass","powder","bullets","primers","magazines","ammunition"],
                                                                     "ammobrowser": ["guns","brass","powder","bullets","primers","magazines","ammunition"],
                                                                     "gun.deals": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"],
                                                                     "gunammo.deals": ["guns","parts", "ammunition","reloading","other"],
+                                                                    "gunmade": ["guns","ammunition","accessories","nfa","knives","archery"],
                                                                     "armsagora": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"],
                                                                     "gunfeed": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"]
                                                                 }
@@ -4348,13 +4360,13 @@ class g_ffl_Cockpit_Admin
                 <tr>
                     <td style="width:150px;font-weight:bold;" scope="row">FFL Cockpit Key:</td>
                     <td>
-                    <form method="post" action="options.php" style="display: flex; align-items: center;">
+                    <form method="post" action="options.php" style="display: flex; align-items: center;" id="g_ffl_cockpit_key_form">
                         <?php settings_fields('g-ffl-cockpit-settings'); ?>
-                        <input oninput="document.getElementById('set_key_form').style.display='inline';" type="password" style="width: 350px;" name="g_ffl_cockpit_key" id="g_ffl_cockpit_key" 
+                        <input oninput="document.getElementById('set_key_form').style.display='inline';" type="password" style="width: 350px;" name="g_ffl_cockpit_key" id="g_ffl_cockpit_key"  autocomplete="off" 
                             aria-describedby="login_error" class="input password-input" size="20"
                             value="<?php echo esc_attr($gFFLCockpitKey); ?>"/>
                         <span id="set_key_form" style="display: none; margin-left: 10px;">
-                            <?php submit_button('Set Key', 'primary', 'submit-button'); ?>
+                            <?php submit_button('Set Key', 'primary', 'confirm_set_key_button', false, array('id' => 'confirm_set_key_button_actual')); ?>
                         </span>
                     </form>
                     </td>
@@ -4405,6 +4417,19 @@ class g_ffl_Cockpit_Admin
                 }
             }
 
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const setKeyButton = document.getElementById('confirm_set_key_button_actual');
+                if (setKeyButton) {
+                    setKeyButton.addEventListener('click', function(event) {
+                        event.preventDefault(); // Prevent default button action
+                        if (confirm("Please confirm, Do you want to apply a new key?")) {
+                            document.getElementById('g_ffl_cockpit_key_form').submit();
+                        }
+                    });
+                }
+            });
         </script>
 
 
