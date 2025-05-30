@@ -51,6 +51,12 @@ class FFLCockpit_Sync_Endpoint {
             'callback' => [__CLASS__, 'get_status'],
             'permission_callback' => fn() => self::fflcockpit_is_allowed(self::$fflckey),
         ]);
+        
+        register_rest_route('fflcockpit/v1', '/export', [
+            'methods' => 'POST',
+            'callback' => [__CLASS__, 'handle_export'],
+            'permission_callback' => fn() => self::fflcockpit_is_allowed(self::$fflckey),
+        ]);
     }
 
     public static function handle_enqueue_only(WP_REST_Request $request) {
@@ -307,6 +313,225 @@ class FFLCockpit_Sync_Endpoint {
         $status = json_decode(file_get_contents(self::$status_file), true);
         return new WP_REST_Response($status, 200);
     }
+
+    public static function handle_export(WP_REST_Request $request) {
+        try {
+            error_reporting(E_ALL);
+            ini_set('display_errors', 1);
+            
+            $timeout = 900;
+            @set_time_limit($timeout);
+            @ini_set('max_execution_time', $timeout);
+            
+            if (!self::fflcockpit_is_allowed(self::$fflckey)) {
+                return new WP_REST_Response(['error' => 'Not authorized'], 401);
+            }
+
+            // Create a temporary file
+            $temp_file = tempnam(sys_get_temp_dir(), 'fflc_export_');
+            $fp = fopen($temp_file, 'w');
+            
+            fwrite($fp, '{"products":[');
+            
+            // Get total count more efficiently
+            $total_count = wc_get_products([
+                'limit' => 1,
+                'status' => 'publish',
+                'return' => 'ids',
+                'paginate' => true,
+            ])->total;
+            
+            $batch_size = 500; // Increased from 20
+            $processed = 0;
+            $is_first = true;
+            
+            // Process products in optimized batches
+            for ($offset = 0; $offset < $total_count; $offset += $batch_size) {
+                $products = wc_get_products([
+                    'limit' => $batch_size,
+                    'offset' => $offset,
+                    'status' => 'publish',
+                    'return' => 'objects'
+                ]);
+                
+                foreach ($products as $product) {
+                    if (!$product || !is_object($product)) continue;
+                    
+                    // Get only required product data
+                    $product_data = [
+                        'id' => $product->get_id(),
+                        'upc' => get_post_meta($product->get_id(), 'upc', true) ?: '',
+                        'sku' => $product->get_sku(),
+                        'name' => $product->get_name(),
+                        'type' => $product->get_type(),
+                        'status' => $product->get_status(),
+                        'description' => $product->get_description(),
+                        'short_description' => $product->get_short_description(),
+                        'regular_price' => $product->get_regular_price(),
+                        'sale_price' => $product->get_sale_price(),
+                        'stock_quantity' => $product->get_stock_quantity(),
+                        'stock_status' => $product->get_stock_status(),
+                        'manage_stock' => $product->get_manage_stock(),
+                        'shipping_class' => $product->get_shipping_class(),
+                        'permalink' => get_permalink($product->get_id())
+                    ];
+
+            
+                    // Add product attributes as a list
+                    $attributes = [];
+                    foreach ($product->get_attributes() as $attribute) {
+                        if ($attribute->is_taxonomy()) {
+                            // Get taxonomy attribute values
+                            $terms = wp_get_post_terms($product->get_id(), $attribute->get_name());
+                            $attribute_values = [];
+                            if (!is_wp_error($terms)) {
+                                foreach ($terms as $term) {
+                                    $attribute_values[] = $term->name;
+                                }
+                            }
+                            // Get taxonomy attribute ID
+                            $taxonomy = $attribute->get_name();
+                            $tax_object = get_taxonomy($taxonomy);
+                            $attribute_id = $tax_object ? wc_attribute_taxonomy_id_by_name($tax_object->name) : 0;
+                        } else {
+                            // Get custom attribute values
+                            $attribute_values = $attribute->get_options();
+                            $attribute_id = 0; // Custom attributes don't have IDs
+                        }
+
+                        $attributes[] = [
+                            'id' => $attribute_id,
+                            'name' => $attribute->get_name(),
+                            'label' => wc_attribute_label($attribute->get_name()),
+                            'options' => $attribute_values,
+                            'visible' => $attribute->get_visible(),
+                            'variation' => $attribute->get_variation()
+                        ];
+                    }
+                    $product_data['attributes'] = $attributes;
+
+                    // Get product images
+                    $image_data = [];
+                    $attachment_id = $product->get_image_id();
+                    if ($attachment_id) {
+                        $image_data[] = [
+                            'id' => $attachment_id,
+                            'src' => wp_get_attachment_url($attachment_id),
+                            'name' => get_the_title($attachment_id),
+                            'alt' => get_post_meta($attachment_id, '_wp_attachment_image_alt', true),
+                            'position' => 0
+                        ];
+                    }
+                    
+                    $gallery_image_ids = $product->get_gallery_image_ids();
+                    foreach ($gallery_image_ids as $position => $gallery_image_id) {
+                        $image_data[] = [
+                            'id' => $gallery_image_id,
+                            'src' => wp_get_attachment_url($gallery_image_id),
+                            'name' => get_the_title($gallery_image_id),
+                            'alt' => get_post_meta($gallery_image_id, '_wp_attachment_image_alt', true),
+                            'position' => $position + 1
+                        ];
+                    }
+                    $product_data['images'] = $image_data;
+
+                    // Get all meta data
+                    $all_meta = $product->get_meta_data();
+                    $meta_data = [];
+                    foreach ($all_meta as $meta) {
+                        $key = $meta->key;
+                        if (strpos($key, '_') === 0) {
+                            $key = ltrim($key, '_');
+                        }
+                        $meta_data[$key] = $meta->value;
+                    }
+                    $product_data['meta_data'] = $meta_data;
+
+                    // Get specific meta keys we know we need and handle boolean/numeric conversions
+                    $meta_keys = ['upc', 'distid', 'unit_price', 'product_class'];
+                    foreach ($meta_keys as $key) {
+                        $product_data[$key] = $meta_data[$key];
+                    }
+                    
+                    // Handle automated_listing conversion
+                    $product_data['drop_ship_flg'] = $meta_data['drop_ship_flg'] === '1' ? true : false;
+
+                    // Handle automated_listing conversion
+                    $product_data['automated_listing'] = $meta_data['automated_listing'] === 'True' ? true : false;
+                    
+                    // Handle ffl_req based on firearm_product
+                    $product_data['ffl_req'] = $meta_data['firearm_product'] === 'yes' ? true : false;
+
+                    // Handle map_price as numeric value
+                    $product_data['map_price'] = isset($meta_data['map_price']) && is_numeric($meta_data['map_price']) ? 
+                    $meta_data['map_price'] : 
+                    null;
+
+                    // Get taxonomies efficiently
+                    $product_data['brands'] = self::get_taxonomy_terms($product->get_id(), 'product_brand');
+                    $product_data['categories'] = self::get_taxonomy_terms($product->get_id(), 'product_cat');
+                    $product_data['tags'] = self::get_taxonomy_terms($product->get_id(), 'product_tag');
+                    
+                    if (!$is_first) {
+                        fwrite($fp, ',');
+                    }
+                    fwrite($fp, json_encode($product_data));
+                    $is_first = false;
+                    
+                    $processed++;
+                }
+                
+                wp_cache_flush();
+                gc_collect_cycles();
+            }
+            
+            fwrite($fp, '],"count":' . $processed . ',"plugin_version":"' . self::$version . '","export_time":"' . gmdate('Y-m-d\TH:i:s\Z') . '"}');
+            
+            fclose($fp);
+            
+            $json_content = file_get_contents($temp_file);
+            $compressed_data = gzencode($json_content, 9);
+            
+            unlink($temp_file);
+            
+            header('Content-Type: application/gzip');
+            header('Content-Encoding: gzip');
+            header('Content-Disposition: attachment; filename="fflcockpit-products-export-' . date('Y-m-d') . '.json.gz"');
+            header('Content-Length: ' . strlen($compressed_data));
+            echo $compressed_data;
+            exit;
+            
+        } catch (Exception $e) {
+            if (isset($temp_file) && file_exists($temp_file)) {
+                unlink($temp_file);
+            }
+            
+            if (!headers_sent()) {
+                return new WP_REST_Response([
+                    'error' => 'Export failed',
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
+            exit;
+        }
+    }
+
+    private static function get_taxonomy_terms($product_id, $taxonomy) {
+        $terms = get_the_terms($product_id, $taxonomy);
+        if (!$terms || is_wp_error($terms)) return [];
+        
+        return array_map(function($term) {
+            return [
+                'id' => $term->term_id,
+                'name' => $term->name,
+                'slug' => $term->slug
+            ];
+        }, $terms);
+    }
+
+
 
     private static function reset_status_file() {
         $default_status = [
