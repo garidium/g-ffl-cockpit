@@ -5,7 +5,7 @@ Donate link: https://fflcockpit.com
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.0
-Stable tag: 1.4.32
+Stable tag: 1.4.33
 License: GPL v3+
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,7 @@ While the plugin is free to download and install, it does require you to purchas
 2. You can also see a full listing of products imported from the distributors configured, along with the automated price settings.
 
 == Changelog ==
+73. v1.4.33 Confirm target feed URL's exist before showing them in the configuration panels
 72. v1.4.32 Added GunMade support in Targets, and made the key setting form more robust to prevent users from accidentally resetting it
 71. v1.4.31 Added GunAmmo.deals and AmmoBrowser support in Targets
 70. v1.4.30 Rearranged configuration tab and fixed bug with attribute loading via onsite queue updater

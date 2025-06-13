@@ -2600,12 +2600,52 @@ class g_ffl_Cockpit_Admin
                                                                     feed_url = `https://garidium.s3.us-east-1.amazonaws.com/feeds/${gFFLCockpitKey.slice(0, 4)}-${gFFLCockpitKey.slice(-4)}/${target.replace(".","")}/feed.json.gz`;
                                                                 }
 
-                                                                modalBody.append(`
-                                                                    <div style="line-height: 1.25;padding:5px;margin-bottom:20px;">
-                                                                        When you signup with ${displayName}, you will be asked for a Product Feed URL. <span style="font-weight:bold;color:red;">${displayName} must be activated to create the product feed, do not provide this URL until you can click on it and download a file.</span> The Product Feed URL will be: 
-                                                                        <a target="_blank" href="${feed_url}">${feed_url}</a>
-                                                                        <i class="fa fa-copy copy-icon" style="cursor: pointer; margin-left: 2px;" title="Copy Feed URL to clipboard"></i>
-                                                                    </div>`);
+                                                                // Initially show loading message
+                                                                const feedSection = `
+                                                                    <div id="feed-url-section" style="line-height: 1.25;padding:5px;margin-bottom:20px;">
+                                                                        <div class="spinner" style="display: inline-block; margin-right: 10px;">
+                                                                            <i class="fas fa-spinner fa-spin"></i>
+                                                                        </div>
+                                                                        Checking feed status...
+                                                                    </div>`;
+                                                                modalBody.append(feedSection);
+
+                                                                // Check feed existence asynchronously
+                                                                (async function() {
+                                                                    let feedExists = false;
+                                                                    try {
+                                                                        const response = await fetch('/wp-json/fflcockpit/v1/remote-file-exists', {
+                                                                            method: 'POST',
+                                                                            headers: {
+                                                                                'Content-Type': 'application/json',
+                                                                            },
+                                                                            body: JSON.stringify({ url: feed_url })
+                                                                        });
+                                                                        const result = await response.json();
+                                                                        feedExists = result.exists;
+                                                                    } catch (error) {
+                                                                        console.warn('Could not check feed existence:', error);
+                                                                        feedExists = false;
+                                                                    }
+
+                                                                    // Update the feed section with the result
+                                                                    const feedSectionElement = document.getElementById('feed-url-section');
+                                                                    if (feedSectionElement) {
+                                                                        if (feedExists) {
+                                                                            // Feed exists - show clickable URL
+                                                                            feedSectionElement.innerHTML = `
+                                                                                When you signup with ${displayName}, you will be asked for a Product Feed URL. Your feed is active and ready to use. The Product Feed URL is: 
+                                                                                <a target="_blank" href="${feed_url}">${feed_url}</a>
+                                                                                <i class="fa fa-copy copy-icon" style="cursor: pointer; margin-left: 2px;" title="Copy Feed URL to clipboard"></i>
+                                                                            `;
+                                                                        } else {
+                                                                            // Feed doesn't exist - show activation message
+                                                                            feedSectionElement.innerHTML = `
+                                                                                When you signup with ${displayName}, you will be asked for a Product Feed URL. <span style="font-weight:bold;color:red;">${displayName} must be activated to create the product feed. After activating (and hitting Save Changes), check back in an hour and your feed URL will appear here.</span>
+                                                                            `;
+                                                                        }
+                                                                    }
+                                                                })();
 
                                                                 if (target == "armsagora") {
                                                                     modalBody.append(`
@@ -2622,7 +2662,7 @@ class g_ffl_Cockpit_Admin
 
                                                                 //modalBody.append(`<hr>`);
 
-                                                                // Add event listener using delegation
+                                                                // Add event listener using delegation for copy functionality
                                                                 modalBody.on('click', '.copy-icon', function () {
                                                                     // Use the pre-defined `feed_url` variable directly
                                                                     navigator.clipboard.writeText(feed_url).then(() => {

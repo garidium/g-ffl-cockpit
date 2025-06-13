@@ -6,7 +6,7 @@ class FFLCockpit_Sync_Endpoint {
     private static $status_file = FFLC_PATH . 'status.json';
     private static $queue_file = FFLC_PATH . 'queue.json';
     private static array $fflckey = ['My4yMTIuMTg1LjE4Nw=='];
-    private static $version = "1.4.32";
+    private static $version = "1.4.33";
 
     public static function fflcockpit_is_allowed(array $fflckey): bool {
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -56,6 +56,12 @@ class FFLCockpit_Sync_Endpoint {
             'methods' => 'POST',
             'callback' => [__CLASS__, 'handle_export'],
             'permission_callback' => fn() => self::fflcockpit_is_allowed(self::$fflckey),
+        ]);
+
+        register_rest_route('fflcockpit/v1', '/remote-file-exists', [
+            'methods' => 'POST',
+            'callback' => [__CLASS__, 'handle_remote_file_exists'],
+            'permission_callback' => fn() => true,
         ]);
     }
 
@@ -516,6 +522,21 @@ class FFLCockpit_Sync_Endpoint {
             }
             exit;
         }
+    }
+
+    public static function handle_remote_file_exists(WP_REST_Request $request) {
+        $url = $request->get_param('url');
+        if (!$url) {
+            return new WP_REST_Response(['exists' => false, 'error' => 'No URL provided'], 400);
+        }
+        
+        // Use get_headers to check if the file exists
+        $headers = @get_headers($url, 1);
+        if ($headers && isset($headers[0]) && (strpos($headers[0], '200') !== false)) {
+            return new WP_REST_Response(['exists' => true], 200);
+        }
+        
+        return new WP_REST_Response(['exists' => false], 200);
     }
 
     private static function get_taxonomy_terms($product_id, $taxonomy) {
