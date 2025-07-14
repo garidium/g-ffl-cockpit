@@ -1490,6 +1490,8 @@ class g_ffl_Cockpit_Admin
                                 gap: 5px;
                                 overflow-y: auto;
                                 max-height:750px;
+                                background-color: white !important;
+                                color: black !important;
                             }
                             .price-based-margin-table {
                                 width: 100%;
@@ -2593,7 +2595,7 @@ class g_ffl_Cockpit_Admin
                                                             modalBody.empty();
                                                             cc = editor.get();
 
-                                                            if (['wikiarms', 'gun.deals','gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed', 'gunmade'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals','gunammo.deals', 'ammoseek', 'caliberking', 'ammobrowser', 'armsagora', 'gunfeed', 'gunmade'].includes(target)) {
                                                                 var feed_url = `https://garidium.s3.us-east-1.amazonaws.com/feeds/${gFFLCockpitKey.slice(0, 4)}-${gFFLCockpitKey.slice(-4)}/${target.replace(".","")}/feed.xml`;
 
                                                                 if (target == "gunmade") {
@@ -2757,7 +2759,7 @@ class g_ffl_Cockpit_Admin
                                                                 }
                                                             }
 
-                                                            if (['wikiarms', 'gun.deals', 'gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed', 'gunmade'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'gunammo.deals', 'ammoseek', 'caliberking', 'ammobrowser', 'armsagora', 'gunfeed', 'gunmade'].includes(target)) {
                                                                 modalBody.append(`
                                                                 <div class="helperDialog">
                                                                     Specify <strong>Product Restrictions specific to ${displayName} </strong> in the section below. Expand the section and define which products you want to list on ${displayName} within each of their product groups.  
@@ -2790,7 +2792,7 @@ class g_ffl_Cockpit_Admin
                                                             }
 
                                                             // automatically open product restrictions for certain targets
-                                                            if (['wikiarms', 'gun.deals', 'gunammo.deals', 'ammoseek', 'ammobrowser', 'armsagora', 'gunfeed', 'gunmade'].includes(target)) {
+                                                            if (['wikiarms', 'gun.deals', 'gunammo.deals', 'ammoseek', 'caliberking', 'ammobrowser', 'armsagora', 'gunfeed', 'gunmade'].includes(target)) {
                                                                 document.getElementById('pr_header').click();
                                                             }
                                                            
@@ -2879,10 +2881,11 @@ class g_ffl_Cockpit_Admin
                                                                         }
                                                                     });
                                                                 });
-                                                            } else if (['gun.deals', 'gunammo.deals', 'wikiarms', 'ammobrowser', 'ammoseek','armsagora', 'gunfeed', 'gunmade'].includes(target)) {
+                                                            } else if (['gun.deals', 'gunammo.deals', 'wikiarms', 'ammobrowser', 'ammoseek', 'caliberking','armsagora', 'gunfeed', 'gunmade'].includes(target)) {
                                                                 var rss_field_categories = {
                                                                     "wikiarms": ["guns","brass","powder","bullets","primers","magazines","ammunition","reloading_misc"],
                                                                     "ammoseek": ["guns","brass","powder","bullets","primers","magazines","ammunition"],
+                                                                    "caliberking": ["guns","brass","powder","bullets","primers","magazines","ammunition"],
                                                                     "ammobrowser": ["guns","brass","powder","bullets","primers","magazines","ammunition"],
                                                                     "gun.deals": ["guns","brass","other","parts","bullets","primers","reloading","ammunition"],
                                                                     "gunammo.deals": ["guns","parts", "ammunition","reloading","other"],

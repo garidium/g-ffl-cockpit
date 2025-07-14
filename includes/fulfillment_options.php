@@ -251,8 +251,18 @@ function g_ffl_checkout_fulfillment_options_html($post_or_order_object)
             }
 
             function load_fulfillment_options_grid(data) {
-                if (data.order == null || data.order == "undefined"){
-                    alert("There was a Problem retreiving Order Data, please refresh and try again. Contact support at support@garidium.com if this error persists.");
+                if (data.order == null || data.order == "undefined") {
+                    // Clear the fulfillment and distributor order sections
+                    document.getElementById("product_fulfillment_table").innerHTML = "";
+                    
+                    // Show a styled error message in the fulfillment section
+                    document.getElementById("product_fulfillment_table").innerHTML = `
+                        <div style="padding: 30px; margin: 20px 0; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 6px; font-size: 1.1em; text-align: center;">
+                            <strong>There was a problem retrieving Order Data.</strong><br>
+                            Please refresh and try again.<br>
+                            Contact <a href="mailto:support@garidium.com">support@garidium.com</a> if this error persists.
+                        </div>
+                    `;
                     return;
                 }
                 var fulfillment_options = data.fulfillment_options;
